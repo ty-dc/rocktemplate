@@ -28,7 +28,7 @@ func NewStdoutLogger(loglevel string) *zap.Logger {
 	case "":
 		l = zapcore.InfoLevel
 	default:
-		panic(fmt.Sprintf("unknow log level %s", loglevel))
+		panic(fmt.Sprintf("unknown log level %s", loglevel))
 	}
 
 	encoderConfig := zap.NewProductionEncoderConfig()

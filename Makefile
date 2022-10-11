@@ -112,17 +112,35 @@ update_mod_golang:
 	$(QUIET) sed -i -E 's/^go .*/go '$(GO_MAJOR_AND_MINOR_VERSION)'/g' go.mod
 	@echo "Updated go version in go.mod to $(GO_VERSION)"
 
-#================== chart
 
-.PHONY: chart_lint
-chart_lint:
-	mkdir -p $(DESTDIR_CHART) ; \
-		CHART_LIST=$$( cd $(CHART_DIR) && ls ) ; \
-   		for NAME in $${CHART_LIST} ; do \
-   			[ ! -d "$(CHART_DIR)/$${NAME}" ] && continue ; \
-   			echo "check $${NAME}" ; \
-   			helm lint --with-subcharts $(CHART_DIR)/$${NAME} ; \
-   		done
+.PHONY: update_gofmt
+update_gofmt: ## Run gofmt on Go source files in the repository.
+	$(QUIET)for pkg in $(GOFILES); do $(GO) fmt $$pkg; done
+
+
+.PHONY: lint_code_spell
+lint_code_spell:
+	$(QUIET) if ! which codespell &> /dev/null ; then \
+  				echo "try to install codespell" ; \
+  				if ! pip3 install codespell ; then \
+  					echo "error, miss tool codespell, install it: pip3 install codespell" ; \
+  					exit 1 ; \
+  				fi \
+  			fi ;\
+  			codespell --config .github/codespell-config
+
+.PHONY: fix-code-spell
+fix-code-spell:
+	$(QUIET) if ! which codespell &> /dev/null ; then \
+  				echo "try to install codespell" ; \
+  				if ! pip3 install codespell ; then \
+  					echo "error, miss tool codespell, install it: pip3 install codespell" ; \
+  					exit 1 ;\
+  				fi \
+  			fi; \
+  			codespell --config .github/codespell-config  --write-changes
+
+#================== chart
 
 .PHONY: chart_package
 chart_package: chart_lint
@@ -135,6 +153,44 @@ chart_package: chart_lint
    			echo "package chart $${NAME}" ; \
    			helm package  $(CHART_DIR)/$${NAME} ; \
    		done
+
+
+.PHONY: update_chart_version
+update_chart_version:
+	VERSION=`cat VERSION | tr -d '\n' ` ; [ -n "$${VERSION}" ] || { echo "error, wrong version" ; exit 1 ; } ; \
+		echo "check chart version $${VERSION}" ; \
+		CHART_VERSION=`echo $${VERSION} | tr -d 'v' ` ; \
+		CHART_LIST=$$( cd $(CHART_DIR) && ls ) ; \
+   		for NAME in $${CHART_LIST} ; do \
+   			[ ! -d "$(CHART_DIR)/$${NAME}" ] && continue ; \
+			sed -E -i 's?^version: .*?version: '$${CHART_VERSION}'?g' $(CHART_DIR)/$${NAME}/Chart.yaml &>/dev/null  ; \
+			sed -E -i 's?^appVersion: .*?appVersion: "'$${CHART_VERSION}'"?g' $(CHART_DIR)/$${NAME}/Chart.yaml &>/dev/null  ; \
+   		done ; \
+   		echo "version of all chart is right"
+
+
+.PHONY: lint_chart_format
+lint_chart_format:
+	mkdir -p $(DESTDIR_CHART) ; \
+		CHART_LIST=$$( cd $(CHART_DIR) && ls ) ; \
+   		for NAME in $${CHART_LIST} ; do \
+   			[ ! -d "$(CHART_DIR)/$${NAME}" ] && continue ; \
+   			echo "check $${NAME}" ; \
+   			helm lint --with-subcharts $(CHART_DIR)/$${NAME} ; \
+   		done
+
+.PHONY: lint_chart_version
+lint_chart_version:
+	VERSION=`cat VERSION | tr -d '\n' ` ; [ -n "$${VERSION}" ] || { echo "error, wrong version" ; exit 1 ; } ; \
+		echo "check chart version $${VERSION}" ; \
+		CHART_VERSION=`echo $${VERSION} | tr -d 'v' ` ; \
+		CHART_LIST=$$( cd $(CHART_DIR) && ls ) ; \
+   		for NAME in $${CHART_LIST} ; do \
+   			[ ! -d "$(CHART_DIR)/$${NAME}" ] && continue ; \
+			grep -E "^version: $${CHART_VERSION}" $(CHART_DIR)/$${NAME}/Chart.yaml &>/dev/null || { echo "error, wrong version in Chart.yaml" ; exit 1 ; } ; \
+			grep -E "^appVersion: \"$${CHART_VERSION}\"" $(CHART_DIR)/$${NAME}/Chart.yaml &>/dev/null || { echo "error, wrong appVersion in Chart.yaml" ; exit 1 ; } ; \
+   		done ; \
+   		echo "version of all chart is right"
 
 
 #=============== lint
@@ -150,12 +206,27 @@ define lint_go_format
 	echo "format of Go source code is right"
 endef
 
-.PHONY: lint_golang
-lint_golang:
+.PHONY: lint_golang_format
+lint_golang_format:
 	@ $(lint_go_format)
 	$(QUIET) $(GO_VET)  ./...
 	$(QUIET) golangci-lint run
+	export GOPROXY="https://goproxy.io|https://goproxy.cn|direct"  ; go mod tidy ; go mod vendor ; \
+		if ! test -z "$$(git status --porcelain)"; then \
+  			echo "please run 'go mod tidy && go mod vendor', and submit your changes" ; \
+  			exit 1 ; \
+  		fi ; echo "succeed to check golang vendor"
 
+.PHONY: lint_golang_lock
+lint_golang_lock:
+	for l in sync.Mutex sync.RWMutex; do \
+  		DATA=` grep -r --exclude-dir={.git,_build,vendor,externalversions,lock,contrib} -i --include \*.go "$${l}" . ` ; \
+	    if [ -n "$${DATA}" ] ; then \
+	   		 echo "Found $${l} usage. Please use pkg/lock instead to improve deadlock detection"; \
+	   		 echo "$${DATA}" ; \
+	    	 exit 1 ;\
+	    fi ; \
+	done
 
 # should label for each test file
 .PHONY: lint_test_label
@@ -169,7 +240,15 @@ lint_test_label:
 		echo "each test go file is labeled right"
 
 
-#=========== test
+.PHONY: lint_yaml
+lint_yaml:
+	@$(CONTAINER_ENGINE) container run --rm \
+		--entrypoint sh -v $(ROOT_DIR):/data cytopia/yamllint \
+		-c '/usr/bin/yamllint -c /data/.github/yamllint-conf.yml /data' ; \
+		if (($$?==0)) ; then echo "congratulations ,all pass" ; else echo "error, pealse refer <https://yamllint.readthedocs.io/en/stable/rules.html> " ; fi
+
+
+#=========== unit test
 
 .PHONY: unitest_tests
 unitest_tests: UNITEST_DIR := pkg cmd
@@ -183,6 +262,28 @@ unitest_tests:
 		-randomize-suites -randomize-all --keep-going  --timeout=1h  -p   --slow-spec-threshold=120s \
 		-vv  -r   $(UNITEST_DIR)
 	go tool cover -html=./coverage.out -o $(UNITEST_OUTPUT)/coverage-all.html && mv ./coverage.out  $(UNITEST_OUTPUT)/coverage.out
+
+
+# ================ e2e
+
+.PHONY: e2e
+e2e:
+	make -C test check-spidernet-images
+	make -C test e2e
+
+.PHONY: e2e-init
+e2e-init:
+	make -C test check-spidernet-images
+	make -C test init-env
+	make -C test install-example-app
+
+.PHONY: e2e-run
+e2e-run:
+	make -C test run-e2e
+
+.PHONY: e2e-clean
+e2e-clean:
+	make -C test clean
 
 
 #============ doc
