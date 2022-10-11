@@ -6,6 +6,8 @@
 ARG GOLANG_IMAGE=docker.io/library/golang:1.18.2@sha256:04fab5aaf4fc18c40379924674491d988af3d9e97487472e674d0b5fd837dfac
 ARG UBUNTU_IMAGE=docker.io/library/ubuntu:21.10@sha256:14d8cab8d7bd72a01e225cd85bf37bbf08bf88115769316fa86c776df4ea5fed
 
+ARG BUILDPLATFORM
+
 #========= build gops ===============
 FROM --platform=${BUILDPLATFORM} ${GOLANG_IMAGE} as gops-cni-builder
 COPY /build-gops.sh /build-gops.sh

@@ -36,6 +36,9 @@ echo "Build Image $(IMAGE_NAME):$(IMAGE_TAG)" ; \
 				--build-arg GIT_COMMIT_VERSION=$(GIT_COMMIT_VERSION) \
 				--build-arg GIT_COMMIT_TIME=$(GIT_COMMIT_TIME) \
 				--build-arg VERSION=$(GIT_COMMIT_VERSION) \
+				--build-arg BUILDPLATFORM="linux/$(TARGETARCH)" \
+				--build-arg TARGETARCH=$(TARGETARCH) \
+				--build-arg TARGETOS=linux \
 				--file $(DOCKERFILE_PATH) \
 				--tag ${IMAGE_NAME}:$(IMAGE_TAG) . ; \
 		echo "build success for $${i}:$(IMAGE_TAG) "
@@ -50,21 +53,25 @@ build_local_agent_image: IMAGE_NAME := ${REGISTER}/${GIT_REPO}/agent
 build_local_agent_image: DOCKERFILE_PATH := $(ROOT_DIR)/images/agent/Dockerfile
 build_local_agent_image: IMAGE_TAG := $(GIT_COMMIT_VERSION)
 build_local_agent_image:
-	@ $(BUILD_FINAL_IMAGE)
+	$(BUILD_FINAL_IMAGE)
 
 
 #---------
 
 define BUILD_BASE_IMAGE
-TAG=` git ls-tree --full-tree HEAD -- $(IMAGEDIR) | awk '{ print $$3 }' ` ; \
-		echo "Build base image $(BASE_IMAGES):$${TAG}" ; \
+IMAGE_DIR=` dirname $(DOCKERFILE_PATH) ` \
+		TAG=` git ls-tree --full-tree HEAD -- $${IMAGE_DIR} | awk '{ print $$3 }' ` ; \
+		echo "Build base image $(BASE_IMAGE_NAME):$${TAG}" ; \
 		docker build  \
 				--build-arg USE_PROXY_SOURCE=true \
+				--build-arg BUILDPLATFORM="linux/$(TARGETARCH)" \
+				--build-arg TARGETARCH=$(TARGETARCH) \
+				--build-arg TARGETOS=linux \
 				--file $(DOCKERFILE_PATH) \
 				--output type=docker \
-				--tag $(BASE_IMAGES):$${TAG}  $(IMAGEDIR) ; \
+				--tag $(BASE_IMAGE_NAME):$${TAG}   $${IMAGE_DIR} ; \
 		(($$?==0)) || { echo "error , failed to build base image" ; exit 1 ;} ; \
-		echo "build success $(BASE_IMAGES):$${TAG} "
+		echo "build success $(BASE_IMAGE_NAME):$${TAG} "
 endef
 
 .PHONY: build_local_base_image
@@ -72,10 +79,11 @@ build_local_base_image: build_local_agent_base_image
 
 .PHONY: build_local_agent_base_image
 build_local_agent_base_image: DOCKERFILE_PATH := $(ROOT_DIR)/images/agent-base/Dockerfile
-build_local_agent_base_image: BASE_IMAGES := ${REGISTER}/${GIT_REPO}/agent-base
+build_local_agent_base_image: BASE_IMAGE_NAME := ${REGISTER}/${GIT_REPO}/agent-base
 build_local_agent_base_image:
-	@ $(BUILD_BASE_IMAGE)
+	$(BUILD_BASE_IMAGE)
 
+#---------
 
 
 .PHONY: update_images_dockerfile_golang
