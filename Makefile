@@ -41,7 +41,7 @@ echo "Build Image $(IMAGE_NAME):$(IMAGE_TAG)" ; \
 				--build-arg TARGETOS=linux \
 				--file $(DOCKERFILE_PATH) \
 				--tag ${IMAGE_NAME}:$(IMAGE_TAG) . ; \
-		echo "build success for $${i}:$(IMAGE_TAG) "
+		echo "build success for ${IMAGE_NAME}:$(IMAGE_TAG) "
 endef
 
 
