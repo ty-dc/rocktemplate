@@ -8,7 +8,7 @@ package lock_test
 
 import (
 	. "github.com/onsi/ginkgo/v2"
-	"github.com/spidernet-io/spiderpool/pkg/lock"
+	"github.com/spidernet-io/template/pkg/lock"
 	"time"
 )
 

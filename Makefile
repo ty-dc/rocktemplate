@@ -4,13 +4,14 @@ include Makefile.defs
 all:
 
 
-# ----------------
+# ========================== build image
 
 define BUILD_BIN
 echo "begin to build bin under $(CMD_BIN_DIR)" ; \
    mkdir -p $(DESTDIR_BIN) ; \
    BIN_NAME_LIST=$$( cd $(CMD_BIN_DIR) && ls ) ; \
    for BIN_NAME in $${BIN_NAME_LIST} ; do \
+   		[ ! -d "$(CMD_BIN_DIR)/$${BIN_NAME}" ] && continue ; \
   		rm -f $(DESTDIR_BIN)/$${BIN_NAME} ; \
   		$(GO_BUILD) -o $(DESTDIR_BIN)/$${BIN_NAME}  $(CMD_BIN_DIR)/$${BIN_NAME}/main.go ; \
   		(($$?!=0)) && echo "error, failed to build $${BIN_NAME}" && exit 1 ; \
@@ -25,7 +26,7 @@ build_all_bin:
 	@ $(BUILD_BIN)
 
 
-# ==========================
+# ------------
 
 define BUILD_FINAL_IMAGE
 echo "Build Image $(IMAGE_NAME):$(IMAGE_TAG)" ; \
@@ -83,10 +84,140 @@ build_local_agent_base_image: BASE_IMAGE_NAME := ${REGISTER}/${GIT_REPO}/agent-b
 build_local_agent_base_image:
 	$(BUILD_BASE_IMAGE)
 
-#---------
+
+#================= update golang
+
+## Update Go version for all the components
+.PHONY: update_go_version
+update_go_version: update_images_dockerfile_golang update_mod_golang update_workflow_golang
 
 
 .PHONY: update_images_dockerfile_golang
 update_images_dockerfile_golang:
 	GO_VERSION=$(GO_VERSION) $(ROOT_DIR)/tools/images/update-golang-image.sh
 
+
+# Update Go version for GitHub workflow
+.PHONY: update_workflow_golang
+update_workflow_golang:
+	$(QUIET) for fl in $(shell find .github/workflows -name "*.yaml" -print) ; do \
+  			sed -i 's/go-version: .*/go-version: ${GO_IMAGE_VERSION}/g' $$fl ; \
+  			done
+	@echo "Updated go version in GitHub Actions to $(GO_IMAGE_VERSION)"
+
+
+# Update Go version in go.mod
+.PHONY: update_mod_golang
+update_mod_golang:
+	$(QUIET) sed -i -E 's/^go .*/go '$(GO_MAJOR_AND_MINOR_VERSION)'/g' go.mod
+	@echo "Updated go version in go.mod to $(GO_VERSION)"
+
+#================== chart
+
+.PHONY: chart_lint
+chart_lint:
+	mkdir -p $(DESTDIR_CHART) ; \
+		CHART_LIST=$$( cd $(CHART_DIR) && ls ) ; \
+   		for NAME in $${CHART_LIST} ; do \
+   			[ ! -d "$(CHART_DIR)/$${NAME}" ] && continue ; \
+   			echo "check $${NAME}" ; \
+   			helm lint --with-subcharts $(CHART_DIR)/$${NAME} ; \
+   		done
+
+.PHONY: chart_package
+chart_package: chart_lint
+	-@rm -rf $(DESTDIR_CHART)
+	-@mkdir -p $(DESTDIR_CHART)
+	CHART_LIST=$$( cd $(CHART_DIR) && ls ) ; \
+		cd $(DESTDIR_CHART) ; \
+   		for NAME in $${CHART_LIST} ; do \
+   			[ ! -d "$(CHART_DIR)/$${NAME}" ] && continue ; \
+   			echo "package chart $${NAME}" ; \
+   			helm package  $(CHART_DIR)/$${NAME} ; \
+   		done
+
+
+#=============== lint
+
+define lint_go_format
+	diff="$(find . ! \( -path './vendor' -prune \) ! \( -path './_build' -prune \) ! \( -path './.git' -prune \) ! \( -path '*.validate.go' -prune \) \
+        -type f -name '*.go' | xargs gofmt -d -l -s )" ; \
+	if [ -n "$diff" ]; then \
+		echo "Unformatted Go source code:" ;\
+		echo "$diff" ;\
+		exit 1 ; \
+	fi ; \
+	echo "format of Go source code is right"
+endef
+
+.PHONY: lint_golang
+lint_golang:
+	@ $(lint_go_format)
+	$(QUIET) $(GO_VET)  ./...
+	$(QUIET) golangci-lint run
+
+
+# should label for each test file
+.PHONY: lint_test_label
+lint_test_label:
+	@ALL_TEST_FILE=` find  ./  -name "*_test.go" -not -path "./vendor/*" ` ; FAIL="false" ; \
+		for ITEM in $$ALL_TEST_FILE ; do \
+			[[ "$$ITEM" == *_suite_test.go ]] && continue  ; \
+			! grep 'Label(' $${ITEM} &>/dev/null && FAIL="true" && echo "error, miss Label in $${ITEM}" ; \
+		done ; \
+		[ "$$FAIL" == "true" ] && echo "error, label check fail" && exit 1 ; \
+		echo "each test go file is labeled right"
+
+
+#=========== test
+
+.PHONY: unitest_tests
+unitest_tests: UNITEST_DIR := pkg cmd
+unitest_tests:
+	-@rm -rf $(UNITEST_OUTPUT)
+	-@mkdir -p $(UNITEST_OUTPUT)
+	@echo "run unitest tests"
+	$(ROOT_DIR)/tools/golang/ginkgo.sh   \
+		--cover --coverprofile=./coverage.out --covermode set  \
+		--json-report unitestreport.json \
+		-randomize-suites -randomize-all --keep-going  --timeout=1h  -p   --slow-spec-threshold=120s \
+		-vv  -r   $(UNITEST_DIR)
+	go tool cover -html=./coverage.out -o $(UNITEST_OUTPUT)/coverage-all.html && mv ./coverage.out  $(UNITEST_OUTPUT)/coverage.out
+
+
+#============ doc
+
+.PHONY: preview_doc
+preview_doc: PROJECT_DOC_DIR := ${ROOT_DIR}/docs
+preview_doc:
+	-docker stop doc_previewer &>/dev/null
+	-docker rm doc_previewer &>/dev/null
+	@echo "set up preview http server  "
+	@echo "you can visit the website on browser with url 'http://127.0.0.1:8000' "
+	[ -f "docs/mkdocs.yml" ] || { echo "error, miss docs/mkdocs.yml "; exit 1 ; }
+	docker run --rm  -p 8000:8000 --name doc_previewer -v $(PROJECT_DOC_DIR):/host/docs \
+        --entrypoint sh \
+        --stop-timeout 3 \
+        --stop-signal "SIGKILL" \
+        squidfunk/mkdocs-material  -c "cd /host ; cp docs/mkdocs.yml ./ ;  mkdocs serve -a 0.0.0.0:8000"
+	#sleep 10 ; if curl 127.0.0.1:8000 &>/dev/null  ; then echo "succeeded to set up preview server" ; else echo "error, failed to set up preview server" ; docker stop doc_previewer ; exit 1 ; fi
+
+
+.PHONY: build_doc
+build_doc: PROJECT_DOC_DIR := ${ROOT_DIR}/docs
+build_doc: OUTPUT_TAR := site.tar.gz
+build_doc:
+	-@rm -rf $(DOC_OUTPUT)
+	-@mkdir -p $(DOC_OUTPUT)
+	-docker stop doc_builder &>/dev/null
+	-docker rm doc_builder &>/dev/null
+	[ -f "docs/mkdocs.yml" ] || { echo "error, miss docs/mkdocs.yml "; exit 1 ; }
+	-@ rm -f ./docs/$(OUTPUT_TAR)
+	@echo "build doc html " ; \
+		docker run --rm --name doc_builder  \
+		-v ${PROJECT_DOC_DIR}:/host/docs \
+        --entrypoint sh \
+        squidfunk/mkdocs-material -c "cd /host ; cp ./docs/mkdocs.yml ./ ; mkdocs build ; cd site ; tar -czvf site.tar.gz * ; mv ${OUTPUT_TAR} ../docs/"
+	@ [ -f "$(PROJECT_DOC_DIR)/$(OUTPUT_TAR)" ] || { echo "failed to build site to $(PROJECT_DOC_DIR)/$(OUTPUT_TAR) " ; exit 1 ; }
+	@ mv $(PROJECT_DOC_DIR)/$(OUTPUT_TAR) $(DOC_OUTPUT)/$(OUTPUT_TAR)
+	@ echo "succeeded to build site to $(DOC_OUTPUT)/$(OUTPUT_TAR) "
