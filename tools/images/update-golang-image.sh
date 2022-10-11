@@ -48,6 +48,6 @@ used_by=($(git grep -l GOLANG_IMAGE= ${PROJECT_ROOT_PATH}/images/*/Dockerfile))
 for i in "${used_by[@]}" ; do
     # golang images with image digest
     [ ! -f "${i}" ] && echo "error, failed to find ${i} " && exit 1
-    sed "s|GOLANG_IMAGE=docker\.io/library/golang:[0-9][0-9]*\.[0-9][0-9]*\(\.[0-9][0-9]*\)\?@.*|GOLANG_IMAGE=${image}@${image_digest}|" "${i}" > "${i}.sedtmp"
+    sed "s|GOLANG_IMAGE=docker\.io/library/golang:[0-9][0-9]*\.[0-9][0-9]*\(\.[0-9][0-9]*\)\?@.*|GOLANG_IMAGE=${image}@${image_digest}|" "${i}" > "${i}.sedtmp" && mv ${i}.sedtmp ${i}
 done
 
