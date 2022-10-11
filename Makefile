@@ -31,6 +31,8 @@ define BUILD_FINAL_IMAGE
 echo "Build Image $(IMAGE_NAME):$(IMAGE_TAG)" ; \
 		docker build  \
 				--build-arg RACE=1 \
+				--build-arg NOSTRIP=1 \
+				--build-arg NOOPT=1 \
 				--build-arg GIT_COMMIT_VERSION=$(GIT_COMMIT_VERSION) \
 				--build-arg GIT_COMMIT_TIME=$(GIT_COMMIT_TIME) \
 				--build-arg VERSION=$(GIT_COMMIT_VERSION) \

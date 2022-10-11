@@ -10,9 +10,16 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
+CURRENT_DIR_PATH=$(cd `dirname $0`; pwd)
+PROJECT_ROOT_PATH="${CURRENT_DIR_PATH}/../.."
 
 if [ "$#" -gt 1 ] ; then
   echo "$0 supports at most 1 argument"
+  exit 1
+fi
+
+if ! ( uname -a | grep Linux ) ; then
+  echo "error, please run on linux, or else the grep syntax is not supported"
   exit 1
 fi
 
@@ -35,10 +42,12 @@ fi
 
 
 # shellcheck disable=SC2207
-used_by=($(git grep -l GOLANG_IMAGE= images/*/Dockerfile))
+cd $PROJECT_ROOT_PATH
+used_by=($(git grep -l GOLANG_IMAGE= ${PROJECT_ROOT_PATH}/images/*/Dockerfile))
 
 for i in "${used_by[@]}" ; do
     # golang images with image digest
     [ ! -f "${i}" ] && echo "error, failed to find ${i} " && exit 1
-    sed "s|GOLANG_IMAGE=docker\.io/library/golang:[0-9][0-9]*\.[0-9][0-9]*\(\.[0-9][0-9]*\)\?@.*|GOLANG_IMAGE=${image}@${image_digest}|" "${i}" > "${i}.sedtmp" && mv "${i}.sedtmp" "${i}"
+    sed "s|GOLANG_IMAGE=docker\.io/library/golang:[0-9][0-9]*\.[0-9][0-9]*\(\.[0-9][0-9]*\)\?@.*|GOLANG_IMAGE=${image}@${image_digest}|" "${i}" > "${i}.sedtmp"
 done
+
