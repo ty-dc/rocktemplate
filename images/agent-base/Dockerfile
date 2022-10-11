@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ARG GOLANG_IMAGE=docker.io/library/golang:1.19@sha256:b850621230956a6d960d6d7cfaba6a8a2e8e245b230a928ef66aa0cfd065e229
-ARG UBUNTU_IMAGE=docker.io/library/ubuntu:21.10@sha256:14d8cab8d7bd72a01e225cd85bf37bbf08bf88115769316fa86c776df4ea5fed
+ARG UBUNTU_IMAGE=docker.io/library/ubuntu:22.04@sha256:35fb073f9e56eb84041b0745cb714eff0f7b225ea9e024f703cab56aaa5c7720
 
 ARG BUILDPLATFORM
 
@@ -41,8 +41,8 @@ RUN apt-get update && apt-get upgrade -y
 WORKDIR /
 RUN chmod +x /configure-iptables-wrapper.sh && /configure-iptables-wrapper.sh && rm -f /configure-iptables-wrapper.sh
 
-ARG TARGETPLATFORM
-COPY --from=gops-cni-builder /out/${TARGETPLATFORM}/bin/gops /bin/gops
+ARG BUILDPLATFORM
+COPY --from=gops-cni-builder /out/${BUILDPLATFORM}/bin/gops /bin/gops
 
 RUN chmod +x /install-others.sh && /install-others.sh ${TARGETARCH} && rm -f /install-others.sh
 
