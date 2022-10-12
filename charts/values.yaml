@@ -51,7 +51,7 @@ rocktemplateAgent:
     registry: ghcr.io
 
     ## @param rocktemplateAgent.image.repository the image repository of rocktemplateAgent
-    repository: spidernet-io/template/agent
+    repository: spidernet-io/rocktemplate/agent
 
     ## @param rocktemplateAgent.image.pullPolicy the image pullPolicy of rocktemplateAgent
     pullPolicy: IfNotPresent
@@ -257,7 +257,7 @@ rocktemplateController:
     registry: ghcr.io
 
     ## @param rocktemplateController.image.repository the image repository of rocktemplateController
-    repository: spidernet-io/template/controller
+    repository: spidernet-io/rocktemplate/controller
 
     ## @param rocktemplateController.image.pullPolicy the image pullPolicy of rocktemplateController
     pullPolicy: IfNotPresent
