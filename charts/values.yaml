@@ -241,7 +241,7 @@ rocktemplateAgent:
 ##
 rocktemplateController:
   ## @param rocktemplateController.name the rocktemplateController name
-  name: "template-controller"
+  name: "rocktemplate-controller"
 
   ## @param rocktemplateController.replicas the replicas number of rocktemplateController pod
   replicas: 1
