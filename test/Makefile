@@ -89,10 +89,10 @@ check_images_ready:
 	else \
 		echo "find image from chart : $${IMAGE_LIST} " ; \
 		for IMAGE in $${IMAGE_LIST} ; do \
-			EXIST=` docker images | awk '{printf("%s:%s\n",$$1,$$2)}' | grep "$${IMAGE}" ` ; \
+			EXIST=` docker images | awk '{printf("%s:%s\n",$$1,$$2)}' | grep "$${IMAGE}" ` || true ; \
 			if [ -z "$${EXIST}" ] ; then \
 			  echo "docker pull $${IMAGE} to local" ; \
-			  docker pull $${IMAGE} || { echo "error, failed to pull image $${IMAGE}" ; exit 1 ; } ; \
+			  docker pull $${IMAGE} || { echo "error, failed to get image $${IMAGE}" ; exit 1 ; } ; \
 			fi ;\
 			echo "image exists: $${IMAGE}" ; \
 		done ; \
