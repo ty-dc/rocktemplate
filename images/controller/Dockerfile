@@ -26,7 +26,7 @@ WORKDIR /src
 RUN  make GOARCH=${TARGETARCH}   \
         RACE=${RACE} NOSTRIP=${NOSTRIP} NOOPT=${NOOPT} \
         DESTDIR_BIN=/tmp/install/${TARGETOS}/${TARGETARCH}/bin \
-        build_all_bin
+        build_controller_bin
 
 
 
