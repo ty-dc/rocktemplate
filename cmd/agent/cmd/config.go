@@ -3,7 +3,7 @@ package cmd
 import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/spidernet-io/template/pkg/logger"
+	"github.com/spidernet-io/rocktemplate/pkg/logger"
 	"reflect"
 	"strconv"
 )

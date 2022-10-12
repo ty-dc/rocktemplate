@@ -1,24 +1,24 @@
-{{- if .Values.templateAgent.prometheus.serviceMonitor.install -}}
+{{- if .Values.rocktemplateAgent.prometheus.serviceMonitor.install -}}
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: {{ .Values.templateAgent.name | trunc 63 | trimSuffix "-" }}
-  namespace: {{ default .Release.Namespace .Values.templateAgent.prometheus.serviceMonitor.namespace }}
+  name: {{ .Values.rocktemplateAgent.name | trunc 63 | trimSuffix "-" }}
+  namespace: {{ default .Release.Namespace .Values.rocktemplateAgent.prometheus.serviceMonitor.namespace }}
   labels:
-    {{- include "project.templateAgent.labels" . | nindent 4 }}
+    {{- include "project.rocktemplateAgent.labels" . | nindent 4 }}
     {{- if .Values.global.commonLabels }}
     {{- include "tplvalues.render" ( dict "value" .Values.global.commonLabels "context" $ ) | nindent 4 }}
     {{- end }}
-    {{- if .Values.templateAgent.prometheus.serviceMonitor.labels }}
-    {{- include "tplvalues.render" ( dict "value" .Values.templateAgent.prometheus.serviceMonitor.labels "context" $ ) | nindent 4 }}
+    {{- if .Values.rocktemplateAgent.prometheus.serviceMonitor.labels }}
+    {{- include "tplvalues.render" ( dict "value" .Values.rocktemplateAgent.prometheus.serviceMonitor.labels "context" $ ) | nindent 4 }}
     {{- end }}
-  {{- if or .Values.global.commonAnnotations .Values.templateAgent.prometheus.serviceMonitor.annotations }}
+  {{- if or .Values.global.commonAnnotations .Values.rocktemplateAgent.prometheus.serviceMonitor.annotations }}
   annotations:
     {{- if .Values.global.commonAnnotations }}
     {{- include "tplvalues.render" ( dict "value" .Values.global.commonAnnotations "context" $ ) | nindent 4 }}
     {{- end }}
-    {{- if .Values.templateAgent.prometheus.serviceMonitor.annotations }}
-    {{- include "tplvalues.render" ( dict "value" .Values.templateAgent.prometheus.serviceMonitor.annotations "context" $ ) | nindent 4 }}
+    {{- if .Values.rocktemplateAgent.prometheus.serviceMonitor.annotations }}
+    {{- include "tplvalues.render" ( dict "value" .Values.rocktemplateAgent.prometheus.serviceMonitor.annotations "context" $ ) | nindent 4 }}
     {{- end }}
   {{- end }}
 spec:
@@ -31,36 +31,36 @@ spec:
       - {{ .Release.Namespace | quote }}
   selector:
     matchLabels:
-      {{- include "project.templateAgent.selectorLabels" . | nindent 6 }}
+      {{- include "project.rocktemplateAgent.selectorLabels" . | nindent 6 }}
       {{- if .Values.global.commonLabels }}
       {{- include "tplvalues.render" ( dict "value" .Values.global.commonLabels "context" $ ) | nindent 6 }}
       {{- end }}
-      {{- if .Values.templateAgent.podLabels }}
-      {{- include "tplvalues.render" ( dict "value" .Values.templateAgent.podLabels "context" $ ) | nindent 6 }}
+      {{- if .Values.rocktemplateAgent.podLabels }}
+      {{- include "tplvalues.render" ( dict "value" .Values.rocktemplateAgent.podLabels "context" $ ) | nindent 6 }}
       {{- end }}
   {{- end }}
 ---
-{{- if .Values.templateController.prometheus.serviceMonitor.install -}}
+{{- if .Values.rocktemplateController.prometheus.serviceMonitor.install -}}
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: {{ .Values.templateController.name | trunc 63 | trimSuffix "-" }}
-  namespace: {{ default .Release.Namespace .Values.templateController.prometheus.serviceMonitor.namespace }}
+  name: {{ .Values.rocktemplateController.name | trunc 63 | trimSuffix "-" }}
+  namespace: {{ default .Release.Namespace .Values.rocktemplateController.prometheus.serviceMonitor.namespace }}
   labels:
-    {{- include "project.templateController.labels" . | nindent 4 }}
+    {{- include "project.rocktemplateController.labels" . | nindent 4 }}
     {{- if .Values.global.commonLabels }}
     {{- include "tplvalues.render" ( dict "value" .Values.global.commonLabels "context" $ ) | nindent 4 }}
     {{- end }}
-    {{- if .Values.templateController.prometheus.serviceMonitor.labels }}
-    {{- include "tplvalues.render" ( dict "value" .Values.templateController.prometheus.serviceMonitor.labels "context" $ ) | nindent 4 }}
+    {{- if .Values.rocktemplateController.prometheus.serviceMonitor.labels }}
+    {{- include "tplvalues.render" ( dict "value" .Values.rocktemplateController.prometheus.serviceMonitor.labels "context" $ ) | nindent 4 }}
     {{- end }}
-  {{- if or .Values.global.commonAnnotations .Values.templateController.prometheus.serviceMonitor.annotations }}
+  {{- if or .Values.global.commonAnnotations .Values.rocktemplateController.prometheus.serviceMonitor.annotations }}
   annotations:
     {{- if .Values.global.commonAnnotations }}
     {{- include "tplvalues.render" ( dict "value" .Values.global.commonAnnotations "context" $ ) | nindent 4 }}
     {{- end }}
-    {{- if .Values.templateController.prometheus.serviceMonitor.annotations }}
-    {{- include "tplvalues.render" ( dict "value" .Values.templateController.prometheus.serviceMonitor.annotations "context" $ ) | nindent 4 }}
+    {{- if .Values.rocktemplateController.prometheus.serviceMonitor.annotations }}
+    {{- include "tplvalues.render" ( dict "value" .Values.rocktemplateController.prometheus.serviceMonitor.annotations "context" $ ) | nindent 4 }}
     {{- end }}
   {{- end }}
 spec:
@@ -73,11 +73,11 @@ spec:
       - {{ .Release.Namespace | quote }}
   selector:
     matchLabels:
-      {{- include "project.templateController.selectorLabels" . | nindent 6 }}
+      {{- include "project.rocktemplateController.selectorLabels" . | nindent 6 }}
       {{- if .Values.global.commonLabels }}
       {{- include "tplvalues.render" ( dict "value" .Values.global.commonLabels "context" $ ) | nindent 6 }}
       {{- end }}
-      {{- if .Values.templateController.podLabels }}
-      {{- include "tplvalues.render" ( dict "value" .Values.templateController.podLabels "context" $ ) | nindent 6 }}
+      {{- if .Values.rocktemplateController.podLabels }}
+      {{- include "tplvalues.render" ( dict "value" .Values.rocktemplateController.podLabels "context" $ ) | nindent 6 }}
       {{- end }}
 {{- end }}

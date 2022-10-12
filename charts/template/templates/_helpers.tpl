@@ -13,11 +13,11 @@ Expand the name of project .
 {{- end }}
 
 {{/*
-templateAgent Common labels
+rocktemplateAgent Common labels
 */}}
-{{- define "project.templateAgent.labels" -}}
+{{- define "project.rocktemplateAgent.labels" -}}
 helm.sh/chart: {{ include "project.chart" . }}
-{{ include "project.templateAgent.selectorLabels" . }}
+{{ include "project.rocktemplateAgent.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -25,11 +25,11 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
 {{/*
-templateAgent Common labels
+rocktemplateAgent Common labels
 */}}
-{{- define "project.templateController.labels" -}}
+{{- define "project.rocktemplateController.labels" -}}
 helm.sh/chart: {{ include "project.chart" . }}
-{{ include "project.templateController.selectorLabels" . }}
+{{ include "project.rocktemplateController.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -37,21 +37,21 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
 {{/*
-templateAgent Selector labels
+rocktemplateAgent Selector labels
 */}}
-{{- define "project.templateAgent.selectorLabels" -}}
+{{- define "project.rocktemplateAgent.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "project.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
-app.kubernetes.io/component: {{ .Values.templateAgent.name | trunc 63 | trimSuffix "-" }}
+app.kubernetes.io/component: {{ .Values.rocktemplateAgent.name | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
-templateAgent Selector labels
+rocktemplateAgent Selector labels
 */}}
-{{- define "project.templateController.selectorLabels" -}}
+{{- define "project.rocktemplateController.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "project.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
-app.kubernetes.io/component: {{ .Values.templateController.name | trunc 63 | trimSuffix "-" }}
+app.kubernetes.io/component: {{ .Values.rocktemplateController.name | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 
@@ -107,11 +107,11 @@ Return the appropriate apiVersion for RBAC resources.
 {{- end -}}
 
 {{/*
-return the templateAgent image
+return the rocktemplateAgent image
 */}}
-{{- define "project.templateAgent.image" -}}
-{{- $registryName := .Values.templateAgent.image.registry -}}
-{{- $repositoryName := .Values.templateAgent.image.repository -}}
+{{- define "project.rocktemplateAgent.image" -}}
+{{- $registryName := .Values.rocktemplateAgent.image.registry -}}
+{{- $repositoryName := .Values.rocktemplateAgent.image.repository -}}
 {{- if .Values.global.imageRegistryOverride }}
     {{- printf "%s/%s" .Values.global.imageRegistryOverride $repositoryName -}}
 {{ else if $registryName }}
@@ -119,12 +119,12 @@ return the templateAgent image
 {{- else -}}
     {{- printf "%s" $repositoryName -}}
 {{- end -}}
-{{- if .Values.templateAgent.image.digest }}
-    {{- print "@" .Values.templateAgent.image.digest -}}
+{{- if .Values.rocktemplateAgent.image.digest }}
+    {{- print "@" .Values.rocktemplateAgent.image.digest -}}
 {{- else if .Values.global.imageTagOverride -}}
     {{- printf ":%s" .Values.global.imageTagOverride -}}
-{{- else if .Values.templateAgent.image.tag -}}
-    {{- printf ":%s" .Values.templateAgent.image.tag -}}
+{{- else if .Values.rocktemplateAgent.image.tag -}}
+    {{- printf ":%s" .Values.rocktemplateAgent.image.tag -}}
 {{- else -}}
     {{- printf ":v%s" .Chart.AppVersion -}}
 {{- end -}}
@@ -132,11 +132,11 @@ return the templateAgent image
 
 
 {{/*
-return the templateController image
+return the rocktemplateController image
 */}}
-{{- define "project.templateController.image" -}}
-{{- $registryName := .Values.templateController.image.registry -}}
-{{- $repositoryName := .Values.templateController.image.repository -}}
+{{- define "project.rocktemplateController.image" -}}
+{{- $registryName := .Values.rocktemplateController.image.registry -}}
+{{- $repositoryName := .Values.rocktemplateController.image.repository -}}
 {{- if .Values.global.imageRegistryOverride }}
     {{- printf "%s/%s" .Values.global.imageRegistryOverride $repositoryName -}}
 {{ else if $registryName }}
@@ -144,12 +144,12 @@ return the templateController image
 {{- else -}}
     {{- printf "%s" $repositoryName -}}
 {{- end -}}
-{{- if .Values.templateController.image.digest }}
-    {{- print "@" .Values.templateController.image.digest -}}
+{{- if .Values.rocktemplateController.image.digest }}
+    {{- print "@" .Values.rocktemplateController.image.digest -}}
 {{- else if .Values.global.imageTagOverride -}}
     {{- printf ":%s" .Values.global.imageTagOverride -}}
-{{- else if .Values.templateController.image.tag -}}
-    {{- printf ":%s" .Values.templateController.image.tag -}}
+{{- else if .Values.rocktemplateController.image.tag -}}
+    {{- printf ":%s" .Values.rocktemplateController.image.tag -}}
 {{- else -}}
     {{- printf ":v%s" .Chart.AppVersion -}}
 {{- end -}}
@@ -160,6 +160,6 @@ return the templateController image
 generate the CA cert
 */}}
 {{- define "generate-ca-certs" }}
-    {{- $ca := genCA "spidernet.io" (.Values.templateController.tls.auto.caExpiration | int) -}}
+    {{- $ca := genCA "spidernet.io" (.Values.rocktemplateController.tls.auto.caExpiration | int) -}}
     {{- $_ := set . "ca" $ca -}}
 {{- end }}

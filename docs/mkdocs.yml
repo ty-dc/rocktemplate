@@ -1,8 +1,8 @@
-site_name: template
+site_name: rocktemplate
 docs_dir: docs
 site_dir: site
-repo_name: spidernet-io/template
-repo_url: https://github.com/spidernet-io/template
+repo_name: spidernet-io/rocktemplate
+repo_url: https://github.com/spidernet-io/rocktemplate
 # remote branch for mkdocs gh-deploy
 remote_branch: github_pages
 theme:

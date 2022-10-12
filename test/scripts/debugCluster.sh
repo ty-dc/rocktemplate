@@ -16,8 +16,8 @@ E2E_LOG_FILE_NAME="$3"
 [ ! -f "$E2E_KUBECONFIG" ] && echo "error, could not find file $E2E_KUBECONFIG " && exit 1
 echo "$CURRENT_FILENAME : E2E_KUBECONFIG $E2E_KUBECONFIG "
 
-CONTROLLER_POD_LIST=$( kubectl get pods --no-headers --kubeconfig ${E2E_KUBECONFIG}  --namespace kube-system --selector app.kubernetes.io/component=template-controller --output jsonpath={.items[*].metadata.name} )
-AGENT_POD_LIST=$( kubectl get pods --no-headers --kubeconfig ${E2E_KUBECONFIG}  --namespace kube-system --selector app.kubernetes.io/component=template-agent --output jsonpath={.items[*].metadata.name} )
+CONTROLLER_POD_LIST=$( kubectl get pods --no-headers --kubeconfig ${E2E_KUBECONFIG}  --namespace kube-system --selector app.kubernetes.io/component=rocktemplate-controller --output jsonpath={.items[*].metadata.name} )
+AGENT_POD_LIST=$( kubectl get pods --no-headers --kubeconfig ${E2E_KUBECONFIG}  --namespace kube-system --selector app.kubernetes.io/component=rocktemplate-agent --output jsonpath={.items[*].metadata.name} )
 [ -z "$CONTROLLER_POD_LIST" ] && echo "error, failed to find any spider controller pod" && exit 1
 [ -z "$AGENT_POD_LIST" ] && echo "error, failed to find any spider agent pod" && exit 1
 
@@ -65,7 +65,7 @@ elif [ "$TYPE"x == "detail"x ] ; then
     kubectl get events -n kube-system --kubeconfig ${E2E_KUBECONFIG}
 
     echo ""
-    echo "=============== template-controller describe ============== "
+    echo "=============== rocktemplate-controller describe ============== "
     for POD in $CONTROLLER_POD_LIST ; do
       echo ""
       echo "--------- kubectl describe pod ${POD} -n kube-system"
@@ -73,7 +73,7 @@ elif [ "$TYPE"x == "detail"x ] ; then
     done
 
     echo ""
-    echo "=============== template-agent describe ============== "
+    echo "=============== rocktemplate-agent describe ============== "
     for POD in $AGENT_POD_LIST ; do
       echo ""
       echo "---------kubectl describe pod ${POD} -n kube-system "
@@ -81,7 +81,7 @@ elif [ "$TYPE"x == "detail"x ] ; then
     done
 
     echo ""
-    echo "=============== template-controller logs ============== "
+    echo "=============== rocktemplate-controller logs ============== "
     for POD in $CONTROLLER_POD_LIST ; do
       echo ""
       echo "---------kubectl logs ${POD} -n kube-system"
@@ -91,7 +91,7 @@ elif [ "$TYPE"x == "detail"x ] ; then
     done
 
     echo ""
-    echo "=============== template-agent logs ============== "
+    echo "=============== rocktemplate-agent logs ============== "
     for POD in $AGENT_POD_LIST ; do
       echo ""
       echo "--------- kubectl logs ${POD} -n kube-system "
@@ -106,7 +106,7 @@ elif [ "$TYPE"x == "detail"x ] ; then
 
     echo ""
     echo "=============== node log  ============== "
-    KIND_CLUSTER_NAME=${KIND_CLUSTER_NAME:-"template"}
+    KIND_CLUSTER_NAME=${KIND_CLUSTER_NAME:-"rocktemplate"}
     KIND_NODES=$(  kind get  nodes --name ${KIND_CLUSTER_NAME} )
     [ -z "$KIND_NODES" ] && echo "warning, failed to find nodes of kind cluster $KIND_CLUSTER_NAME " || true
     for NODE in $KIND_NODES ; do
@@ -131,13 +131,13 @@ elif [ "$TYPE"x == "datarace"x ] ; then
     }
 
     echo ""
-    echo "=============== template-controller data race ============== "
+    echo "=============== rocktemplate-controller data race ============== "
     for POD in $CONTROLLER_POD_LIST ; do
       CHECK_DATA_RACE
     done
 
     echo ""
-    echo "=============== template-agent data race ============== "
+    echo "=============== rocktemplate-agent data race ============== "
     for POD in $AGENT_POD_LIST ; do
       CHECK_DATA_RACE
     done
@@ -157,13 +157,13 @@ elif [ "$TYPE"x == "longlock"x ] ; then
       fi
     }
     echo ""
-    echo "=============== template-controller long lock ============== "
+    echo "=============== rocktemplate-controller long lock ============== "
     for POD in $CONTROLLER_POD_LIST ; do
       CHECK_LONG_LOCK
     done
 
     echo ""
-    echo "=============== template-agent long lock ============== "
+    echo "=============== rocktemplate-agent long lock ============== "
     for POD in $AGENT_POD_LIST ; do
       CHECK_LONG_LOCK
     done

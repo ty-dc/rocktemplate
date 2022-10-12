@@ -4,7 +4,7 @@
 package main
 
 import (
-	"github.com/spidernet-io/template/cmd/agent/cmd"
+	"github.com/spidernet-io/rocktemplate/cmd/agent/cmd"
 )
 
 func main() {

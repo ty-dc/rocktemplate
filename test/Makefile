@@ -82,7 +82,7 @@ install_proscope:
 .PHONY: check_images_ready
 check_images_ready:
 	echo "check image  " ; \
-	IMAGE_LIST=` helm template test $(ROOT_DIR)/charts/template --set global.imageTagOverride=$(PROJECT_IMAGE_VERSION)  | grep " image: " | tr -d '"'| awk '{print $$2}' ` ; \
+	IMAGE_LIST=` helm template test $(ROOT_DIR)/charts/rocktemplate --set global.imageTagOverride=$(PROJECT_IMAGE_VERSION)  | grep " image: " | tr -d '"'| awk '{print $$2}' ` ; \
 	if [ -z "$${IMAGE_LIST}" ] ; then \
 		echo "warning, failed to find image from chart " ; \
 		exit 1 ;\
@@ -105,11 +105,11 @@ deploy_project: KIND_KUBECONFIG ?= $(E2E_KIND_KUBECONFIG_PATH)
 deploy_project: KIND_CLUSTER_NAME ?= $(E2E_KIND_CLUSTER_NAME)
 deploy_project:
 	echo "try to load local image tag $(PROJECT_IMAGE_VERSION) " ; \
-	IMAGE_LIST=` helm template test $(ROOT_DIR)/charts/template --set global.imageTagOverride=$(PROJECT_IMAGE_VERSION)  | grep " image: " | tr -d '"'| awk '{print $$2}' ` ; \
+	IMAGE_LIST=` helm template test $(ROOT_DIR)/charts/rocktemplate --set global.imageTagOverride=$(PROJECT_IMAGE_VERSION)  | grep " image: " | tr -d '"'| awk '{print $$2}' ` ; \
 	if [ -z "$${IMAGE_LIST}" ] ; then \
-		echo "warning, failed to find image from chart template" ; \
+		echo "warning, failed to find image from chart " ; \
 	else \
-		echo "found image from chart template: $${IMAGE_LIST} " ; \
+		echo "found image from chart : $${IMAGE_LIST} " ; \
 		for IMAGE in $${IMAGE_LIST} ; do \
 			EXIST=` docker images | awk '{printf("%s:%s\n",$$1,$$2)}' | grep "$${IMAGE}" ` ; \
 			if [ -z "$${EXIST}" ] ; then \
@@ -125,8 +125,8 @@ deploy_project:
     	if [ -n "$(PYROSCOPE_LOCAL_PORT)" ] ; then \
 			echo "add spiderpool env" ; \
 			ServerAddress=$$(docker network inspect kind -f {{\(index\ $$.IPAM.Config\ 0\).Gateway}}) ; \
-			HELM_OPTION+=" --set templateAgent.extraEnv[0].name=ENV_PYROSCOPE_PUSH_SERVER_ADDRESS  --set templateAgent.extraEnv[0].value=http://$${ServerAddress}:$(PYROSCOPE_LOCAL_PORT) " ; \
-			HELM_OPTION+=" --set templateController.extraEnv[0].name=ENV_PYROSCOPE_PUSH_SERVER_ADDRESS  --set templateController.extraEnv[0].value=http://$${ServerAddress}:$(PYROSCOPE_LOCAL_PORT) " ; \
+			HELM_OPTION+=" --set rocktemplateAgent.extraEnv[0].name=ENV_PYROSCOPE_PUSH_SERVER_ADDRESS  --set rocktemplateAgent.extraEnv[0].value=http://$${ServerAddress}:$(PYROSCOPE_LOCAL_PORT) " ; \
+			HELM_OPTION+=" --set rocktemplateController.extraEnv[0].name=ENV_PYROSCOPE_PUSH_SERVER_ADDRESS  --set rocktemplateController.extraEnv[0].value=http://$${ServerAddress}:$(PYROSCOPE_LOCAL_PORT) " ; \
 		fi ; \
 		helm --kubeconfig=$(KIND_KUBECONFIG) install project $(ROOT_DIR)/charts/template \
 				-n kube-system --wait --debug \
@@ -153,7 +153,7 @@ install_example_app:
 
 .PHONY: clean
 clean:
-	-@ kind delete cluster --name $(KIND_CLUSTER_NAME)
+	-@ kind delete cluster --name $(E2E_KIND_CLUSTER_NAME)
 	-@ rm -rf $(E2E_RUNTIME_DIR)
 	-@ docker stop $(PYROSCOPE_CONTAINER_NAME) &>/dev/null
 	-@ docker rm $(PYROSCOPE_CONTAINER_NAME) &>/dev/null

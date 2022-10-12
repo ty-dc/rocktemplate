@@ -4,7 +4,7 @@
 package main
 
 import (
-	"github.com/spidernet-io/template/cmd/controller/cmd"
+	"github.com/spidernet-io/rocktemplate/cmd/controller/cmd"
 )
 
 func main() {

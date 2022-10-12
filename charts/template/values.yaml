@@ -9,8 +9,8 @@ global:
   imageTagOverride: ""
 
   ## @param global.name instance name
-  ## default template
-  name: "template"
+  ## default rocktemplate
+  name: "rocktemplate"
 
   ## @param global.clusterDnsDomain cluster dns domain
   clusterDnsDomain: "cluster.local"
@@ -24,7 +24,7 @@ global:
   #  labele: v2
 
   ## @param global.configName the configmap name
-  configName: "template"
+  configName: "rocktemplate"
 
 ## @section feature parameters
 feature:
@@ -34,62 +34,62 @@ feature:
   ## @param feature.enableIPv6 enable ipv6
   enableIPv6: false
 
-## @section templateAgent parameters
+## @section rocktemplateAgent parameters
 ##
-templateAgent:
-  ## @param templateAgent.name the templateAgent name
-  name: "template-agent"
+rocktemplateAgent:
+  ## @param rocktemplateAgent.name the rocktemplateAgent name
+  name: "rocktemplate-agent"
 
-  ## @param templateAgent.cmdBinName the binary name of templateAgent
+  ## @param rocktemplateAgent.cmdBinName the binary name of rocktemplateAgent
   cmdBinName: "agent"
 
-  ## @param templateAgent.hostnetwork enable hostnetwork mode of templateAgent pod
+  ## @param rocktemplateAgent.hostnetwork enable hostnetwork mode of rocktemplateAgent pod
   hostnetwork: true
 
   image:
-    ## @param templateAgent.image.registry the image registry of templateAgent
+    ## @param rocktemplateAgent.image.registry the image registry of rocktemplateAgent
     registry: ghcr.io
 
-    ## @param templateAgent.image.repository the image repository of templateAgent
+    ## @param rocktemplateAgent.image.repository the image repository of rocktemplateAgent
     repository: spidernet-io/template/agent
 
-    ## @param templateAgent.image.pullPolicy the image pullPolicy of templateAgent
+    ## @param rocktemplateAgent.image.pullPolicy the image pullPolicy of rocktemplateAgent
     pullPolicy: IfNotPresent
 
-    ## @param templateAgent.image.digest the image digest of templateAgent, which takes preference over tag
+    ## @param rocktemplateAgent.image.digest the image digest of rocktemplateAgent, which takes preference over tag
     digest: ""
 
-    ## @param templateAgent.image.tag the image tag of templateAgent, overrides the image tag whose default is the chart appVersion.
+    ## @param rocktemplateAgent.image.tag the image tag of rocktemplateAgent, overrides the image tag whose default is the chart appVersion.
     tag: ""
 
-    ## @param templateAgent.image.imagePullSecrets the image imagePullSecrets of templateAgent
+    ## @param rocktemplateAgent.image.imagePullSecrets the image imagePullSecrets of rocktemplateAgent
     imagePullSecrets: []
     # - name: "image-pull-secret"
 
-  ## @skip templateAgent.nodeSelector.kubernetes.io/os
+  ## @skip rocktemplateAgent.nodeSelector.kubernetes.io/os
   nodeSelector:
     kubernetes.io/os: linux
 
   serviceAccount:
-    ## @param templateAgent.serviceAccount.create create the service account for the templateAgent
+    ## @param rocktemplateAgent.serviceAccount.create create the service account for the rocktemplateAgent
     create: true
-    ## @param templateAgent.serviceAccount.annotations the annotations of templateAgent service account
+    ## @param rocktemplateAgent.serviceAccount.annotations the annotations of rocktemplateAgent service account
     annotations: {}
 
-  ## @skip templateAgent.updateStrategy.rollingUpdate.maxUnavailable
-  ## @skip templateAgent.updateStrategy.type
+  ## @skip rocktemplateAgent.updateStrategy.rollingUpdate.maxUnavailable
+  ## @skip rocktemplateAgent.updateStrategy.type
   updateStrategy:
     rollingUpdate:
       maxUnavailable: 2
     type: RollingUpdate
 
   service:
-    ## @param templateAgent.service.annotations the annotations for templateAgent service
+    ## @param rocktemplateAgent.service.annotations the annotations for rocktemplateAgent service
     annotations: {}
-    ## @param templateAgent.service.type the type for templateAgent service
+    ## @param rocktemplateAgent.service.type the type for rocktemplateAgent service
     type: ClusterIP
 
-  ## @skip templateAgent.tolerations
+  ## @skip rocktemplateAgent.tolerations
   # --  Node tolerations
   # ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
   tolerations:
@@ -123,35 +123,35 @@ templateAgent:
     - key: CriticalAddonsOnly
       operator: Exists
 
-  ## @param templateAgent.priorityClassName the priority Class Name for templateAgent
+  ## @param rocktemplateAgent.priorityClassName the priority Class Name for rocktemplateAgent
   priorityClassName: "system-node-critical"
 
-  ## @param templateAgent.affinity the affinity of templateAgent
+  ## @param rocktemplateAgent.affinity the affinity of rocktemplateAgent
   affinity: {}
 
-  ## @param templateAgent.extraArgs the additional arguments of templateAgent container
+  ## @param rocktemplateAgent.extraArgs the additional arguments of rocktemplateAgent container
   extraArgs: []
 
-  ## @param templateAgent.extraEnv the additional environment variables of templateAgent container
+  ## @param rocktemplateAgent.extraEnv the additional environment variables of rocktemplateAgent container
   extraEnv: []
 
-  ## @param templateAgent.extraVolumes the additional volumes of templateAgent container
+  ## @param rocktemplateAgent.extraVolumes the additional volumes of rocktemplateAgent container
   extraVolumes: []
 
-  ## @param templateAgent.extraVolumeMounts the additional hostPath mounts of templateAgent container
+  ## @param rocktemplateAgent.extraVolumeMounts the additional hostPath mounts of rocktemplateAgent container
   extraVolumeMounts: []
 
-  ## @param templateAgent.podAnnotations the additional annotations of templateAgent pod
+  ## @param rocktemplateAgent.podAnnotations the additional annotations of rocktemplateAgent pod
   podAnnotations: {}
 
-  ## @param templateAgent.podLabels the additional label of templateAgent pod
+  ## @param rocktemplateAgent.podLabels the additional label of rocktemplateAgent pod
   podLabels: {}
 
   resources:
-    ## @param templateAgent.resources.limits.cpu the cpu limit of templateAgent pod
-    ## @param templateAgent.resources.limits.memory the memory limit of templateAgent pod
-    ## @param templateAgent.resources.requests.cpu the cpu requests of templateAgent pod
-    ## @param templateAgent.resources.requests.memory the memory requests of templateAgent pod
+    ## @param rocktemplateAgent.resources.limits.cpu the cpu limit of rocktemplateAgent pod
+    ## @param rocktemplateAgent.resources.limits.memory the memory limit of rocktemplateAgent pod
+    ## @param rocktemplateAgent.resources.requests.cpu the cpu requests of rocktemplateAgent pod
+    ## @param rocktemplateAgent.resources.requests.memory the memory requests of rocktemplateAgent pod
     limits:
       cpu: 1000m
       memory: 1024Mi
@@ -159,136 +159,136 @@ templateAgent:
       cpu: 100m
       memory: 128Mi
 
-  ## @param templateAgent.securityContext the security Context of templateAgent pod
+  ## @param rocktemplateAgent.securityContext the security Context of rocktemplateAgent pod
   securityContext: {}
   # runAsUser: 0
 
   healthChecking:
-    ## @param templateAgent.healthChecking.port the http Port for templateAgent, for health checking
+    ## @param rocktemplateAgent.healthChecking.port the http Port for rocktemplateAgent, for health checking
     port: 5710
 
     startupProbe:
-      ## @param templateAgent.healthChecking.startupProbe.failureThreshold the failure threshold of startup probe for templateAgent health checking
+      ## @param rocktemplateAgent.healthChecking.startupProbe.failureThreshold the failure threshold of startup probe for rocktemplateAgent health checking
       failureThreshold: 60
-      ## @param templateAgent.healthChecking.startupProbe.periodSeconds the period seconds of startup probe for templateAgent health checking
+      ## @param rocktemplateAgent.healthChecking.startupProbe.periodSeconds the period seconds of startup probe for rocktemplateAgent health checking
       periodSeconds: 2
 
     livenessProbe:
-      ## @param templateAgent.healthChecking.livenessProbe.failureThreshold the failure threshold of startup probe for templateAgent health checking
+      ## @param rocktemplateAgent.healthChecking.livenessProbe.failureThreshold the failure threshold of startup probe for rocktemplateAgent health checking
       failureThreshold: 6
-      ## @param templateAgent.healthChecking.livenessProbe.periodSeconds the period seconds of startup probe for templateAgent health checking
+      ## @param rocktemplateAgent.healthChecking.livenessProbe.periodSeconds the period seconds of startup probe for rocktemplateAgent health checking
       periodSeconds: 10
 
     readinessProbe:
-      ## @param templateAgent.healthChecking.readinessProbe.failureThreshold the failure threshold of startup probe for templateAgent health checking
+      ## @param rocktemplateAgent.healthChecking.readinessProbe.failureThreshold the failure threshold of startup probe for rocktemplateAgent health checking
       failureThreshold: 3
-      ## @param templateAgent.healthChecking.readinessProbe.periodSeconds the period seconds of startup probe for templateAgent health checking
+      ## @param rocktemplateAgent.healthChecking.readinessProbe.periodSeconds the period seconds of startup probe for rocktemplateAgent health checking
       periodSeconds: 10
 
   prometheus:
-    ## @param templateAgent.prometheus.enabled enable template agent to collect metrics
+    ## @param rocktemplateAgent.prometheus.enabled enable template agent to collect metrics
     enabled: false
 
-    ## @param templateAgent.prometheus.port the metrics port of template agent
+    ## @param rocktemplateAgent.prometheus.port the metrics port of template agent
     port: 5711
 
     serviceMonitor:
-      ## @param templateAgent.prometheus.serviceMonitor.install install serviceMonitor for template agent. This requires the prometheus CRDs to be available
+      ## @param rocktemplateAgent.prometheus.serviceMonitor.install install serviceMonitor for template agent. This requires the prometheus CRDs to be available
       install: false
 
-      ## @param templateAgent.prometheus.serviceMonitor.namespace the serviceMonitor namespace. Default to the namespace of helm instance
+      ## @param rocktemplateAgent.prometheus.serviceMonitor.namespace the serviceMonitor namespace. Default to the namespace of helm instance
       namespace: ""
 
-      ## @param templateAgent.prometheus.serviceMonitor.annotations the additional annotations of templateAgent serviceMonitor
+      ## @param rocktemplateAgent.prometheus.serviceMonitor.annotations the additional annotations of rocktemplateAgent serviceMonitor
       annotations: {}
 
-      ## @param templateAgent.prometheus.serviceMonitor.labels the additional label of templateAgent serviceMonitor
+      ## @param rocktemplateAgent.prometheus.serviceMonitor.labels the additional label of rocktemplateAgent serviceMonitor
       labels: {}
 
     prometheusRule:
-      ## @param templateAgent.prometheus.prometheusRule.install install prometheusRule for template agent. This requires the prometheus CRDs to be available
+      ## @param rocktemplateAgent.prometheus.prometheusRule.install install prometheusRule for template agent. This requires the prometheus CRDs to be available
       install: false
 
-      ## @param templateAgent.prometheus.prometheusRule.namespace the prometheusRule namespace. Default to the namespace of helm instance
+      ## @param rocktemplateAgent.prometheus.prometheusRule.namespace the prometheusRule namespace. Default to the namespace of helm instance
       namespace: ""
 
-      ## @param templateAgent.prometheus.prometheusRule.annotations the additional annotations of templateAgent prometheusRule
+      ## @param rocktemplateAgent.prometheus.prometheusRule.annotations the additional annotations of rocktemplateAgent prometheusRule
       annotations: {}
 
-      ## @param templateAgent.prometheus.prometheusRule.labels the additional label of templateAgent prometheusRule
+      ## @param rocktemplateAgent.prometheus.prometheusRule.labels the additional label of rocktemplateAgent prometheusRule
       labels: {}
 
     grafanaDashboard:
-      ## @param templateAgent.prometheus.grafanaDashboard.install install grafanaDashboard for template agent. This requires the prometheus CRDs to be available
+      ## @param rocktemplateAgent.prometheus.grafanaDashboard.install install grafanaDashboard for template agent. This requires the prometheus CRDs to be available
       install: false
 
-      ## @param templateAgent.prometheus.grafanaDashboard.namespace the grafanaDashboard namespace. Default to the namespace of helm instance
+      ## @param rocktemplateAgent.prometheus.grafanaDashboard.namespace the grafanaDashboard namespace. Default to the namespace of helm instance
       namespace: ""
 
-      ## @param templateAgent.prometheus.grafanaDashboard.annotations the additional annotations of templateAgent grafanaDashboard
+      ## @param rocktemplateAgent.prometheus.grafanaDashboard.annotations the additional annotations of rocktemplateAgent grafanaDashboard
       annotations: {}
 
-      ## @param templateAgent.prometheus.grafanaDashboard.labels the additional label of templateAgent grafanaDashboard
+      ## @param rocktemplateAgent.prometheus.grafanaDashboard.labels the additional label of rocktemplateAgent grafanaDashboard
       labels: {}
 
   debug:
-    ## @param templateAgent.debug.logLevel the log level of template agent [debug, info, warn, error, fatal, panic]
+    ## @param rocktemplateAgent.debug.logLevel the log level of template agent [debug, info, warn, error, fatal, panic]
     logLevel: "info"
-    ## @param templateAgent.debug.gopsPort the gops port of template agent
+    ## @param rocktemplateAgent.debug.gopsPort the gops port of template agent
     gopsPort: 5712
 
-## @section templateController parameters
+## @section rocktemplateController parameters
 ##
-templateController:
-  ## @param templateController.name the templateController name
+rocktemplateController:
+  ## @param rocktemplateController.name the rocktemplateController name
   name: "template-controller"
 
-  ## @param templateController.replicas the replicas number of templateController pod
+  ## @param rocktemplateController.replicas the replicas number of rocktemplateController pod
   replicas: 1
 
-  ## @param templateController.binName the binName name of templateController
+  ## @param rocktemplateController.binName the binName name of rocktemplateController
   cmdBinName: "controller"
 
-  ## @param templateController.hostnetwork enable hostnetwork mode of templateController pod. Notice, if no CNI available before template installation, must enable this
+  ## @param rocktemplateController.hostnetwork enable hostnetwork mode of rocktemplateController pod. Notice, if no CNI available before template installation, must enable this
   hostnetwork: false
 
   image:
-    ## @param templateController.image.registry the image registry of templateController
+    ## @param rocktemplateController.image.registry the image registry of rocktemplateController
     registry: ghcr.io
 
-    ## @param templateController.image.repository the image repository of templateController
+    ## @param rocktemplateController.image.repository the image repository of rocktemplateController
     repository: spidernet-io/template/controller
 
-    ## @param templateController.image.pullPolicy the image pullPolicy of templateController
+    ## @param rocktemplateController.image.pullPolicy the image pullPolicy of rocktemplateController
     pullPolicy: IfNotPresent
 
-    ## @param templateController.image.digest the image digest of templateController, which takes preference over tag
+    ## @param rocktemplateController.image.digest the image digest of rocktemplateController, which takes preference over tag
     digest: ""
 
-    ## @param templateController.image.tag the image tag of templateController, overrides the image tag whose default is the chart appVersion.
+    ## @param rocktemplateController.image.tag the image tag of rocktemplateController, overrides the image tag whose default is the chart appVersion.
     tag: ""
 
-    ## @param templateController.image.imagePullSecrets the image imagePullSecrets of templateController
+    ## @param rocktemplateController.image.imagePullSecrets the image imagePullSecrets of rocktemplateController
     imagePullSecrets: []
     # - name: "image-pull-secret"
 
-  ## @skip templateController.nodeSelector.kubernetes.io/os
+  ## @skip rocktemplateController.nodeSelector.kubernetes.io/os
   nodeSelector:
     kubernetes.io/os: linux
 
   serviceAccount:
-    ## @param templateController.serviceAccount.create create the service account for the templateController
+    ## @param rocktemplateController.serviceAccount.create create the service account for the rocktemplateController
     create: true
-    ## @param templateController.serviceAccount.annotations the annotations of templateController service account
+    ## @param rocktemplateController.serviceAccount.annotations the annotations of rocktemplateController service account
     annotations: {}
 
   service:
-    ## @param templateController.service.annotations the annotations for templateController service
+    ## @param rocktemplateController.service.annotations the annotations for rocktemplateController service
     annotations: {}
-    ## @param templateController.service.type the type for templateController service
+    ## @param rocktemplateController.service.type the type for rocktemplateController service
     type: ClusterIP
 
-  ## @skip templateController.tolerations
+  ## @skip rocktemplateController.tolerations
   tolerations:
     - effect: NoExecute
       key: node.kubernetes.io/not-ready
@@ -320,44 +320,44 @@ templateController:
     - key: CriticalAddonsOnly
       operator: Exists
 
-  ## @param templateController.priorityClassName the priority Class Name for templateController
+  ## @param rocktemplateController.priorityClassName the priority Class Name for rocktemplateController
   priorityClassName: "system-node-critical"
 
-  ## @param templateController.affinity the affinity of templateController
+  ## @param rocktemplateController.affinity the affinity of rocktemplateController
   affinity: {}
 
-  ## @param templateController.extraArgs the additional arguments of templateController container
+  ## @param rocktemplateController.extraArgs the additional arguments of rocktemplateController container
   extraArgs: []
 
-  ## @param templateController.extraEnv the additional environment variables of templateController container
+  ## @param rocktemplateController.extraEnv the additional environment variables of rocktemplateController container
   extraEnv: []
 
-  ## @param templateController.extraVolumes the additional volumes of templateController container
+  ## @param rocktemplateController.extraVolumes the additional volumes of rocktemplateController container
   extraVolumes: []
     # - name: test-val
   #   mountPath: /host/tmp
 
-  ## @param templateController.extraVolumeMounts the additional hostPath mounts of templateController container
+  ## @param rocktemplateController.extraVolumeMounts the additional hostPath mounts of rocktemplateController container
   extraVolumeMounts: []
     # - name: test-val
   #   mountPath: /tmp
 
-  ## @param templateController.podAnnotations the additional annotations of templateController pod
+  ## @param rocktemplateController.podAnnotations the additional annotations of rocktemplateController pod
   podAnnotations: {}
   # test: 100
 
-  ## @param templateController.podLabels the additional label of templateController pod
+  ## @param rocktemplateController.podLabels the additional label of rocktemplateController pod
   podLabels: {}
 
-  ## @param templateController.securityContext the security Context of templateController pod
+  ## @param rocktemplateController.securityContext the security Context of rocktemplateController pod
   securityContext: {}
   # runAsUser: 0
 
   resources:
-    ## @param templateController.resources.limits.cpu the cpu limit of templateController pod
-    ## @param templateController.resources.limits.memory the memory limit of templateController pod
-    ## @param templateController.resources.requests.cpu the cpu requests of templateController pod
-    ## @param templateController.resources.requests.memory the memory requests of templateController pod
+    ## @param rocktemplateController.resources.limits.cpu the cpu limit of rocktemplateController pod
+    ## @param rocktemplateController.resources.limits.memory the memory limit of rocktemplateController pod
+    ## @param rocktemplateController.resources.requests.cpu the cpu requests of rocktemplateController pod
+    ## @param rocktemplateController.resources.requests.memory the memory requests of rocktemplateController pod
     limits:
       cpu: 500m
       memory: 1024Mi
@@ -366,139 +366,139 @@ templateController:
       memory: 128Mi
 
   podDisruptionBudget:
-    ## @param templateController.podDisruptionBudget.enabled enable podDisruptionBudget for templateController pod
+    ## @param rocktemplateController.podDisruptionBudget.enabled enable podDisruptionBudget for rocktemplateController pod
     enabled: false
 
-    ## @param templateController.podDisruptionBudget.minAvailable minimum number/percentage of pods that should remain scheduled.
+    ## @param rocktemplateController.podDisruptionBudget.minAvailable minimum number/percentage of pods that should remain scheduled.
     minAvailable: 1
 
   healthChecking:
-    ## @param templateController.port the http Port for templateController, for health checking and http service
+    ## @param rocktemplateController.port the http Port for rocktemplateController, for health checking and http service
     port: 5720
 
     startupProbe:
-      ## @param templateController.healthChecking.startupProbe.failureThreshold the failure threshold of startup probe for templateController health checking
+      ## @param rocktemplateController.healthChecking.startupProbe.failureThreshold the failure threshold of startup probe for rocktemplateController health checking
       failureThreshold: 30
 
-      ## @param templateController.healthChecking.startupProbe.periodSeconds the period seconds of startup probe for templateController health checking
+      ## @param rocktemplateController.healthChecking.startupProbe.periodSeconds the period seconds of startup probe for rocktemplateController health checking
       periodSeconds: 2
 
     livenessProbe:
-      ## @param templateController.healthChecking.livenessProbe.failureThreshold the failure threshold of startup probe for templateController health checking
+      ## @param rocktemplateController.healthChecking.livenessProbe.failureThreshold the failure threshold of startup probe for rocktemplateController health checking
       failureThreshold: 6
 
-      ## @param templateController.healthChecking.livenessProbe.periodSeconds the period seconds of startup probe for templateController health checking
+      ## @param rocktemplateController.healthChecking.livenessProbe.periodSeconds the period seconds of startup probe for rocktemplateController health checking
       periodSeconds: 10
 
     readinessProbe:
-      ## @param templateController.healthChecking.readinessProbe.failureThreshold the failure threshold of startup probe for templateController health checking
+      ## @param rocktemplateController.healthChecking.readinessProbe.failureThreshold the failure threshold of startup probe for rocktemplateController health checking
       failureThreshold: 3
 
-      ## @param templateController.healthChecking.readinessProbe.periodSeconds the period seconds of startup probe for templateController health checking
+      ## @param rocktemplateController.healthChecking.readinessProbe.periodSeconds the period seconds of startup probe for rocktemplateController health checking
       periodSeconds: 10
 
-  ## @param templateController.webhookPort the http port for templateController webhook
+  ## @param rocktemplateController.webhookPort the http port for rocktemplateController webhook
   webhookPort: 5722
 
   prometheus:
-    ## @param templateController.prometheus.enabled enable template Controller to collect metrics
+    ## @param rocktemplateController.prometheus.enabled enable template Controller to collect metrics
     enabled: false
 
-    ## @param templateController.prometheus.port the metrics port of template Controller
+    ## @param rocktemplateController.prometheus.port the metrics port of template Controller
     port: 5721
 
     serviceMonitor:
-      ## @param templateController.prometheus.serviceMonitor.install install serviceMonitor for template agent. This requires the prometheus CRDs to be available
+      ## @param rocktemplateController.prometheus.serviceMonitor.install install serviceMonitor for template agent. This requires the prometheus CRDs to be available
       install: false
 
-      ## @param templateController.prometheus.serviceMonitor.namespace the serviceMonitor namespace. Default to the namespace of helm instance
+      ## @param rocktemplateController.prometheus.serviceMonitor.namespace the serviceMonitor namespace. Default to the namespace of helm instance
       namespace: ""
 
-      ## @param templateController.prometheus.serviceMonitor.annotations the additional annotations of templateController serviceMonitor
+      ## @param rocktemplateController.prometheus.serviceMonitor.annotations the additional annotations of rocktemplateController serviceMonitor
       annotations: {}
 
-      ## @param templateController.prometheus.serviceMonitor.labels the additional label of templateController serviceMonitor
+      ## @param rocktemplateController.prometheus.serviceMonitor.labels the additional label of rocktemplateController serviceMonitor
       labels: {}
 
     prometheusRule:
-      ## @param templateController.prometheus.prometheusRule.install install prometheusRule for template agent. This requires the prometheus CRDs to be available
+      ## @param rocktemplateController.prometheus.prometheusRule.install install prometheusRule for template agent. This requires the prometheus CRDs to be available
       install: false
 
-      ## @param templateController.prometheus.prometheusRule.namespace the prometheusRule namespace. Default to the namespace of helm instance
+      ## @param rocktemplateController.prometheus.prometheusRule.namespace the prometheusRule namespace. Default to the namespace of helm instance
       namespace: ""
 
-      ## @param templateController.prometheus.prometheusRule.annotations the additional annotations of templateController prometheusRule
+      ## @param rocktemplateController.prometheus.prometheusRule.annotations the additional annotations of rocktemplateController prometheusRule
       annotations: {}
 
-      ## @param templateController.prometheus.prometheusRule.labels the additional label of templateController prometheusRule
+      ## @param rocktemplateController.prometheus.prometheusRule.labels the additional label of rocktemplateController prometheusRule
       labels: {}
 
     grafanaDashboard:
-      ## @param templateController.prometheus.grafanaDashboard.install install grafanaDashboard for template agent. This requires the prometheus CRDs to be available
+      ## @param rocktemplateController.prometheus.grafanaDashboard.install install grafanaDashboard for template agent. This requires the prometheus CRDs to be available
       install: false
 
-      ## @param templateController.prometheus.grafanaDashboard.namespace the grafanaDashboard namespace. Default to the namespace of helm instance
+      ## @param rocktemplateController.prometheus.grafanaDashboard.namespace the grafanaDashboard namespace. Default to the namespace of helm instance
       namespace: ""
 
-      ## @param templateController.prometheus.grafanaDashboard.annotations the additional annotations of templateController grafanaDashboard
+      ## @param rocktemplateController.prometheus.grafanaDashboard.annotations the additional annotations of rocktemplateController grafanaDashboard
       annotations: {}
 
-      ## @param templateController.prometheus.grafanaDashboard.labels the additional label of templateController grafanaDashboard
+      ## @param rocktemplateController.prometheus.grafanaDashboard.labels the additional label of rocktemplateController grafanaDashboard
       labels: {}
 
   debug:
-    ## @param templateController.debug.logLevel the log level of template Controller [debug, info, warn, error, fatal, panic]
+    ## @param rocktemplateController.debug.logLevel the log level of template Controller [debug, info, warn, error, fatal, panic]
     logLevel: "info"
 
-    ## @param templateController.debug.gopsPort the gops port of template Controller
+    ## @param rocktemplateController.debug.gopsPort the gops port of template Controller
     gopsPort: 5724
 
   ## TLS configuration for webhook
   tls:
-    ## @param templateController.tls.method the method for generating TLS certificates. [ provided , certmanager , auto]
+    ## @param rocktemplateController.tls.method the method for generating TLS certificates. [ provided , certmanager , auto]
     ## - provided:     provide all certificates by helm options
     ## - certmanager:  This method use cert-manager to generate & rotate certificates.
     ## - auto:         Auto generate cert.
     method: auto
 
-    ## @param templateController.tls.secretName the secret name for storing TLS certificates
+    ## @param rocktemplateController.tls.secretName the secret name for storing TLS certificates
     secretName: "template-controller-server-certs"
 
     ## for certmanager method
     certmanager:
-      ## @param templateController.tls.certmanager.certValidityDuration generated certificates validity duration in days for 'certmanager' method
+      ## @param rocktemplateController.tls.certmanager.certValidityDuration generated certificates validity duration in days for 'certmanager' method
       certValidityDuration: 365
 
-      ## @param templateController.tls.certmanager.issuerName issuer name of cert manager 'certmanager'. If not specified, a CA issuer will be created.
+      ## @param rocktemplateController.tls.certmanager.issuerName issuer name of cert manager 'certmanager'. If not specified, a CA issuer will be created.
       issuerName: ""
 
-      ## @param templateController.tls.certmanager.extraDnsNames extra DNS names added to certificate when it's auto generated
+      ## @param rocktemplateController.tls.certmanager.extraDnsNames extra DNS names added to certificate when it's auto generated
       extraDnsNames: []
 
-      ## @param templateController.tls.certmanager.extraIPAddresses extra IP addresses added to certificate when it's auto generated
+      ## @param rocktemplateController.tls.certmanager.extraIPAddresses extra IP addresses added to certificate when it's auto generated
       extraIPAddresses: []
 
     ## for provided method
     provided:
-      ## @param templateController.tls.provided.tlsCert encoded tls certificate for provided method
-      ## @param templateController.tls.provided.tlsKey encoded tls key for provided method
-      ## @param templateController.tls.provided.tlsCa encoded tls CA for provided method
+      ## @param rocktemplateController.tls.provided.tlsCert encoded tls certificate for provided method
+      ## @param rocktemplateController.tls.provided.tlsKey encoded tls key for provided method
+      ## @param rocktemplateController.tls.provided.tlsCa encoded tls CA for provided method
       tlsCert: ""
       tlsKey: ""
       tlsCa: ""
 
     ## for auto method
     auto:
-      ## @param templateController.tls.auto.caExpiration ca expiration for auto method
+      ## @param rocktemplateController.tls.auto.caExpiration ca expiration for auto method
       # in day , default 200 years
       caExpiration: '73000'
 
-      ## @param templateController.tls.auto.certExpiration server cert expiration for auto method
+      ## @param rocktemplateController.tls.auto.certExpiration server cert expiration for auto method
       # in day, default 200 years
       certExpiration: '73000'
 
-      ## @param templateController.tls.auto.extraIpAddresses extra IP addresses of server certificate for auto method
+      ## @param rocktemplateController.tls.auto.extraIpAddresses extra IP addresses of server certificate for auto method
       extraIpAddresses: []
 
-      ## @param templateController.tls.auto.extraDnsNames extra DNS names of server cert for auto method
+      ## @param rocktemplateController.tls.auto.extraDnsNames extra DNS names of server cert for auto method
       extraDnsNames: []

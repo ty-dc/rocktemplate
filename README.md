@@ -1,4 +1,8 @@
-# template
+# rocktemplate
+
+## copy
+
+copy repo and replace all 'rocktemplate' to 'YourRepoName'
 
 ## local develop
 

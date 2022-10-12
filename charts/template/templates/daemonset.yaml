@@ -1,10 +1,10 @@
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name:  {{ .Values.templateAgent.name | trunc 63 | trimSuffix "-" }}
+  name:  {{ .Values.rocktemplateAgent.name | trunc 63 | trimSuffix "-" }}
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "project.templateAgent.labels" . | nindent 4 }}
+    {{- include "project.rocktemplateAgent.labels" . | nindent 4 }}
     {{- if .Values.global.commonLabels }}
     {{- include "tplvalues.render" ( dict "value" .Values.global.commonLabels "context" $ ) | nindent 4 }}
     {{- end }}
@@ -15,40 +15,40 @@ metadata:
 spec:
   selector:
     matchLabels:
-      {{- include "project.templateAgent.selectorLabels" . | nindent 6 }}
-  {{- with .Values.templateAgent.updateStrategy }}
+      {{- include "project.rocktemplateAgent.selectorLabels" . | nindent 6 }}
+  {{- with .Values.rocktemplateAgent.updateStrategy }}
   updateStrategy:
     {{- toYaml . | trim | nindent 4 }}
   {{- end }}
   template:
     metadata:
-      {{- if or .Values.templateAgent.podAnnotations .Values.global.commonAnnotations }}
+      {{- if or .Values.rocktemplateAgent.podAnnotations .Values.global.commonAnnotations }}
       annotations:
         {{- if .Values.global.commonAnnotations }}
         {{- include "tplvalues.render" ( dict "value" .Values.global.commonAnnotations "context" $ ) | nindent 8 }}
         {{- end }}
-        {{- if .Values.templateAgent.podAnnotations }}
-        {{- include "tplvalues.render" ( dict "value" .Values.templateAgent.podAnnotations "context" $ ) | nindent 8 }}
+        {{- if .Values.rocktemplateAgent.podAnnotations }}
+        {{- include "tplvalues.render" ( dict "value" .Values.rocktemplateAgent.podAnnotations "context" $ ) | nindent 8 }}
         {{- end }}
         {{- end }}
       labels:
-        {{- include "project.templateAgent.selectorLabels" . | nindent 8 }}
+        {{- include "project.rocktemplateAgent.selectorLabels" . | nindent 8 }}
         {{- if .Values.global.commonLabels }}
         {{- include "tplvalues.render" ( dict "value" .Values.global.commonLabels "context" $ ) | nindent 8 }}
         {{- end }}
-        {{- if .Values.templateAgent.podLabels }}
-        {{- include "tplvalues.render" ( dict "value" .Values.templateAgent.podLabels "context" $ ) | nindent 8 }}
+        {{- if .Values.rocktemplateAgent.podLabels }}
+        {{- include "tplvalues.render" ( dict "value" .Values.rocktemplateAgent.podLabels "context" $ ) | nindent 8 }}
         {{- end }}
     spec:
-      {{- if .Values.templateAgent.image.imagePullSecrets }}
+      {{- if .Values.rocktemplateAgent.image.imagePullSecrets }}
       imagePullSecrets:
-      {{- with .Values.templateAgent.image.imagePullSecrets }}
+      {{- with .Values.rocktemplateAgent.image.imagePullSecrets }}
       {{- toYaml . | trim | nindent 6 }}
       {{- end }}
       {{- end }}
-      serviceAccountName: {{ .Values.templateAgent.name | trunc 63 | trimSuffix "-" }}
-      priorityClassName: {{ default "system-node-critical" .Values.templateAgent.priorityClassName }}
-      {{- if .Values.templateAgent.hostnetwork }}
+      serviceAccountName: {{ .Values.rocktemplateAgent.name | trunc 63 | trimSuffix "-" }}
+      priorityClassName: {{ default "system-node-critical" .Values.rocktemplateAgent.priorityClassName }}
+      {{- if .Values.rocktemplateAgent.hostnetwork }}
       hostNetwork: true
       dnsPolicy: ClusterFirstWithHostNet
       {{- else }}
@@ -56,17 +56,17 @@ spec:
       dnsPolicy: ClusterFirst
       {{- end }}
       restartPolicy: Always
-      {{- with .Values.templateAgent.tolerations }}
+      {{- with .Values.rocktemplateAgent.tolerations }}
       tolerations:
       {{- toYaml . | nindent 6 }}
       {{- end }}
-      {{- with .Values.templateAgent.nodeSelector }}
+      {{- with .Values.rocktemplateAgent.nodeSelector }}
       nodeSelector:
       {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- if .Values.templateAgent.affinity }}
+      {{- if .Values.rocktemplateAgent.affinity }}
       affinity:
-      {{- include "tplvalues.render" (dict "value" .Values.templateAgent.affinity "context" $) | nindent 6 }}
+      {{- include "tplvalues.render" (dict "value" .Values.rocktemplateAgent.affinity "context" $) | nindent 6 }}
       {{- else }}
       affinity:
         nodeAffinity:
@@ -85,20 +85,20 @@ spec:
                       - linux
       {{- end }}
       containers:
-        - name: {{ .Values.templateAgent.name | trunc 63 | trimSuffix "-" }}
-          image: {{ include "project.templateAgent.image" . | quote }}
-          imagePullPolicy: {{ .Values.templateAgent.image.pullPolicy }}
+        - name: {{ .Values.rocktemplateAgent.name | trunc 63 | trimSuffix "-" }}
+          image: {{ include "project.rocktemplateAgent.image" . | quote }}
+          imagePullPolicy: {{ .Values.rocktemplateAgent.image.pullPolicy }}
           command:
-            - {{ .Values.templateAgent.cmdBinName }}
+            - {{ .Values.rocktemplateAgent.cmdBinName }}
           args:
             - --config-path=/tmp/config-map/conf.yml
-          {{- with .Values.templateAgent.extraArgs }}
+          {{- with .Values.rocktemplateAgent.extraArgs }}
           {{- toYaml . | trim | nindent 8 }}
           {{- end }}
-          {{- if .Values.templateAgent.prometheus.enabled }}
+          {{- if .Values.rocktemplateAgent.prometheus.enabled }}
           ports:
             - name: metrics
-              containerPort: {{ .Values.templateAgent.prometheus.port }}
+              containerPort: {{ .Values.rocktemplateAgent.prometheus.port }}
               protocol: TCP
           {{- end }}
           {{- if semverCompare ">=1.20-0" .Capabilities.KubeVersion.Version }}
@@ -106,62 +106,62 @@ spec:
             httpGet:
               host: {{ .Values.feature.enableIPv4 | ternary "127.0.0.1" "::1" | quote }}
               path: /v1/runtime/startup
-              port: {{ .Values.templateAgent.healthChecking.port }}
+              port: {{ .Values.rocktemplateAgent.healthChecking.port }}
               scheme: HTTP
               httpHeaders:
                 - name: "checkType"
                   value: "startupProbe"
-            failureThreshold: {{ .Values.templateAgent.healthChecking.startupProbe.failureThreshold }}
-            periodSeconds: {{ .Values.templateAgent.healthChecking.startupProbe.periodSeconds }}
+            failureThreshold: {{ .Values.rocktemplateAgent.healthChecking.startupProbe.failureThreshold }}
+            periodSeconds: {{ .Values.rocktemplateAgent.healthChecking.startupProbe.periodSeconds }}
             successThreshold: 1
           {{- end }}
           livenessProbe:
             httpGet:
               host: {{ .Values.feature.enableIPv4 | ternary "127.0.0.1" "::1" | quote }}
               path: /v1/runtime/liveness
-              port: {{ .Values.templateAgent.healthChecking.port }}
+              port: {{ .Values.rocktemplateAgent.healthChecking.port }}
               scheme: HTTP
               httpHeaders:
                 - name: "checkType"
                   value: "livenessProbe"
             initialDelaySeconds: 60
-            periodSeconds: {{ .Values.templateAgent.healthChecking.livenessProbe.periodSeconds }}
+            periodSeconds: {{ .Values.rocktemplateAgent.healthChecking.livenessProbe.periodSeconds }}
             successThreshold: 1
-            failureThreshold: {{ .Values.templateAgent.healthChecking.livenessProbe.failureThreshold }}
+            failureThreshold: {{ .Values.rocktemplateAgent.healthChecking.livenessProbe.failureThreshold }}
             timeoutSeconds: 5
           readinessProbe:
             httpGet:
               host: {{ .Values.feature.enableIPv4 | ternary "127.0.0.1" "::1" | quote }}
               path: /v1/runtime/readiness
-              port: {{ .Values.templateAgent.healthChecking.port }}
+              port: {{ .Values.rocktemplateAgent.healthChecking.port }}
               scheme: HTTP
               httpHeaders:
                 - name: "checkType"
                   value: "readinessProbe"
             initialDelaySeconds: 5
-            periodSeconds: {{ .Values.templateAgent.healthChecking.readinessProbe.periodSeconds }}
+            periodSeconds: {{ .Values.rocktemplateAgent.healthChecking.readinessProbe.periodSeconds }}
             successThreshold: 1
-            failureThreshold: {{ .Values.templateAgent.healthChecking.readinessProbe.failureThreshold }}
+            failureThreshold: {{ .Values.rocktemplateAgent.healthChecking.readinessProbe.failureThreshold }}
             timeoutSeconds: 5
-          {{- with .Values.templateAgent.resources }}
+          {{- with .Values.rocktemplateAgent.resources }}
           resources:
           {{- toYaml . | trim | nindent 12 }}
           {{- end }}
           env:
             - name: ENV_LOG_LEVEL
-              value: {{ .Values.templateAgent.debug.logLevel | quote }}
+              value: {{ .Values.rocktemplateAgent.debug.logLevel | quote }}
             - name: ENV_ENABLED_METRIC
-              value: {{ .Values.templateAgent.prometheus.enabled | quote }}
+              value: {{ .Values.rocktemplateAgent.prometheus.enabled | quote }}
             - name: ENV_METRIC_HTTP_PORT
-              value: {{ .Values.templateAgent.prometheus.port | quote }}
+              value: {{ .Values.rocktemplateAgent.prometheus.port | quote }}
             - name: ENV_HEALTH_PORT
-              value: {{ .Values.templateAgent.httpPort | quote }}
+              value: {{ .Values.rocktemplateAgent.httpPort | quote }}
             - name: ENV_GOPS_LISTEN_PORT
-              value: {{ .Values.templateAgent.debug.gopsPort | quote }}
-            {{- with .Values.templateAgent.extraEnv }}
+              value: {{ .Values.rocktemplateAgent.debug.gopsPort | quote }}
+            {{- with .Values.rocktemplateAgent.extraEnv }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
-          {{- with .Values.templateAgent.securityContext }}
+          {{- with .Values.rocktemplateAgent.securityContext }}
           securityContext:
           {{- toYaml . | nindent 10 }}
           {{- end }}
@@ -169,8 +169,8 @@ spec:
             - name: config-path
               mountPath: /tmp/config-map
               readOnly: true
-            {{- if .Values.templateAgent.extraVolumes }}
-            {{- include "tplvalues.render" ( dict "value" .Values.templateAgent.extraVolumeMounts "context" $ ) | nindent 12 }}
+            {{- if .Values.rocktemplateAgent.extraVolumes }}
+            {{- include "tplvalues.render" ( dict "value" .Values.rocktemplateAgent.extraVolumeMounts "context" $ ) | nindent 12 }}
             {{- end }}
       volumes:
         # To read the configuration from the config map
@@ -178,6 +178,6 @@ spec:
           configMap:
             defaultMode: 0400
             name: {{ .Values.global.configName }}
-      {{- if .Values.templateAgent.extraVolumeMounts }}
-      {{- include "tplvalues.render" ( dict "value" .Values.templateAgent.extraVolumeMounts "context" $ ) | nindent 6 }}
+      {{- if .Values.rocktemplateAgent.extraVolumeMounts }}
+      {{- include "tplvalues.render" ( dict "value" .Values.rocktemplateAgent.extraVolumeMounts "context" $ ) | nindent 6 }}
       {{- end }}

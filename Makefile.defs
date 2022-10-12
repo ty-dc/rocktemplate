@@ -2,7 +2,7 @@
 GO_VERSION := 1.19
 
 REGISTER ?= ghcr.io
-GIT_REPO ?= spidernet-io/template
+GIT_REPO ?= spidernet-io/rocktemplate
 
 #======================
 
@@ -145,7 +145,7 @@ PYROSCOPE_CONTAINER_NAME := pyroscope
 PYROSCOPE_IMAGE_NAME := pyroscope/pyroscope:latest
 PYROSCOPE_LOCAL_PORT := 4040
 
-E2E_KIND_CLUSTER_NAME ?= template
+E2E_KIND_CLUSTER_NAME ?= rocktemplate
 E2E_RUNTIME_DIR := $(ROOT_DIR)/test/runtime
 E2E_KIND_KUBECONFIG_PATH := $(E2E_RUNTIME_DIR)/kubeconfig_$(E2E_KIND_CLUSTER_NAME).config
 E2E_LOG_FILE ?= $(E2E_RUNTIME_DIR)/e2edebugLog.txt
