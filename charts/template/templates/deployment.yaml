@@ -1,0 +1,198 @@
+apiVersion: {{ include "capabilities.deployment.apiVersion" . }}
+kind: Deployment
+metadata:
+  name: {{ .Values.templateController.name | trunc 63 | trimSuffix "-" }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "project.templateController.labels" . | nindent 4 }}
+      {{- if .Values.global.commonLabels }}
+      {{- include "tplvalues.render" ( dict "value" .Values.global.commonLabels "context" $ ) | nindent 4 }}
+      {{- end }}
+  {{- if .Values.global.commonAnnotations }}
+  annotations:
+    {{- include "tplvalues.render" ( dict "value" .Values.global.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.templateController.replicas }}
+  selector:
+    matchLabels:
+      {{- include "project.templateController.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- if or .Values.templateController.podAnnotations .Values.global.commonAnnotations }}
+      annotations:
+        {{- if .Values.global.commonAnnotations }}
+        {{- include "tplvalues.render" ( dict "value" .Values.global.commonAnnotations "context" $ ) | nindent 8 }}
+        {{- end }}
+        {{- if .Values.templateController.podAnnotations }}
+        {{- include "tplvalues.render" ( dict "value" .Values.templateController.podAnnotations "context" $ ) | nindent 8 }}
+        {{- end }}
+        {{- end }}
+      labels:
+        {{- include "project.templateController.selectorLabels" . | nindent 8 }}
+        {{- if .Values.global.commonLabels }}
+        {{- include "tplvalues.render" ( dict "value" .Values.global.commonLabels "context" $ ) | nindent 8 }}
+        {{- end }}
+        {{- if .Values.templateController.podLabels }}
+        {{- include "tplvalues.render" ( dict "value" .Values.templateController.podLabels "context" $ ) | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- if .Values.templateController.image.imagePullSecrets }}
+      imagePullSecrets:
+      {{- with .Values.templateController.image.imagePullSecrets }}
+      {{- toYaml . | trim | nindent 6 }}
+      {{- end }}
+      {{- end }}
+      serviceAccountName: {{ .Values.templateController.name | trunc 63 | trimSuffix "-" }}
+      priorityClassName: {{ default "system-node-critical" .Values.templateController.priorityClassName }}
+      {{- if .Values.templateController.hostnetwork }}
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      {{- else }}
+      hostNetwork: false
+      dnsPolicy: ClusterFirst
+      {{- end }}
+      restartPolicy: Always
+      {{- with .Values.templateController.tolerations }}
+      tolerations:
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
+      {{- with .Values.templateController.nodeSelector }}
+      nodeSelector:
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.templateController.affinity }}
+      affinity:
+      {{- include "tplvalues.render" (dict "value" .Values.templateController.affinity "context" $) | nindent 6 }}
+      {{- end }}
+      containers:
+        - name: {{ .Values.templateController.name | trunc 63 | trimSuffix "-" }}
+          image: {{ include "project.templateController.image" . | quote }}
+          imagePullPolicy: {{ .Values.templateController.image.pullPolicy }}
+          command:
+            - {{ .Values.templateController.cmdBinName }}
+          args:
+            - --config-path=/tmp/config-map/conf.yml
+            - --tls-ca-cert=/etc/tls/ca.crt
+            - --tls-server-cert=/etc/tls/tls.crt
+            - --tls-server-key=/etc/tls/tls.key
+          {{- with .Values.templateController.extraArgs }}
+          {{- toYaml . | trim | nindent 8 }}
+          {{- end }}
+          ports:
+          {{- if .Values.templateController.prometheus.enabled }}
+          - name: metrics
+            containerPort: {{ .Values.templateController.prometheus.port }}
+            protocol: TCP
+          {{- end }}
+          - name: http
+            containerPort: {{ .Values.templateController.healthChecking.port }}
+            protocol: TCP
+          - name: webhook
+            containerPort: {{ .Values.templateController.webhookPort }}
+            protocol: TCP
+          {{- if semverCompare ">=1.20-0" .Capabilities.KubeVersion.Version }}
+          startupProbe:
+            httpGet:
+              host: {{ .Values.feature.enableIPv4 | ternary "127.0.0.1" "::1" | quote }}
+              path: /v1/runtime/startup
+              port: {{ .Values.templateController.healthChecking.port }}
+              scheme: HTTP
+              httpHeaders:
+                - name: "checkType"
+                  value: "startupProbe"
+            failureThreshold: {{ .Values.templateController.healthChecking.startupProbe.failureThreshold }}
+            periodSeconds: {{ .Values.templateController.healthChecking.startupProbe.periodSeconds }}
+            successThreshold: 1
+          {{- end }}
+          livenessProbe:
+            httpGet:
+              host: {{ .Values.feature.enableIPv4 | ternary "127.0.0.1" "::1" | quote }}
+              path: /v1/runtime/liveness
+              port: {{ .Values.templateController.healthChecking.port }}
+              scheme: HTTP
+              httpHeaders:
+                - name: "checkType"
+                  value: "livenessProbe"
+            initialDelaySeconds: 60
+            periodSeconds: {{ .Values.templateController.healthChecking.livenessProbe.periodSeconds }}
+            successThreshold: 1
+            failureThreshold: {{ .Values.templateController.healthChecking.livenessProbe.failureThreshold }}
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              host: {{ .Values.feature.enableIPv4 | ternary "127.0.0.1" "::1" | quote }}
+              path: /v1/runtime/readiness
+              port: {{ .Values.templateController.healthChecking.port }}
+              scheme: HTTP
+              httpHeaders:
+                - name: "checkType"
+                  value: "readinessProbe"
+            initialDelaySeconds: 5
+            periodSeconds: {{ .Values.templateController.healthChecking.readinessProbe.periodSeconds }}
+            successThreshold: 1
+            failureThreshold: {{ .Values.templateController.healthChecking.readinessProbe.failureThreshold }}
+            timeoutSeconds: 5
+          {{- with .Values.templateController.resources }}
+          resources:
+          {{- toYaml . | trim | nindent 12 }}
+          {{- end }}
+          env:
+            - name: ENV_LOG_LEVEL
+              value: {{ .Values.templateController.debug.logLevel | quote }}
+            - name: ENV_ENABLED_METRIC
+              value: {{ .Values.templateController.prometheus.enabled | quote }}
+            - name: ENV_METRIC_HTTP_PORT
+              value: {{ .Values.templateController.prometheus.port | quote }}
+            - name: ENV_GOPS_LISTEN_PORT
+              value: {{ .Values.templateController.debug.gopsPort | quote }}
+            - name: ENV_WEBHOOK_PORT
+              value: {{ .Values.templateController.webhookPort | quote }}
+            - name: ENV_HEALTH_PORT
+              value: {{ .Values.templateController.healthChecking.port | quote }}
+            - name: ENV_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: ENV_POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            {{- with .Values.templateController.extraEnv }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- with .Values.templateController.securityContext }}
+          securityContext:
+          {{- toYaml . | nindent 10 }}
+          {{- end }}
+          volumeMounts:
+            - name: config-path
+              mountPath: /tmp/config-map
+              readOnly: true
+            - name: tls
+              mountPath: /etc/tls
+              readOnly: true
+            {{- if .Values.templateController.extraVolumes }}
+            {{- include "tplvalues.render" ( dict "value" .Values.templateController.extraVolumeMounts "context" $ ) | nindent 12 }}
+            {{- end }}
+      volumes:
+        # To read the configuration from the config map
+        - name: config-path
+          configMap:
+            name: {{ .Values.global.configName }}
+        - name: tls
+          projected:
+            defaultMode: 0400
+            sources:
+              - secret:
+                  name: {{ .Values.templateController.tls.secretName | trunc 63 | trimSuffix "-" }}
+                  items:
+                    - key: tls.crt
+                      path: tls.crt
+                    - key: tls.key
+                      path: tls.key
+                    - key: ca.crt
+                      path: ca.crt
+      {{- if .Values.templateController.extraVolumeMounts }}
+      {{- include "tplvalues.render" ( dict "value" .Values.templateController.extraVolumeMounts "context" $ ) | nindent 6 }}
+      {{- end }}

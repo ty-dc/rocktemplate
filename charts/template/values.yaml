@@ -1,0 +1,504 @@
+
+## @section Global parameters
+##
+global:
+  ## @param global.imageRegistryOverride Global Docker image registry
+  imageRegistryOverride: ""
+
+  ## @param global.imageTagOverride Global Docker image tag
+  imageTagOverride: ""
+
+  ## @param global.name instance name
+  ## default template
+  name: "template"
+
+  ## @param global.clusterDnsDomain cluster dns domain
+  clusterDnsDomain: "cluster.local"
+
+  ## @param global.commonAnnotations Annotations to add to all deployed objects
+  commonAnnotations: {}
+
+  ## @param global.commonLabels Labels to add to all deployed objects
+  commonLabels: {}
+  #  label1: v1
+  #  labele: v2
+
+  ## @param global.configName the configmap name
+  configName: "template"
+
+## @section feature parameters
+feature:
+  ## @param feature.enableIPv4 enable ipv4
+  enableIPv4: true
+
+  ## @param feature.enableIPv6 enable ipv6
+  enableIPv6: false
+
+## @section templateAgent parameters
+##
+templateAgent:
+  ## @param templateAgent.name the templateAgent name
+  name: "template-agent"
+
+  ## @param templateAgent.cmdBinName the binary name of templateAgent
+  cmdBinName: "agent"
+
+  ## @param templateAgent.hostnetwork enable hostnetwork mode of templateAgent pod
+  hostnetwork: true
+
+  image:
+    ## @param templateAgent.image.registry the image registry of templateAgent
+    registry: ghcr.io
+
+    ## @param templateAgent.image.repository the image repository of templateAgent
+    repository: spidernet-io/template/agent
+
+    ## @param templateAgent.image.pullPolicy the image pullPolicy of templateAgent
+    pullPolicy: IfNotPresent
+
+    ## @param templateAgent.image.digest the image digest of templateAgent, which takes preference over tag
+    digest: ""
+
+    ## @param templateAgent.image.tag the image tag of templateAgent, overrides the image tag whose default is the chart appVersion.
+    tag: ""
+
+    ## @param templateAgent.image.imagePullSecrets the image imagePullSecrets of templateAgent
+    imagePullSecrets: []
+    # - name: "image-pull-secret"
+
+  ## @skip templateAgent.nodeSelector.kubernetes.io/os
+  nodeSelector:
+    kubernetes.io/os: linux
+
+  serviceAccount:
+    ## @param templateAgent.serviceAccount.create create the service account for the templateAgent
+    create: true
+    ## @param templateAgent.serviceAccount.annotations the annotations of templateAgent service account
+    annotations: {}
+
+  ## @skip templateAgent.updateStrategy.rollingUpdate.maxUnavailable
+  ## @skip templateAgent.updateStrategy.type
+  updateStrategy:
+    rollingUpdate:
+      maxUnavailable: 2
+    type: RollingUpdate
+
+  service:
+    ## @param templateAgent.service.annotations the annotations for templateAgent service
+    annotations: {}
+    ## @param templateAgent.service.type the type for templateAgent service
+    type: ClusterIP
+
+  ## @skip templateAgent.tolerations
+  # --  Node tolerations
+  # ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
+  tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/disk-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/memory-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/pid-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/unschedulable
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/network-unavailable
+      operator: Exists
+    - key: node.kubernetes.io/not-ready
+      effect: NoSchedule
+    - key: node-role.kubernetes.io/master
+      effect: NoSchedule
+    - key: node-role.kubernetes.io/control-plane
+      effect: NoSchedule
+    - key: CriticalAddonsOnly
+      operator: Exists
+
+  ## @param templateAgent.priorityClassName the priority Class Name for templateAgent
+  priorityClassName: "system-node-critical"
+
+  ## @param templateAgent.affinity the affinity of templateAgent
+  affinity: {}
+
+  ## @param templateAgent.extraArgs the additional arguments of templateAgent container
+  extraArgs: []
+
+  ## @param templateAgent.extraEnv the additional environment variables of templateAgent container
+  extraEnv: []
+
+  ## @param templateAgent.extraVolumes the additional volumes of templateAgent container
+  extraVolumes: []
+
+  ## @param templateAgent.extraVolumeMounts the additional hostPath mounts of templateAgent container
+  extraVolumeMounts: []
+
+  ## @param templateAgent.podAnnotations the additional annotations of templateAgent pod
+  podAnnotations: {}
+
+  ## @param templateAgent.podLabels the additional label of templateAgent pod
+  podLabels: {}
+
+  resources:
+    ## @param templateAgent.resources.limits.cpu the cpu limit of templateAgent pod
+    ## @param templateAgent.resources.limits.memory the memory limit of templateAgent pod
+    ## @param templateAgent.resources.requests.cpu the cpu requests of templateAgent pod
+    ## @param templateAgent.resources.requests.memory the memory requests of templateAgent pod
+    limits:
+      cpu: 1000m
+      memory: 1024Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+  ## @param templateAgent.securityContext the security Context of templateAgent pod
+  securityContext: {}
+  # runAsUser: 0
+
+  healthChecking:
+    ## @param templateAgent.healthChecking.port the http Port for templateAgent, for health checking
+    port: 5710
+
+    startupProbe:
+      ## @param templateAgent.healthChecking.startupProbe.failureThreshold the failure threshold of startup probe for templateAgent health checking
+      failureThreshold: 60
+      ## @param templateAgent.healthChecking.startupProbe.periodSeconds the period seconds of startup probe for templateAgent health checking
+      periodSeconds: 2
+
+    livenessProbe:
+      ## @param templateAgent.healthChecking.livenessProbe.failureThreshold the failure threshold of startup probe for templateAgent health checking
+      failureThreshold: 6
+      ## @param templateAgent.healthChecking.livenessProbe.periodSeconds the period seconds of startup probe for templateAgent health checking
+      periodSeconds: 10
+
+    readinessProbe:
+      ## @param templateAgent.healthChecking.readinessProbe.failureThreshold the failure threshold of startup probe for templateAgent health checking
+      failureThreshold: 3
+      ## @param templateAgent.healthChecking.readinessProbe.periodSeconds the period seconds of startup probe for templateAgent health checking
+      periodSeconds: 10
+
+  prometheus:
+    ## @param templateAgent.prometheus.enabled enable template agent to collect metrics
+    enabled: false
+
+    ## @param templateAgent.prometheus.port the metrics port of template agent
+    port: 5711
+
+    serviceMonitor:
+      ## @param templateAgent.prometheus.serviceMonitor.install install serviceMonitor for template agent. This requires the prometheus CRDs to be available
+      install: false
+
+      ## @param templateAgent.prometheus.serviceMonitor.namespace the serviceMonitor namespace. Default to the namespace of helm instance
+      namespace: ""
+
+      ## @param templateAgent.prometheus.serviceMonitor.annotations the additional annotations of templateAgent serviceMonitor
+      annotations: {}
+
+      ## @param templateAgent.prometheus.serviceMonitor.labels the additional label of templateAgent serviceMonitor
+      labels: {}
+
+    prometheusRule:
+      ## @param templateAgent.prometheus.prometheusRule.install install prometheusRule for template agent. This requires the prometheus CRDs to be available
+      install: false
+
+      ## @param templateAgent.prometheus.prometheusRule.namespace the prometheusRule namespace. Default to the namespace of helm instance
+      namespace: ""
+
+      ## @param templateAgent.prometheus.prometheusRule.annotations the additional annotations of templateAgent prometheusRule
+      annotations: {}
+
+      ## @param templateAgent.prometheus.prometheusRule.labels the additional label of templateAgent prometheusRule
+      labels: {}
+
+    grafanaDashboard:
+      ## @param templateAgent.prometheus.grafanaDashboard.install install grafanaDashboard for template agent. This requires the prometheus CRDs to be available
+      install: false
+
+      ## @param templateAgent.prometheus.grafanaDashboard.namespace the grafanaDashboard namespace. Default to the namespace of helm instance
+      namespace: ""
+
+      ## @param templateAgent.prometheus.grafanaDashboard.annotations the additional annotations of templateAgent grafanaDashboard
+      annotations: {}
+
+      ## @param templateAgent.prometheus.grafanaDashboard.labels the additional label of templateAgent grafanaDashboard
+      labels: {}
+
+  debug:
+    ## @param templateAgent.debug.logLevel the log level of template agent [debug, info, warn, error, fatal, panic]
+    logLevel: "info"
+    ## @param templateAgent.debug.gopsPort the gops port of template agent
+    gopsPort: 5712
+
+## @section templateController parameters
+##
+templateController:
+  ## @param templateController.name the templateController name
+  name: "template-controller"
+
+  ## @param templateController.replicas the replicas number of templateController pod
+  replicas: 1
+
+  ## @param templateController.binName the binName name of templateController
+  cmdBinName: "controller"
+
+  ## @param templateController.hostnetwork enable hostnetwork mode of templateController pod. Notice, if no CNI available before template installation, must enable this
+  hostnetwork: false
+
+  image:
+    ## @param templateController.image.registry the image registry of templateController
+    registry: ghcr.io
+
+    ## @param templateController.image.repository the image repository of templateController
+    repository: spidernet-io/template/controller
+
+    ## @param templateController.image.pullPolicy the image pullPolicy of templateController
+    pullPolicy: IfNotPresent
+
+    ## @param templateController.image.digest the image digest of templateController, which takes preference over tag
+    digest: ""
+
+    ## @param templateController.image.tag the image tag of templateController, overrides the image tag whose default is the chart appVersion.
+    tag: ""
+
+    ## @param templateController.image.imagePullSecrets the image imagePullSecrets of templateController
+    imagePullSecrets: []
+    # - name: "image-pull-secret"
+
+  ## @skip templateController.nodeSelector.kubernetes.io/os
+  nodeSelector:
+    kubernetes.io/os: linux
+
+  serviceAccount:
+    ## @param templateController.serviceAccount.create create the service account for the templateController
+    create: true
+    ## @param templateController.serviceAccount.annotations the annotations of templateController service account
+    annotations: {}
+
+  service:
+    ## @param templateController.service.annotations the annotations for templateController service
+    annotations: {}
+    ## @param templateController.service.type the type for templateController service
+    type: ClusterIP
+
+  ## @skip templateController.tolerations
+  tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/disk-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/memory-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/pid-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/unschedulable
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/network-unavailable
+      operator: Exists
+    - key: node.kubernetes.io/not-ready
+      effect: NoSchedule
+    - key: node-role.kubernetes.io/master
+      effect: NoSchedule
+    - key: node-role.kubernetes.io/control-plane
+      effect: NoSchedule
+    - key: CriticalAddonsOnly
+      operator: Exists
+
+  ## @param templateController.priorityClassName the priority Class Name for templateController
+  priorityClassName: "system-node-critical"
+
+  ## @param templateController.affinity the affinity of templateController
+  affinity: {}
+
+  ## @param templateController.extraArgs the additional arguments of templateController container
+  extraArgs: []
+
+  ## @param templateController.extraEnv the additional environment variables of templateController container
+  extraEnv: []
+
+  ## @param templateController.extraVolumes the additional volumes of templateController container
+  extraVolumes: []
+    # - name: test-val
+  #   mountPath: /host/tmp
+
+  ## @param templateController.extraVolumeMounts the additional hostPath mounts of templateController container
+  extraVolumeMounts: []
+    # - name: test-val
+  #   mountPath: /tmp
+
+  ## @param templateController.podAnnotations the additional annotations of templateController pod
+  podAnnotations: {}
+  # test: 100
+
+  ## @param templateController.podLabels the additional label of templateController pod
+  podLabels: {}
+
+  ## @param templateController.securityContext the security Context of templateController pod
+  securityContext: {}
+  # runAsUser: 0
+
+  resources:
+    ## @param templateController.resources.limits.cpu the cpu limit of templateController pod
+    ## @param templateController.resources.limits.memory the memory limit of templateController pod
+    ## @param templateController.resources.requests.cpu the cpu requests of templateController pod
+    ## @param templateController.resources.requests.memory the memory requests of templateController pod
+    limits:
+      cpu: 500m
+      memory: 1024Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+  podDisruptionBudget:
+    ## @param templateController.podDisruptionBudget.enabled enable podDisruptionBudget for templateController pod
+    enabled: false
+
+    ## @param templateController.podDisruptionBudget.minAvailable minimum number/percentage of pods that should remain scheduled.
+    minAvailable: 1
+
+  healthChecking:
+    ## @param templateController.port the http Port for templateController, for health checking and http service
+    port: 5720
+
+    startupProbe:
+      ## @param templateController.healthChecking.startupProbe.failureThreshold the failure threshold of startup probe for templateController health checking
+      failureThreshold: 30
+
+      ## @param templateController.healthChecking.startupProbe.periodSeconds the period seconds of startup probe for templateController health checking
+      periodSeconds: 2
+
+    livenessProbe:
+      ## @param templateController.healthChecking.livenessProbe.failureThreshold the failure threshold of startup probe for templateController health checking
+      failureThreshold: 6
+
+      ## @param templateController.healthChecking.livenessProbe.periodSeconds the period seconds of startup probe for templateController health checking
+      periodSeconds: 10
+
+    readinessProbe:
+      ## @param templateController.healthChecking.readinessProbe.failureThreshold the failure threshold of startup probe for templateController health checking
+      failureThreshold: 3
+
+      ## @param templateController.healthChecking.readinessProbe.periodSeconds the period seconds of startup probe for templateController health checking
+      periodSeconds: 10
+
+  ## @param templateController.webhookPort the http port for templateController webhook
+  webhookPort: 5722
+
+  prometheus:
+    ## @param templateController.prometheus.enabled enable template Controller to collect metrics
+    enabled: false
+
+    ## @param templateController.prometheus.port the metrics port of template Controller
+    port: 5721
+
+    serviceMonitor:
+      ## @param templateController.prometheus.serviceMonitor.install install serviceMonitor for template agent. This requires the prometheus CRDs to be available
+      install: false
+
+      ## @param templateController.prometheus.serviceMonitor.namespace the serviceMonitor namespace. Default to the namespace of helm instance
+      namespace: ""
+
+      ## @param templateController.prometheus.serviceMonitor.annotations the additional annotations of templateController serviceMonitor
+      annotations: {}
+
+      ## @param templateController.prometheus.serviceMonitor.labels the additional label of templateController serviceMonitor
+      labels: {}
+
+    prometheusRule:
+      ## @param templateController.prometheus.prometheusRule.install install prometheusRule for template agent. This requires the prometheus CRDs to be available
+      install: false
+
+      ## @param templateController.prometheus.prometheusRule.namespace the prometheusRule namespace. Default to the namespace of helm instance
+      namespace: ""
+
+      ## @param templateController.prometheus.prometheusRule.annotations the additional annotations of templateController prometheusRule
+      annotations: {}
+
+      ## @param templateController.prometheus.prometheusRule.labels the additional label of templateController prometheusRule
+      labels: {}
+
+    grafanaDashboard:
+      ## @param templateController.prometheus.grafanaDashboard.install install grafanaDashboard for template agent. This requires the prometheus CRDs to be available
+      install: false
+
+      ## @param templateController.prometheus.grafanaDashboard.namespace the grafanaDashboard namespace. Default to the namespace of helm instance
+      namespace: ""
+
+      ## @param templateController.prometheus.grafanaDashboard.annotations the additional annotations of templateController grafanaDashboard
+      annotations: {}
+
+      ## @param templateController.prometheus.grafanaDashboard.labels the additional label of templateController grafanaDashboard
+      labels: {}
+
+  debug:
+    ## @param templateController.debug.logLevel the log level of template Controller [debug, info, warn, error, fatal, panic]
+    logLevel: "info"
+
+    ## @param templateController.debug.gopsPort the gops port of template Controller
+    gopsPort: 5724
+
+  ## TLS configuration for webhook
+  tls:
+    ## @param templateController.tls.method the method for generating TLS certificates. [ provided , certmanager , auto]
+    ## - provided:     provide all certificates by helm options
+    ## - certmanager:  This method use cert-manager to generate & rotate certificates.
+    ## - auto:         Auto generate cert.
+    method: auto
+
+    ## @param templateController.tls.secretName the secret name for storing TLS certificates
+    secretName: "template-controller-server-certs"
+
+    ## for certmanager method
+    certmanager:
+      ## @param templateController.tls.certmanager.certValidityDuration generated certificates validity duration in days for 'certmanager' method
+      certValidityDuration: 365
+
+      ## @param templateController.tls.certmanager.issuerName issuer name of cert manager 'certmanager'. If not specified, a CA issuer will be created.
+      issuerName: ""
+
+      ## @param templateController.tls.certmanager.extraDnsNames extra DNS names added to certificate when it's auto generated
+      extraDnsNames: []
+
+      ## @param templateController.tls.certmanager.extraIPAddresses extra IP addresses added to certificate when it's auto generated
+      extraIPAddresses: []
+
+    ## for provided method
+    provided:
+      ## @param templateController.tls.provided.tlsCert encoded tls certificate for provided method
+      ## @param templateController.tls.provided.tlsKey encoded tls key for provided method
+      ## @param templateController.tls.provided.tlsCa encoded tls CA for provided method
+      tlsCert: ""
+      tlsKey: ""
+      tlsCa: ""
+
+    ## for auto method
+    auto:
+      ## @param templateController.tls.auto.caExpiration ca expiration for auto method
+      # in day , default 200 years
+      caExpiration: '73000'
+
+      ## @param templateController.tls.auto.certExpiration server cert expiration for auto method
+      # in day, default 200 years
+      certExpiration: '73000'
+
+      ## @param templateController.tls.auto.extraIpAddresses extra IP addresses of server certificate for auto method
+      extraIpAddresses: []
+
+      ## @param templateController.tls.auto.extraDnsNames extra DNS names of server cert for auto method
+      extraDnsNames: []
