@@ -295,7 +295,7 @@ e2e_init:
 
 .PHONY: e2e_run
 e2e_run:
-	make -C test run-e2e
+	make -C test e2e_test
 
 .PHONY: e2e_clean
 e2e_clean:

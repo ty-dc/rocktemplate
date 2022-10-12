@@ -84,10 +84,10 @@ check_images_ready:
 	echo "check image  " ; \
 	IMAGE_LIST=` helm template test $(ROOT_DIR)/charts/template --set global.imageTagOverride=$(PROJECT_IMAGE_VERSION)  | grep " image: " | tr -d '"'| awk '{print $$2}' ` ; \
 	if [ -z "$${IMAGE_LIST}" ] ; then \
-		echo "warning, failed to find image from chart template" ; \
+		echo "warning, failed to find image from chart " ; \
 		exit 1 ;\
 	else \
-		echo "find image from chart template: $${IMAGE_LIST} " ; \
+		echo "find image from chart : $${IMAGE_LIST} " ; \
 		for IMAGE in $${IMAGE_LIST} ; do \
 			EXIST=` docker images | awk '{printf("%s:%s\n",$$1,$$2)}' | grep "$${IMAGE}" ` ; \
 			if [ -z "$${EXIST}" ] ; then \
@@ -142,11 +142,11 @@ install_example_app: KIND_KUBECONFIG ?= $(E2E_KIND_KUBECONFIG_PATH)
 install_example_app:
 	@echo "---------- install example app"
 	kubectl --kubeconfig=$(KIND_KUBECONFIG) apply -f yaml/testpod.yaml
-	@if ! kubectl rollout status  deployment/test --kubeconfig ${KIND_KUBECONFIG} -w --timeout=120s ; then
+	@ if ! kubectl rollout status  deployment/test --kubeconfig $(KIND_KUBECONFIG) -w --timeout=120s ; then \
 			echo "error, failed to create a test pod" ; \
 			exit 1 ; \
 		fi ; \
-		@echo "succeeded to deploy test deployment "
+		echo "succeeded to deploy test deployment "
 
 
 
@@ -186,7 +186,7 @@ e2e_test:
 		echo "=========== before test `date` ===========" >> $(E2E_LOG_FILE) ; \
 		./scripts/debugCluster.sh $(KIND_KUBECONFIG) "gops" "$(E2E_LOG_FILE)" ; \
 		RESULT=0 ; \
-		$(ROOT_DIR)/tools/scripts/ginkgo.sh \
+		$(ROOT_DIR)/tools/golang/ginkgo.sh \
 			--race --timeout=$(E2E_TIMEOUT) --output-interceptor-mode=none  --slow-spec-threshold=15s \
 			--json-report e2ereport.json --output-dir $(ROOT_DIR) --procs $(E2E_GINKGO_PROCS) \
 			--label-filter="$(E2E_GINKGO_LABELS)" -randomize-suites -randomize-all  -vv --fail-fast  $(E2E_GINKGO_OPTION) \
