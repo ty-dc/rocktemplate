@@ -54,13 +54,21 @@ endef
 
 
 .PHONY: build_local_image
-build_local_image: build_local_agent_image
+build_local_image: build_local_agent_image build_local_controller_image
 
 .PHONY: build_local_agent_image
 build_local_agent_image: IMAGE_NAME := ${REGISTER}/${GIT_REPO}/agent
 build_local_agent_image: DOCKERFILE_PATH := $(ROOT_DIR)/images/agent/Dockerfile
 build_local_agent_image: IMAGE_TAG := $(GIT_COMMIT_VERSION)
 build_local_agent_image:
+	$(BUILD_FINAL_IMAGE)
+
+
+.PHONY: build_local_controller_image
+build_local_controller_image: IMAGE_NAME := ${REGISTER}/${GIT_REPO}/controller
+build_local_controller_image: DOCKERFILE_PATH := $(ROOT_DIR)/images/controller/Dockerfile
+build_local_controller_image: IMAGE_TAG := $(GIT_COMMIT_VERSION)
+build_local_controller_image:
 	$(BUILD_FINAL_IMAGE)
 
 
