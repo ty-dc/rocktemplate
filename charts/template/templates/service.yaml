@@ -1,0 +1,65 @@
+{{- if .Values.templateAgent.prometheus.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.templateAgent.name | trunc 63 | trimSuffix "-" }}
+  namespace: {{ .Release.Namespace | quote }}
+  {{- if or .Values.global.commonAnnotations .Values.templateAgent.service.annotations }}
+  annotations:
+    {{- if .Values.global.commonAnnotations }}
+    {{- include "tplvalues.render" ( dict "value" .Values.global.commonAnnotations "context" $ ) | nindent 4 }}
+    {{- end }}
+    {{- if .Values.templateAgent.service.annotations }}
+    {{- include "tplvalues.render" ( dict "value" .Values.templateAgent.service.annotations "context" $ ) | nindent 4 }}
+    {{- end }}
+  {{- end }}
+  labels:
+    {{- if .Values.global.commonLabels }}
+    {{- include "tplvalues.render" ( dict "value" .Values.global.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+    {{- include "project.templateAgent.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.templateAgent.service.type }}
+  ports:
+    - name: metrics
+      port: {{ .Values.templateAgent.prometheus.port }}
+      targetPort: metrics
+      protocol: TCP
+  selector:
+    {{- include "project.templateAgent.selectorLabels" . | nindent 4 }}
+{{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.templateController.name | trunc 63 | trimSuffix "-" }}
+  namespace: {{ .Release.Namespace | quote }}
+  {{- if or .Values.global.commonAnnotations .Values.templateController.service.annotations }}
+  annotations:
+    {{- if .Values.global.commonAnnotations }}
+    {{- include "tplvalues.render" ( dict "value" .Values.global.commonAnnotations "context" $ ) | nindent 4 }}
+    {{- end }}
+    {{- if .Values.templateController.service.annotations }}
+    {{- include "tplvalues.render" ( dict "value" .Values.templateController.service.annotations "context" $ ) | nindent 4 }}
+    {{- end }}
+  {{- end }}
+  labels:
+    {{- if .Values.global.commonLabels }}
+    {{- include "tplvalues.render" ( dict "value" .Values.global.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+    {{- include "project.templateController.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.templateController.service.type }}
+  ports:
+    {{- if .Values.templateController.prometheus.enabled }}
+    - name: metrics
+      port: {{ .Values.templateController.prometheus.port }}
+      targetPort: metrics
+      protocol: TCP
+    {{- end }}
+    - name: webhook
+      port: {{ .Values.templateController.webhookPort }}
+      targetPort: webhook
+      protocol: TCP
+  selector:
+    {{- include "project.templateController.selectorLabels" . | nindent 4 }}

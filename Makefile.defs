@@ -128,3 +128,38 @@ GO_LIST = $(GO) list
 
 GOFILES_EVAL := $(subst _$(ROOT_DIR)/,,$(shell $(GO_LIST) -find -e ./...))
 GOFILES ?= $(GOFILES_EVAL)
+
+
+
+
+#===================== E2E
+
+
+PROJECT_IMAGE_VERSION ?= $(GIT_COMMIT_VERSION)
+ifeq ($(PROJECT_IMAGE_VERSION),)
+    PROJECT_IMAGE_VERSION = $(shell cat $(ROOT_DIR)/VERSION | tr -d ' ' | tr -d '\n' )
+endif
+
+#====== pyroscope
+PYROSCOPE_CONTAINER_NAME := e2e-pyroscope
+PYROSCOPE_LOCAL_PORT := 4040
+
+
+E2E_KIND_CLUSTER_NAME ?= template
+E2E_RUNTIME_DIR := $(ROOT_DIR)/test/runtime
+E2E_KIND_KUBECONFIG_PATH := $(E2E_RUNTIME_DIR)/kubeconfig_$(E2E_KIND_CLUSTER_NAME).config
+E2E_LOG_FILE ?= $(E2E_RUNTIME_DIR)/e2edebugLog.txt
+
+E2E_GINKGO_LABELS ?=
+E2E_GINKGO_OPTION ?=
+E2E_TIMEOUT ?= 60m
+E2E_GINKGO_PROCS ?= 4
+
+# ipv4 or ipv6 or dual, default ipv4
+E2E_IP_FAMILY ?= dual
+
+E2E_KIND_IPV4_SERVICE_CIDR = 172.41.0.0/16
+E2E_KIND_IPV6_SERVICE_CIDR = fd41::/108
+
+E2E_KIND_IPV4_POD_CIDR = 172.40.0.0/16
+E2E_KIND_IPV6_POD_CIDR = fd40::/48

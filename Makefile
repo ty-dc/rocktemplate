@@ -268,21 +268,22 @@ unitest_tests:
 
 .PHONY: e2e
 e2e:
-	make -C test check-spidernet-images
+	make -C test check_images_ready
 	make -C test e2e
 
-.PHONY: e2e-init
-e2e-init:
-	make -C test check-spidernet-images
-	make -C test init-env
-	make -C test install-example-app
+.PHONY: e2e_init
+e2e_init:
+	make -C test check_images_ready
+	make -C test init_kind_env
+	make -C test deploy_project
+	make -C test install_example_app
 
-.PHONY: e2e-run
-e2e-run:
+.PHONY: e2e_run
+e2e_run:
 	make -C test run-e2e
 
-.PHONY: e2e-clean
-e2e-clean:
+.PHONY: e2e_clean
+e2e_clean:
 	make -C test clean
 
 
