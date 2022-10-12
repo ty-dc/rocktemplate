@@ -16,18 +16,20 @@ init_one_kind: checkBin clean
 	[ -n $(KIND_CLUSTER_NAME) ] || { echo "error, miss KIND_CLUSTER_NAME " ; exit 1 ; }
 	[ -f $(KIND_CONFIG_PATH) ] || { echo "error, miss file KIND_CONFIG_PATH=$(KIND_CONFIG_PATH)" ; exit 1 ; }
 	# init kind yaml
+	- mkdir -p $(E2E_RUNTIME_DIR)
 	NEW_KIND_YAML=$(E2E_RUNTIME_DIR)/kind_config_$(KIND_CLUSTER_NAME).yaml ;\
-		INSERT_LINE=` grep "insert subnet inform" $(KIND_CONFIG_PATH) -n | awk -F':' '{print $1}' ` ; \
-		sed  $(INSERT_LINE)' a \  ipFamily: '$(E2E_IP_FAMILY) $(KIND_CONFIG_PATH) > $(NEW_KIND_YAML) ; \
+		INSERT_LINE=` grep "insert subnet inform" $(KIND_CONFIG_PATH) -n | awk -F':' '{print $$1}' ` ; \
+		echo "insert after line $${INSERT_LINE}" ;\
+		sed  ''"$${INSERT_LINE}"' a \  ipFamily: $(E2E_IP_FAMILY)' $(KIND_CONFIG_PATH) > $${NEW_KIND_YAML} ; \
 		if [ "$(E2E_IP_FAMILY)" == "ipv4" ] ; then \
-			sed -i $(INSERT_LINE)' a \  podSubnet: "$(E2E_KIND_IPV4_POD_CIDR)"' $(NEW_KIND_YAML) > $(NEW_KIND_YAML) ;\
-			sed -i $(INSERT_LINE)' a \  serviceSubnet: "$(E2E_KIND_IPV4_SERVICE_CIDR)"' $(NEW_KIND_YAML) > $(NEW_KIND_YAML) ;\
+			sed -i  ''"$${INSERT_LINE}"' a \  podSubnet: "$(E2E_KIND_IPV4_POD_CIDR)"' $${NEW_KIND_YAML} ;\
+			sed -i  ''"$${INSERT_LINE}"' a \  serviceSubnet: "$(E2E_KIND_IPV4_SERVICE_CIDR)"' $${NEW_KIND_YAML} ;\
 		elif [ "$(E2E_IP_FAMILY)" == "ipv6" ] ; then \
-			sed -i $(INSERT_LINE)' a \  podSubnet: "$(E2E_KIND_IPV6_POD_CIDR)"' $(NEW_KIND_YAML) ; \
-			sed -i $(INSERT_LINE)' a \  serviceSubnet: "$(E2E_KIND_IPV6_SERVICE_CIDR)"' $(NEW_KIND_YAML) ; \
+			sed -i  ''"$${INSERT_LINE}"' a \  podSubnet: "$(E2E_KIND_IPV6_POD_CIDR)"' $${NEW_KIND_YAML} ; \
+			sed -i  ''"$${INSERT_LINE}"' a \  serviceSubnet: "$(E2E_KIND_IPV6_SERVICE_CIDR)"' $${NEW_KIND_YAML} ; \
 		else \
-			sed -i $(INSERT_LINE)' a \  podSubnet: "$(E2E_KIND_IPV4_POD_CIDR),$(E2E_KIND_IPV6_POD_CIDR)"' $(NEW_KIND_YAML)  ; \
-			sed -i $(INSERT_LINE)' a \  serviceSubnet: "$(E2E_KIND_IPV4_SERVICE_CIDR),$(E2E_KIND_IPV6_SERVICE_CIDR)"' $(NEW_KIND_YAML)  ; \
+			sed -i  ''"$${INSERT_LINE}"' a \  podSubnet: "$(E2E_KIND_IPV4_POD_CIDR),$(E2E_KIND_IPV6_POD_CIDR)"' $${NEW_KIND_YAML}  ; \
+			sed -i  ''"$${INSERT_LINE}"' a \  serviceSubnet: "$(E2E_KIND_IPV4_SERVICE_CIDR),$(E2E_KIND_IPV6_SERVICE_CIDR)"' $${NEW_KIND_YAML}  ; \
   		fi
 	- sysctl -w net.ipv6.conf.all.disable_ipv6=0 || true
 	- sysctl -w fs.inotify.max_user_watches=524288 || true
@@ -64,11 +66,12 @@ checkBin:
 .PHONY: install_proscope
 install_proscope:
 	if [ -n "$(PYROSCOPE_LOCAL_PORT)" ] ; then \
+  		echo "install proscope " ; \
 		docker stop $(PYROSCOPE_CONTAINER_NAME) &>/dev/null || true ; \
 		docker rm $(PYROSCOPE_CONTAINER_NAME) &>/dev/null || true ; \
 		ServerAddress=$$(docker network inspect kind -f {{\(index\ $$.IPAM.Config\ 0\).Gateway}}) ; \
 		echo "setup pyroscope on $${ServerAddress}:$(PYROSCOPE_LOCAL_PORT)" ; \
-		docker run -d --name $(PYROSCOPE_CONTAINER_NAME) -p $(PYROSCOPE_LOCAL_PORT):4040 $(IMAGE_PYROSCOPE_NAME) server ; \
+		docker run -d --name $(PYROSCOPE_CONTAINER_NAME) -p $(PYROSCOPE_LOCAL_PORT):4040 $(PYROSCOPE_IMAGE_NAME) server ; \
 		echo "finish setuping pyroscope " ; \
       fi
 
@@ -102,7 +105,7 @@ deploy_project: KIND_KUBECONFIG ?= $(E2E_KIND_KUBECONFIG_PATH)
 deploy_project: KIND_CLUSTER_NAME ?= $(E2E_KIND_CLUSTER_NAME)
 deploy_project:
 	echo "try to load local image tag $(PROJECT_IMAGE_VERSION) " ; \
-	IMAGE_LIST=` helm template test $(ROOT_DIR)/charts --set global.imageTagOverride=$(PROJECT_IMAGE_VERSION)  | grep " image: " | tr -d '"'| awk '{print $$2}' ` ; \
+	IMAGE_LIST=` helm template test $(ROOT_DIR)/charts/template --set global.imageTagOverride=$(PROJECT_IMAGE_VERSION)  | grep " image: " | tr -d '"'| awk '{print $$2}' ` ; \
 	if [ -z "$${IMAGE_LIST}" ] ; then \
 		echo "warning, failed to find image from chart template" ; \
 	else \
@@ -118,10 +121,19 @@ deploy_project:
 		done ; \
 	fi
 	- helm --kubeconfig=$(KIND_KUBECONFIG) uninstall -n kube-system project || true
-	helm --kubeconfig=$(KIND_KUBECONFIG) install \
-			project $(ROOT_DIR)/charts \
-			-n kube-system \
-			--set global.imageTagOverride=$(PROJECT_IMAGE_VERSION)
+	HELM_OPTION="" ; \
+    	if [ -n "$(PYROSCOPE_LOCAL_PORT)" ] ; then \
+			echo "add spiderpool env" ; \
+			ServerAddress=$$(docker network inspect kind -f {{\(index\ $$.IPAM.Config\ 0\).Gateway}}) ; \
+			HELM_OPTION+=" --set templateAgent.extraEnv[0].name=ENV_PYROSCOPE_PUSH_SERVER_ADDRESS  --set templateAgent.extraEnv[0].value=http://$${ServerAddress}:$(PYROSCOPE_LOCAL_PORT) " ; \
+			HELM_OPTION+=" --set templateController.extraEnv[0].name=ENV_PYROSCOPE_PUSH_SERVER_ADDRESS  --set templateController.extraEnv[0].value=http://$${ServerAddress}:$(PYROSCOPE_LOCAL_PORT) " ; \
+		fi ; \
+		helm --kubeconfig=$(KIND_KUBECONFIG) install project $(ROOT_DIR)/charts/template \
+				-n kube-system --wait --debug \
+				--set global.imageTagOverride=$(PROJECT_IMAGE_VERSION) \
+				$${HELM_OPTION} \
+				|| { KIND_CLUSTER_NAME=$(KIND_CLUSTER_NAME) ./scripts/debugCluster.sh $(KIND_KUBECONFIG) "detail"   ; exit 1 ; } ; \
+		exit 0
 
 
 # test kind is ok
@@ -172,7 +184,7 @@ e2e_test:
 		export E2E_KUBECONFIG_PATH=$(KIND_KUBECONFIG) ; [ -f "$(KIND_KUBECONFIG)" ] || { echo "error, does not exist KUBECONFIG $(E2E_KUBECONFIG)" ; exit 1 ; } ; \
 		rm -f $(E2E_LOG_FILE) || true ; \
 		echo "=========== before test `date` ===========" >> $(E2E_LOG_FILE) ; \
-		./scripts/debugEnv.sh $(KIND_KUBECONFIG) "gops" "$(E2E_LOG_FILE)" ; \
+		./scripts/debugCluster.sh $(KIND_KUBECONFIG) "gops" "$(E2E_LOG_FILE)" ; \
 		RESULT=0 ; \
 		$(ROOT_DIR)/tools/scripts/ginkgo.sh \
 			--race --timeout=$(E2E_TIMEOUT) --output-interceptor-mode=none  --slow-spec-threshold=15s \
@@ -180,10 +192,10 @@ e2e_test:
 			--label-filter="$(E2E_GINKGO_LABELS)" -randomize-suites -randomize-all  -vv --fail-fast  $(E2E_GINKGO_OPTION) \
 			-r e2e/*  || RESULT=1  ; \
 		echo "=========== after test `date` ===========" >> $(E2E_LOG_FILE) ; \
-		./scripts/debugEnv.sh $(KIND_KUBECONFIG) "gops" "$(E2E_LOG_FILE)" ; \
-		KIND_CLUSTER_NAME=$(KIND_CLUSTER_NAME) ./scripts/debugEnv.sh $(KIND_KUBECONFIG) "detail" "$(E2E_LOG_FILE)" ; \
-		./scripts/debugEnv.sh $(KIND_KUBECONFIG) "longlock" "$(E2E_LOG_FILE)" || { echo "error, found long lock !!!" ; RESULT=1 ; } ; \
-		./scripts/debugEnv.sh $(KIND_KUBECONFIG) "datarace" "$(E2E_LOG_FILE)" || { echo "error, found data race !!!" ; RESULT=1 ; } ; \
+		./scripts/debugCluster.sh $(KIND_KUBECONFIG) "gops" "$(E2E_LOG_FILE)" ; \
+		KIND_CLUSTER_NAME=$(KIND_CLUSTER_NAME) ./scripts/debugCluster.sh $(KIND_KUBECONFIG) "detail" "$(E2E_LOG_FILE)" ; \
+		./scripts/debugCluster.sh $(KIND_KUBECONFIG) "longlock" "$(E2E_LOG_FILE)" || { echo "error, found long lock !!!" ; RESULT=1 ; } ; \
+		./scripts/debugCluster.sh $(KIND_KUBECONFIG) "datarace" "$(E2E_LOG_FILE)" || { echo "error, found data race !!!" ; RESULT=1 ; } ; \
 		if (($${RESULT} != 0)) ; then \
 		   echo "failed to run e2e test"  ; \
 		   exit 1 ; \

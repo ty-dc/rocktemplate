@@ -1,79 +1,80 @@
 {{- if (eq .Values.templateController.tls.method "auto") }}
 {{- $_ := include "generate-ca-certs" . }}
 {{- end }}
-apiVersion: admissionregistration.k8s.io/v1
-kind: MutatingWebhookConfiguration
-metadata:
-  name: {{ .Values.templateController.name | trunc 63 | trimSuffix "-" }}
-  annotations:
-    {{- if (eq .Values.templateController.tls.method "certmanager") }}
-    cert-manager.io/inject-ca-from: {{ .Release.Namespace }}/{{ .Values.templateController.name | trunc 63 | trimSuffix "-" }}-server-certs
-    {{- end }}
-webhooks:
-  - admissionReviewVersions:
-      - v1
-    clientConfig:
-      service:
-        name: {{ .Values.templateController.name | trunc 63 | trimSuffix "-" }}
-        namespace: {{ .Release.Namespace }}
-        path: "/mutate-template-crd-name"
-        port: {{ .Values.templateController.webhookPort }}
-      {{- if (eq .Values.templateController.tls.method "provided") }}
-      caBundle: {{ .Values.templateController.tls.provided.tlsCa | required "missing tls.provided.tlsCa" }}
-      {{- else if (eq .Values.templateController.tls.method "auto") }}
-      caBundle: {{ .ca.Cert | b64enc }}
-      {{- end }}
-    failurePolicy: Fail
-    name: template.spidernet.io
-    rules:
-      - apiGroups:
-          - template.spidernet.io
-        apiVersions:
-          - v1
-        operations:
-          - CREATE
-          - UPDATE
-        #resources:
-        #  - templateCrdName
-    sideEffects: None
+
+#apiVersion: admissionregistration.k8s.io/v1
+#kind: MutatingWebhookConfiguration
+#metadata:
+#  name: {{ .Values.templateController.name | trunc 63 | trimSuffix "-" }}
+#  annotations:
+#    {{- if (eq .Values.templateController.tls.method "certmanager") }}
+#    cert-manager.io/inject-ca-from: {{ .Release.Namespace }}/{{ .Values.templateController.name | trunc 63 | trimSuffix "-" }}-server-certs
+#    {{- end }}
+#webhooks:
+#  - admissionReviewVersions:
+#      - v1
+#    clientConfig:
+#      service:
+#        name: {{ .Values.templateController.name | trunc 63 | trimSuffix "-" }}
+#        namespace: {{ .Release.Namespace }}
+#        path: "/mutate-template-crd-name"
+#        port: {{ .Values.templateController.webhookPort }}
+#      {{- if (eq .Values.templateController.tls.method "provided") }}
+#      caBundle: {{ .Values.templateController.tls.provided.tlsCa | required "missing tls.provided.tlsCa" }}
+#      {{- else if (eq .Values.templateController.tls.method "auto") }}
+#      caBundle: {{ .ca.Cert | b64enc }}
+#      {{- end }}
+#    failurePolicy: Fail
+#    name: template.spidernet.io
+#    rules:
+#      - apiGroups:
+#          - template.spidernet.io
+#        apiVersions:
+#          - v1
+#        operations:
+#          - CREATE
+#          - UPDATE
+#        resources:
+#          - templateCrdName
+#    sideEffects: None
 
 ---
-apiVersion: admissionregistration.k8s.io/v1
-kind: ValidatingWebhookConfiguration
-metadata:
-  name: {{ .Values.templateController.name | trunc 63 | trimSuffix "-" }}
-  annotations:
-    {{- if (eq .Values.templateController.tls.method "certmanager") }}
-    cert-manager.io/inject-ca-from: {{ .Release.Namespace }}/{{ .Values.templateController.name | trunc 63 | trimSuffix "-" }}-server-certs
-    {{- end }}
-webhooks:
-  - admissionReviewVersions:
-      - v1
-    clientConfig:
-      service:
-        name: {{ .Values.templateController.name | trunc 63 | trimSuffix "-" }}
-        namespace: {{ .Release.Namespace }}
-        path: "/validating-template-crd-name"
-        port: {{ .Values.templateController.webhookPort }}
-      {{- if (eq .Values.templateController.tls.method "provided") }}
-      caBundle: {{ .Values.templateController.tls.provided.tlsCa | required "missing tls.provided.tlsCa" }}
-      {{- else if (eq .Values.templateController.tls.method "auto") }}
-      caBundle: {{ .ca.Cert | b64enc }}
-      {{- end }}
-    failurePolicy: Fail
-    name: template.spidernet.io
-    rules:
-      - apiGroups:
-          - template.spidernet.io
-        apiVersions:
-          - v1
-        operations:
-          - CREATE
-          - UPDATE
-          - DELETE
-        #resources:
-        #  - templateCrdName
-    sideEffects: None
+#apiVersion: admissionregistration.k8s.io/v1
+#kind: ValidatingWebhookConfiguration
+#metadata:
+#  name: {{ .Values.templateController.name | trunc 63 | trimSuffix "-" }}
+#  annotations:
+#    {{- if (eq .Values.templateController.tls.method "certmanager") }}
+#    cert-manager.io/inject-ca-from: {{ .Release.Namespace }}/{{ .Values.templateController.name | trunc 63 | trimSuffix "-" }}-server-certs
+#    {{- end }}
+#webhooks:
+#  - admissionReviewVersions:
+#      - v1
+#    clientConfig:
+#      service:
+#        name: {{ .Values.templateController.name | trunc 63 | trimSuffix "-" }}
+#        namespace: {{ .Release.Namespace }}
+#        path: "/validating-template-crd-name"
+#        port: {{ .Values.templateController.webhookPort }}
+#      {{- if (eq .Values.templateController.tls.method "provided") }}
+#      caBundle: {{ .Values.templateController.tls.provided.tlsCa | required "missing tls.provided.tlsCa" }}
+#      {{- else if (eq .Values.templateController.tls.method "auto") }}
+#      caBundle: {{ .ca.Cert | b64enc }}
+#      {{- end }}
+#    failurePolicy: Fail
+#    name: template.spidernet.io
+#    rules:
+#      - apiGroups:
+#          - template.spidernet.io
+#        apiVersions:
+#          - v1
+#        operations:
+#          - CREATE
+#          - UPDATE
+#          - DELETE
+#        resources:
+#          - templateCrdName
+#    sideEffects: None
 
 {{- if eq .Values.templateController.tls.method "certmanager" -}}
 ---

@@ -145,7 +145,7 @@ spec:
             timeoutSeconds: 5
           {{- with .Values.templateAgent.resources }}
           resources:
-          {{- toYaml . | trim | nindent 10 }}
+          {{- toYaml . | trim | nindent 12 }}
           {{- end }}
           env:
             - name: ENV_LOG_LEVEL
@@ -158,20 +158,20 @@ spec:
               value: {{ .Values.templateAgent.httpPort | quote }}
             - name: ENV_GOPS_LISTEN_PORT
               value: {{ .Values.templateAgent.debug.gopsPort | quote }}
-          {{- with .Values.templateAgent.extraEnv }}
-          {{- toYaml . | nindent 8 }}
-          {{- end }}
+            {{- with .Values.templateAgent.extraEnv }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
           {{- with .Values.templateAgent.securityContext }}
           securityContext:
-          {{- toYaml . | nindent 8 }}
+          {{- toYaml . | nindent 10 }}
           {{- end }}
           volumeMounts:
             - name: config-path
               mountPath: /tmp/config-map
               readOnly: true
-          {{- if .Values.templateAgent.extraVolumes }}
-          {{- include "tplvalues.render" ( dict "value" .Values.templateAgent.extraVolumeMounts "context" $ ) | nindent 8 }}
-          {{- end }}
+            {{- if .Values.templateAgent.extraVolumes }}
+            {{- include "tplvalues.render" ( dict "value" .Values.templateAgent.extraVolumeMounts "context" $ ) | nindent 12 }}
+            {{- end }}
       volumes:
         # To read the configuration from the config map
         - name: config-path

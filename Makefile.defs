@@ -126,7 +126,7 @@ GO_VET = $(GO) vet
 GO_LIST = $(GO) list
 
 
-GOFILES_EVAL := $(subst _$(ROOT_DIR)/,,$(shell $(GO_LIST) -find -e ./...))
+GOFILES_EVAL := $(subst _$(ROOT_DIR)/,,$(shell $(GO_LIST) -find -e $(ROOT_DIR)/...))
 GOFILES ?= $(GOFILES_EVAL)
 
 
@@ -141,9 +141,9 @@ ifeq ($(PROJECT_IMAGE_VERSION),)
 endif
 
 #====== pyroscope
-PYROSCOPE_CONTAINER_NAME := e2e-pyroscope
+PYROSCOPE_CONTAINER_NAME := pyroscope
+PYROSCOPE_IMAGE_NAME := pyroscope/pyroscope:latest
 PYROSCOPE_LOCAL_PORT := 4040
-
 
 E2E_KIND_CLUSTER_NAME ?= template
 E2E_RUNTIME_DIR := $(ROOT_DIR)/test/runtime
