@@ -38,7 +38,7 @@ feature:
 ##
 templateAgent:
   ## @param templateAgent.name the templateAgent name
-  name: "template-agent"
+  name: "agent"
 
   ## @param templateAgent.cmdBinName the binary name of templateAgent
   cmdBinName: "agent"
@@ -241,7 +241,7 @@ templateAgent:
 ##
 templateController:
   ## @param templateController.name the templateController name
-  name: "template-controller"
+  name: "controller"
 
   ## @param templateController.replicas the replicas number of templateController pod
   replicas: 1
