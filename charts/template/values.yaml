@@ -38,7 +38,7 @@ feature:
 ##
 templateAgent:
   ## @param templateAgent.name the templateAgent name
-  name: "agent"
+  name: "template-agent"
 
   ## @param templateAgent.cmdBinName the binary name of templateAgent
   cmdBinName: "agent"
@@ -51,7 +51,7 @@ templateAgent:
     registry: ghcr.io
 
     ## @param templateAgent.image.repository the image repository of templateAgent
-    repository: spidernet-io/template/template-agent
+    repository: spidernet-io/template/agent
 
     ## @param templateAgent.image.pullPolicy the image pullPolicy of templateAgent
     pullPolicy: IfNotPresent
@@ -241,13 +241,13 @@ templateAgent:
 ##
 templateController:
   ## @param templateController.name the templateController name
-  name: "controller"
+  name: "template-controller"
 
   ## @param templateController.replicas the replicas number of templateController pod
   replicas: 1
 
   ## @param templateController.binName the binName name of templateController
-  cmdBinName: "template-controller"
+  cmdBinName: "controller"
 
   ## @param templateController.hostnetwork enable hostnetwork mode of templateController pod. Notice, if no CNI available before template installation, must enable this
   hostnetwork: false
@@ -257,7 +257,7 @@ templateController:
     registry: ghcr.io
 
     ## @param templateController.image.repository the image repository of templateController
-    repository: spidernet-io/template/template-controller
+    repository: spidernet-io/template/controller
 
     ## @param templateController.image.pullPolicy the image pullPolicy of templateController
     pullPolicy: IfNotPresent
