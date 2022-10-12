@@ -144,8 +144,8 @@ lint_code_spell:
   			fi ;\
   			codespell --config .github/codespell-config
 
-.PHONY: fix-code-spell
-fix-code-spell:
+.PHONY: fix_code_spell
+fix_code_spell:
 	$(QUIET) if ! which codespell &> /dev/null ; then \
   				echo "try to install codespell" ; \
   				if ! pip3 install codespell ; then \
@@ -179,7 +179,7 @@ update_chart_version:
 .PHONY: lint_chart_format
 lint_chart_format:
 	mkdir -p $(DESTDIR_CHART) ; \
-   			echo "check $${NAME}" ; \
+   			echo "check chart" ; \
    			helm lint --with-subcharts $(CHART_DIR) ; \
 
 .PHONY: lint_chart_version
