@@ -195,11 +195,11 @@ lint_chart_version:
 #=============== lint
 
 define lint_go_format
-	diff="$(find . ! \( -path './vendor' -prune \) ! \( -path './_build' -prune \) ! \( -path './.git' -prune \) ! \( -path '*.validate.go' -prune \) \
-        -type f -name '*.go' | xargs gofmt -d -l -s )" ; \
-	if [ -n "$diff" ]; then \
+	data=` find . ! \( -path './vendor' -prune \) ! \( -path './_build' -prune \) ! \( -path './.git' -prune \) ! \( -path '*.validate.go' -prune \) \
+        -type f -name '*.go' | xargs gofmt -d -l -s ` ; \
+	if [ -n "$${data}" ]; then \
 		echo "Unformatted Go source code:" ;\
-		echo "$diff" ;\
+		echo "$${data}" ;\
 		exit 1 ; \
 	fi ; \
 	echo "format of Go source code is right"
@@ -219,7 +219,7 @@ lint_golang_format:
 .PHONY: lint_golang_lock
 lint_golang_lock:
 	for l in sync.Mutex sync.RWMutex; do \
-  		DATA=` grep -r --exclude-dir={.git,_build,vendor,externalversions,lock,contrib} -i --include \*.go "$${l}" . ` ; \
+  		DATA=` grep -r --exclude-dir={.git,_build,vendor,externalversions,lock,contrib} -i --include \*.go "$${l}" . ` || true ; \
 	    if [ -n "$${DATA}" ] ; then \
 	   		 echo "Found $${l} usage. Please use pkg/lock instead to improve deadlock detection"; \
 	   		 echo "$${DATA}" ; \
