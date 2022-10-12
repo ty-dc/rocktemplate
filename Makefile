@@ -218,14 +218,14 @@ lint_golang_format:
 
 .PHONY: lint_golang_lock
 lint_golang_lock:
-	for l in sync.Mutex sync.RWMutex; do \
+	@ for l in sync.Mutex sync.RWMutex; do \
   		DATA=` grep -r --exclude-dir={.git,_build,vendor,externalversions,lock,contrib} -i --include \*.go "$${l}" . ` || true ; \
 	    if [ -n "$${DATA}" ] ; then \
 	   		 echo "Found $${l} usage. Please use pkg/lock instead to improve deadlock detection"; \
 	   		 echo "$${DATA}" ; \
 	    	 exit 1 ;\
 	    fi ; \
-	done
+	  done
 
 # should label for each test file
 .PHONY: lint_test_label
