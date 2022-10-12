@@ -13,4 +13,3 @@ copy repo and replace all 'rocktemplate' to 'YourRepoName'
 3. `make e2e_run`
 
 4. check proscope, browser vists http://NodeIP:4040
-

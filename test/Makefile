@@ -139,6 +139,7 @@ deploy_project:
 # test kind is ok
 .PHONY: install_example_app
 install_example_app: KIND_KUBECONFIG ?= $(E2E_KIND_KUBECONFIG_PATH)
+install_example_app: KIND_CLUSTER_NAME ?= $(E2E_KIND_CLUSTER_NAME)
 install_example_app:
 	@echo "---------- install example app"
 	kubectl --kubeconfig=$(KIND_KUBECONFIG) apply -f yaml/testpod.yaml
@@ -147,7 +148,10 @@ install_example_app:
 			exit 1 ; \
 		fi ; \
 		echo "succeeded to deploy test deployment "
-
+	@echo "========================================================"
+	@echo "   deploy kind cluster $(KIND_CLUSTER_NAME)             "
+	@echo "  kubectl get node --kubeconfig $(KIND_KUBECONFIG)      "
+	@echo "========================================================"
 
 
 
@@ -205,4 +209,3 @@ e2e_test:
 		echo "succeeded to run all test" ; \
 		echo "output report to e2ereport.json" ; \
 		echo "output env log to $(E2E_LOG_FILE) "
-
