@@ -1,4 +1,4 @@
-{{- if .Values.rockrocktemplateAgent.prometheus.grafanaDashboard.install -}}
+{{- if .Values.rocktemplateAgent.prometheus.grafanaDashboard.install -}}
 apiVersion: integreatly.org/v1alpha1
 kind: GrafanaDashboard
 metadata:
@@ -24,7 +24,8 @@ metadata:
 spec:
   json: |-
     {}
-  {{- end }}
+{{- end }}
+
 ---
 {{- if .Values.rocktemplateController.prometheus.grafanaDashboard.install -}}
 apiVersion: integreatly.org/v1alpha1

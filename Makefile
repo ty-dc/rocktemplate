@@ -158,53 +158,37 @@ fix-code-spell:
 #================== chart
 
 .PHONY: chart_package
-chart_package: chart_lint
+chart_package: lint_chart_format lint_chart_version
 	-@rm -rf $(DESTDIR_CHART)
 	-@mkdir -p $(DESTDIR_CHART)
-	CHART_LIST=$$( cd $(CHART_DIR) && ls ) ; \
-		cd $(DESTDIR_CHART) ; \
-   		for NAME in $${CHART_LIST} ; do \
-   			[ ! -d "$(CHART_DIR)/$${NAME}" ] && continue ; \
-   			echo "package chart $${NAME}" ; \
-   			helm package  $(CHART_DIR)/$${NAME} ; \
-   		done
+	cd $(DESTDIR_CHART) ; \
+   		echo "package chart " ; \
+   		helm package  $(CHART_DIR) ; \
 
 
 .PHONY: update_chart_version
 update_chart_version:
 	VERSION=`cat VERSION | tr -d '\n' ` ; [ -n "$${VERSION}" ] || { echo "error, wrong version" ; exit 1 ; } ; \
-		echo "check chart version $${VERSION}" ; \
+		echo "update chart version to $${VERSION}" ; \
 		CHART_VERSION=`echo $${VERSION} | tr -d 'v' ` ; \
-		CHART_LIST=$$( cd $(CHART_DIR) && ls ) ; \
-   		for NAME in $${CHART_LIST} ; do \
-   			[ ! -d "$(CHART_DIR)/$${NAME}" ] && continue ; \
-			sed -E -i 's?^version: .*?version: '$${CHART_VERSION}'?g' $(CHART_DIR)/$${NAME}/Chart.yaml &>/dev/null  ; \
-			sed -E -i 's?^appVersion: .*?appVersion: "'$${CHART_VERSION}'"?g' $(CHART_DIR)/$${NAME}/Chart.yaml &>/dev/null  ; \
-   		done ; \
+		sed -E -i 's?^version: .*?version: '$${CHART_VERSION}'?g' $(CHART_DIR)/Chart.yaml &>/dev/null  ; \
+		sed -E -i 's?^appVersion: .*?appVersion: "'$${CHART_VERSION}'"?g' $(CHART_DIR)/Chart.yaml &>/dev/null  ; \
    		echo "version of all chart is right"
 
 
 .PHONY: lint_chart_format
 lint_chart_format:
 	mkdir -p $(DESTDIR_CHART) ; \
-		CHART_LIST=$$( cd $(CHART_DIR) && ls ) ; \
-   		for NAME in $${CHART_LIST} ; do \
-   			[ ! -d "$(CHART_DIR)/$${NAME}" ] && continue ; \
    			echo "check $${NAME}" ; \
-   			helm lint --with-subcharts $(CHART_DIR)/$${NAME} ; \
-   		done
+   			helm lint --with-subcharts $(CHART_DIR) ; \
 
 .PHONY: lint_chart_version
 lint_chart_version:
 	VERSION=`cat VERSION | tr -d '\n' ` ; [ -n "$${VERSION}" ] || { echo "error, wrong version" ; exit 1 ; } ; \
 		echo "check chart version $${VERSION}" ; \
 		CHART_VERSION=`echo $${VERSION} | tr -d 'v' ` ; \
-		CHART_LIST=$$( cd $(CHART_DIR) && ls ) ; \
-   		for NAME in $${CHART_LIST} ; do \
-   			[ ! -d "$(CHART_DIR)/$${NAME}" ] && continue ; \
-			grep -E "^version: $${CHART_VERSION}" $(CHART_DIR)/$${NAME}/Chart.yaml &>/dev/null || { echo "error, wrong version in Chart.yaml" ; exit 1 ; } ; \
-			grep -E "^appVersion: \"$${CHART_VERSION}\"" $(CHART_DIR)/$${NAME}/Chart.yaml &>/dev/null || { echo "error, wrong appVersion in Chart.yaml" ; exit 1 ; } ; \
-   		done ; \
+			grep -E "^version: $${CHART_VERSION}" $(CHART_DIR)/Chart.yaml &>/dev/null || { echo "error, wrong version in Chart.yaml" ; exit 1 ; } ; \
+			grep -E "^appVersion: \"$${CHART_VERSION}\"" $(CHART_DIR)/Chart.yaml &>/dev/null || { echo "error, wrong appVersion in Chart.yaml" ; exit 1 ; } ; \
    		echo "version of all chart is right"
 
 

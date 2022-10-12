@@ -82,7 +82,7 @@ install_proscope:
 .PHONY: check_images_ready
 check_images_ready:
 	echo "check image  " ; \
-	IMAGE_LIST=` helm template test $(ROOT_DIR)/charts/rocktemplate --set global.imageTagOverride=$(PROJECT_IMAGE_VERSION)  | grep " image: " | tr -d '"'| awk '{print $$2}' ` ; \
+	IMAGE_LIST=` helm template test $(ROOT_DIR)/charts --set global.imageTagOverride=$(PROJECT_IMAGE_VERSION)  | grep " image: " | tr -d '"'| awk '{print $$2}' ` ; \
 	if [ -z "$${IMAGE_LIST}" ] ; then \
 		echo "warning, failed to find image from chart " ; \
 		exit 1 ;\
@@ -105,7 +105,7 @@ deploy_project: KIND_KUBECONFIG ?= $(E2E_KIND_KUBECONFIG_PATH)
 deploy_project: KIND_CLUSTER_NAME ?= $(E2E_KIND_CLUSTER_NAME)
 deploy_project:
 	echo "try to load local image tag $(PROJECT_IMAGE_VERSION) " ; \
-	IMAGE_LIST=` helm template test $(ROOT_DIR)/charts/rocktemplate --set global.imageTagOverride=$(PROJECT_IMAGE_VERSION)  | grep " image: " | tr -d '"'| awk '{print $$2}' ` ; \
+	IMAGE_LIST=` helm template test $(ROOT_DIR)/charts --set global.imageTagOverride=$(PROJECT_IMAGE_VERSION)  | grep " image: " | tr -d '"'| awk '{print $$2}' ` ; \
 	if [ -z "$${IMAGE_LIST}" ] ; then \
 		echo "warning, failed to find image from chart " ; \
 	else \
@@ -128,7 +128,7 @@ deploy_project:
 			HELM_OPTION+=" --set rocktemplateAgent.extraEnv[0].name=ENV_PYROSCOPE_PUSH_SERVER_ADDRESS  --set rocktemplateAgent.extraEnv[0].value=http://$${ServerAddress}:$(PYROSCOPE_LOCAL_PORT) " ; \
 			HELM_OPTION+=" --set rocktemplateController.extraEnv[0].name=ENV_PYROSCOPE_PUSH_SERVER_ADDRESS  --set rocktemplateController.extraEnv[0].value=http://$${ServerAddress}:$(PYROSCOPE_LOCAL_PORT) " ; \
 		fi ; \
-		helm --kubeconfig=$(KIND_KUBECONFIG) install project $(ROOT_DIR)/charts/template \
+		helm --kubeconfig=$(KIND_KUBECONFIG) install project $(ROOT_DIR)/charts \
 				-n kube-system --wait --debug \
 				--set global.imageTagOverride=$(PROJECT_IMAGE_VERSION) \
 				$${HELM_OPTION} \
