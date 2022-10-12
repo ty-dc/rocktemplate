@@ -6,25 +6,32 @@ all:
 
 # ========================== build image
 
+
 define BUILD_BIN
-echo "begin to build bin under $(CMD_BIN_DIR)" ; \
-   mkdir -p $(DESTDIR_BIN) ; \
-   BIN_NAME_LIST=$$( cd $(CMD_BIN_DIR) && ls ) ; \
-   for BIN_NAME in $${BIN_NAME_LIST} ; do \
-   		[ ! -d "$(CMD_BIN_DIR)/$${BIN_NAME}" ] && continue ; \
-  		rm -f $(DESTDIR_BIN)/$${BIN_NAME} ; \
-  		$(GO_BUILD) -o $(DESTDIR_BIN)/$${BIN_NAME}  $(CMD_BIN_DIR)/$${BIN_NAME}/main.go ; \
-  		(($$?!=0)) && echo "error, failed to build $${BIN_NAME}" && exit 1 ; \
-  		echo "succeeded to build '$${BIN_NAME}' to $(DESTDIR_BIN)/$${BIN_NAME}" ; \
-  	 done
+BIN_NAME=`basename $(CMD_BIN_DIR)` ; \
+    echo "begin to build $${BIN_NAME} under $(CMD_BIN_DIR)" ; \
+    mkdir -p $(DESTDIR_BIN) ; \
+	rm -f $(DESTDIR_BIN)/$${BIN_NAME} ; \
+	$(GO_BUILD) -o $(DESTDIR_BIN)/$${BIN_NAME}  $(CMD_BIN_DIR)/main.go ; \
+	(($$?!=0)) && echo "error, failed to build $${BIN_NAME}" && exit 1 ; \
+	echo "succeeded to build '$${BIN_NAME}' to $(DESTDIR_BIN)/$${BIN_NAME}"
 endef
 
-
 .PHONY: build_all_bin
-build_all_bin: CMD_BIN_DIR:=cmd
 build_all_bin:
-	@ $(BUILD_BIN)
+	make build_controller_bin
+	make build_agent_bin
 
+
+.PHONY: build_controller_bin
+build_controller_bin: CMD_BIN_DIR:=$(ROOT_DIR)/cmd/controller
+build_controller_bin:
+	$(BUILD_BIN)
+
+.PHONY: build_agent_bin
+build_agent_bin: CMD_BIN_DIR:=$(ROOT_DIR)/cmd/agent
+build_agent_bin:
+	$(BUILD_BIN)
 
 # ------------
 
