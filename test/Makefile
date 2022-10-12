@@ -123,7 +123,7 @@ deploy_project:
 	- helm --kubeconfig=$(KIND_KUBECONFIG) uninstall -n kube-system project || true
 	HELM_OPTION="" ; \
     	if [ -n "$(PYROSCOPE_LOCAL_PORT)" ] ; then \
-			echo "add spiderpool env" ; \
+			echo "add env" ; \
 			ServerAddress=$$(docker network inspect kind -f {{\(index\ $$.IPAM.Config\ 0\).Gateway}}) ; \
 			HELM_OPTION+=" --set rocktemplateAgent.extraEnv[0].name=ENV_PYROSCOPE_PUSH_SERVER_ADDRESS  --set rocktemplateAgent.extraEnv[0].value=http://$${ServerAddress}:$(PYROSCOPE_LOCAL_PORT) " ; \
 			HELM_OPTION+=" --set rocktemplateController.extraEnv[0].name=ENV_PYROSCOPE_PUSH_SERVER_ADDRESS  --set rocktemplateController.extraEnv[0].value=http://$${ServerAddress}:$(PYROSCOPE_LOCAL_PORT) " ; \
