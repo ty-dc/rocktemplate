@@ -15,6 +15,9 @@
 
 6. spidernet.io  -> settings -> secrets -> actions -> grant secret to repo
 
+7. repo -> packages -> package settings -> Change package visibility
+
+
 ## local develop
 
 1. `make build_local_image`
