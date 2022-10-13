@@ -256,8 +256,8 @@ jobs:
               TAR_FILES=`ls ${ITEM}`
               for TAR in $TAR_FILES ; do
                 echo "image tar ${ITEM}/${TAR}"
-                #cat ${ITEM}/${TAR} |  docker import - ${TAR}:${{ needs.prepare.outputs.ref }}
-                cat ${ITEM}/${TAR} |  docker import -
+                cat ${ITEM}/${TAR} |  docker import - ${TAR}:${{ needs.prepare.outputs.ref }}
+                #cat ${ITEM}/${TAR} |  docker import -
               done
           done
           docker images
