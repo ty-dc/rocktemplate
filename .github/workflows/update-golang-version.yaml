@@ -8,13 +8,13 @@ on:
       - 'Makefile.defs'
 
 jobs:
-  prepare:
+  update:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Get Downloaded Files
+      - name: update golang version
         run: |
           make update_go_version
           if ! test -z "$$(git status --porcelain)"; then

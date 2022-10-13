@@ -13,6 +13,8 @@
 
 5. create badge for github/workflows/auto-nightly-ci.yaml, github/workflows/badge.yaml
 
+6. spidernet.io  -> settings -> secrets -> actions -> grant secret to repo
+
 ## local develop
 
 1. `make build_local_image`
