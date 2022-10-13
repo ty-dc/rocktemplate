@@ -110,7 +110,7 @@ jobs:
           context: ${{ matrix.context }}
           file: ${{ matrix.dockerfile }}
           github-token: ${{ secrets.WELAN_PAT }}
-          outputs: type=tar,dest=/tmp/images/${{ matrix.name }}.tar
+          outputs: type=tar,dest=/tmp/${{ matrix.name }}.tar
           platforms: ${{ env.BUILD_PLATFORM }}
           tags: |
             ${{ env.ONLINE_REGISTER }}/${{ github.repository }}/${{ matrix.name }}${{ env.RUN_SUFFIX }}:${{ env.RUN_IMAGE_TAG }}
@@ -172,5 +172,5 @@ jobs:
         uses: actions/upload-artifact@v3.1.0
         with:
           name: image-tar-${{ matrix.name }}
-          path: /tmp/images/${{ matrix.name }}.tar
+          path: /tmp/${{ matrix.name }}.tar
           retention-days: 1
