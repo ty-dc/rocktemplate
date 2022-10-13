@@ -29,7 +29,7 @@ jobs:
     name: prepare doc
     runs-on: ubuntu-latest
     outputs:
-      ref: ${{ steps.get_ref.outputs.ref }}
+      ref: ${{ env.RUN_REF }}
     steps:
       - name: Get Ref
         id: get_ref
@@ -38,10 +38,10 @@ jobs:
           ls
           if ${{ inputs.ref != '' }}; then
               echo "call by workflow_call"
-              echo ::set-output name=ref::${{ inputs.ref }}
+              echo "RUN_REF=${{ inputs.ref }}" >> $GITHUB_ENV
           elif ${{ github.event_name == 'workflow_dispatch' }} ; then
               echo "call by workflow_dispatch"
-              echo ::set-output name=ref::${{ github.event.inputs.ref }}
+              echo "RUN_REF=${{ github.event.inputs.ref }}" >> $GITHUB_ENV
           else
               echo "unexpected event: ${{ github.event_name }}"
               exit 1

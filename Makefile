@@ -194,6 +194,10 @@ lint_chart_version:
 
 #=============== lint
 
+.PHONY: lint_golang_everything
+lint_golang_everything: lint_golang_lock lint_test_label lint_golang_format
+
+
 define lint_go_format
 	data=` find . ! \( -path './vendor' -prune \) ! \( -path './_build' -prune \) ! \( -path './.git' -prune \) ! \( -path '*.validate.go' -prune \) \
         -type f -name '*.go' | xargs gofmt -d -l -s ` ; \
