@@ -37,15 +37,18 @@ build_agent_bin:
 
 define BUILD_FINAL_IMAGE
 echo "Build Image $(IMAGE_NAME):$(IMAGE_TAG)" ; \
-		docker buildx build  \
+		sed -i '2 a \ARG BUILDPLATFORM' $${DOCKERFILE_PATH} ; \
+		docker build  \
 				--build-arg RACE=1 \
 				--build-arg NOSTRIP=1 \
 				--build-arg NOOPT=1 \
 				--build-arg GIT_COMMIT_VERSION=$(GIT_COMMIT_VERSION) \
 				--build-arg GIT_COMMIT_TIME=$(GIT_COMMIT_TIME) \
 				--build-arg VERSION=$(GIT_COMMIT_VERSION) \
+				--build-arg BUILDPLATFORM="linux/$(TARGETARCH)" \
+				--build-arg TARGETARCH=$(TARGETARCH) \
+				--build-arg TARGETOS=linux \
 				--file $(DOCKERFILE_PATH) \
-				--output type=docker \
 				--tag ${IMAGE_NAME}:$(IMAGE_TAG) . ; \
 		echo "build success for ${IMAGE_NAME}:$(IMAGE_TAG) "
 endef
@@ -76,8 +79,12 @@ define BUILD_BASE_IMAGE
 IMAGE_DIR=` dirname $(DOCKERFILE_PATH) ` \
 		TAG=` git ls-tree --full-tree HEAD -- $${IMAGE_DIR} | awk '{ print $$3 }' ` ; \
 		echo "Build base image $(BASE_IMAGE_NAME):$${TAG}" ; \
-		docker buildx build  \
+		sed -i '2 a \ARG BUILDPLATFORM' $${DOCKERFILE_PATH} ; \
+		docker build  \
 				--build-arg USE_PROXY_SOURCE=true \
+				--build-arg BUILDPLATFORM="linux/$(TARGETARCH)" \
+				--build-arg TARGETARCH=$(TARGETARCH) \
+				--build-arg TARGETOS=linux \
 				--file $(DOCKERFILE_PATH) \
 				--output type=docker \
 				--tag $(BASE_IMAGE_NAME):$${TAG}   $${IMAGE_DIR} ; \
