@@ -1,7 +1,0 @@
-# rocktemplate
-
-## Introduction
-
-## Features
-
-## Parameters
