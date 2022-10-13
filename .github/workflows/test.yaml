@@ -12,6 +12,9 @@ on:
 jobs:
   prepare:
     runs-on: ubuntu-latest
+    outputs:
+      v1: ${{ env.step1_1 }}
+      v2: ${{ env.HELLO }}
     steps:
       - name: set
         run: |
@@ -30,4 +33,6 @@ jobs:
         run: |
           echo ${{ env.step1_1 }}
           echo ${{ env.HELLO }}
+          echo ${{ needs.prepare.outputs.v1 }}
+          echo ${{ needs.prepare.outputs.v2 }}
 
