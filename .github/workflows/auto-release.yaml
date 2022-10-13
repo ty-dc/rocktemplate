@@ -18,17 +18,17 @@ jobs:
   get-tag:
     runs-on: ubuntu-latest
     outputs:
-      tag: ${{ steps.get_ref.outputs.tag }}
+      tag: ${{ env.RUN_TAG }}
     steps:
       - name: Get Ref
         id: get_ref
         run: |
           if ${{ github.event_name == 'workflow_dispatch' }} ; then
             echo "call by self workflow_dispatch"
-            echo ::set-output name=tag::${{ github.event.inputs.tag }}
+            echo "RUN_TAG=${{ github.event.inputs.tag }}" >> $GITHUB_ENV
           elif ${{ github.event_name == 'push' }} ; then
             echo "call by push tag"
-            echo ::set-output name=tag::${GITHUB_REF##*/}
+            echo "RUN_TAG=${GITHUB_REF##*/}" >> $GITHUB_ENV
           else
             echo "unexpected event: ${{ github.event_name }}"
             exit 1
@@ -37,11 +37,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          ref: ${{ steps.get_ref.outputs.tag }}
+          ref: ${{ env.RUN_TAG }}
 
       - name: Check Version
         run: |
-          TagVersion="${{ steps.get_ref.outputs.tag }}"
+          TagVersion="${{ env.RUN_TAG }}"
           RecordVersion=` cat VERSION  | tr -d ' ' | tr -d '\n' `
           if [ "$RecordVersion" != "$TagVersion" ] ; then
             echo "error, version $RecordVersion of '/VERSION' is different with Tag $TagVersion "
@@ -105,7 +105,7 @@ jobs:
               exit 1
           fi
           chart_path=$( ls chart-package/*.tgz )
-          echo ::set-output name=chart_path::${chart_path}
+          echo "RUN_CHART_PATH=${chart_path}" >> $GITHUB_ENV
           # ========== changelog
           if ! ls changelog-result/*.md &>/dev/null ; then
               echo "error, failed to find changelog "
@@ -115,7 +115,7 @@ jobs:
           cat changelog-result/*.md
           changelog_file=$( ls changelog-result/ )
           changelog_path=./changelog-result/${changelog_file}
-          echo ::set-output name=changelog_path::${changelog_path}
+          echo "RUN_CHANGELOG_PATH=${changelog_path}" >> $GITHUB_ENV
           cp ./changelog-result/${changelog_file} ./changelog-result/changelog.md
 
       - name: Create Release
