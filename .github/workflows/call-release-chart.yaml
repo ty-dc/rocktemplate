@@ -1,12 +1,10 @@
-env:
-  CHART_PACKAGE_PATH: output/chart/*
-
 name: Call Release Charts
 
 env:
-  PR_LABEL: release/robot_update_githubpage
+  PR_LABEL: pr/robot_update_githubpage
   PR_REVIWER: weizhoublue
   MERGE_BRANCH: github_pages
+  CHART_OUTPUT_PATH: output/chart/*
 
 on:
   workflow_call:
@@ -67,7 +65,7 @@ jobs:
           ref: ${{ needs.get_ref.outputs.ref }}
 
       - name: Install Helm
-        uses: azure/setup-helm@v3.0
+        uses: azure/setup-helm@v3.3
 
       - name: Package Chart
         continue-on-error: false
@@ -75,9 +73,55 @@ jobs:
           make chart_package
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v3.0.0
+        uses: actions/upload-artifact@v3.1.0
         with:
           name: chart_package_artifact
-          path: ${{ env.CHART_PACKAGE_PATH }}
+          path: ${{ env.CHART_OUTPUT_PATH }}
           retention-days: 1
           if-no-files-found: error
+
+  # update /index.yaml in the target branch
+  update_githubpage:
+    runs-on: ubuntu-latest
+    needs: [package_chart, get_ref]
+    if: ${{ needs.get_ref.outputs.submit == 'true' }}
+    steps:
+      - name: Get Base Chart URL
+        id: get_base_url
+        run: |
+          name=${{ github.repository }}
+          proj=${name#*/}
+          url=https://${{ github.repository_owner }}.github.io/${proj}
+          echo "::set-output name=url::${url}"
+
+      - name: Checkout Code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ env.MERGE_BRANCH }}
+          persist-credentials: "true"
+
+      - name: Download Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: chart_package_artifact
+          path: docs/charts/
+
+      - name: Update Chart Yaml
+        run: |
+          cd docs
+          helm repo index  ./charts  --url ${{ steps.get_base_url.outputs.url }}/charts
+          mv ./charts/index.yaml ./index.yaml
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v4.1.3
+        with:
+          title: "robot Update chart from ${{ needs.get_ref.outputs.ref }} to branch ${{ env.MERGE_BRANCH }} "
+          commit-message: "robot Update chart from ${{ needs.get_ref.outputs.ref }} to branch ${{ env.MERGE_BRANCH }} "
+          branch-suffix: timestamp
+          branch: robot/update_chart
+          delete-branch: true
+          base: ${{ env.MERGE_BRANCH }}
+          signoff: true
+          token: ${{ secrets.WELAN_PAT }}
+          labels: ${{ env.PR_LABEL }}
+          reviewers: ${{ env.PR_REVIWER }}

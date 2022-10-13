@@ -17,6 +17,10 @@
 
 7. repo -> packages -> package settings -> Change package visibility
 
+8. repo -> settings -> pages -> add branch 'github_pages', directory 'docs'
+
+8. repo -> settings -> branch -> add protection rules for 'main' and 'github_pages'
+
 
 ## local develop
 
