@@ -1,0 +1,42 @@
+name: Auto Update Golang Verison
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'Makefile.defs'
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Get Downloaded Files
+        run: |
+          make update_go_version
+          if ! test -z "$$(git status --porcelain)"; then
+            echo "update golang"
+            echo ::set-output name=update::true
+          else
+             echo "no need to update golang version"
+             echo ::set-output name=update::false
+          fi
+
+      # https://github.com/peter-evans/create-pull-request
+      - name: Create Pull Request
+        id: create_pr
+        uses: peter-evans/create-pull-request@v4.0.4
+        with:
+          title: "robot Update project owing to updated Golang Version "
+          commit-message: "robot Update project owing to updated Golang Version "
+          branch-suffix: timestamp
+          branch: robot/update_golang
+          delete-branch: true
+          base: main
+          signoff: true
+          token: ${{ secrets.WELAN_PAT }}
+          labels: ${{ env.PR_LABEL }}
+          reviewers: ${{ env.PR_REVIWER }}
