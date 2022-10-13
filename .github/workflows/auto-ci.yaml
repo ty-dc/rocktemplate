@@ -214,7 +214,7 @@ jobs:
           echo "===== chart "
           echo "chart package artifact: ${{ needs.call_release_chart.outputs.artifact }}"
           TMP=` date +%m%d%H%M%S `
-          E2E_CLUSTER_NAME="project{TMP}"
+          E2E_CLUSTER_NAME="project${TMP}"
           echo "RUN_KIND_CLUSTER_NAME=${E2E_CLUSTER_NAME}" >> $GITHUB_ENV
 
       - name: Checkout Code

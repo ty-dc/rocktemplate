@@ -50,7 +50,8 @@ echo "Build Image $(IMAGE_NAME):$(IMAGE_TAG)" ; \
 				--build-arg TARGETOS=linux \
 				--file $(DOCKERFILE_PATH) \
 				--tag ${IMAGE_NAME}:$(IMAGE_TAG) . ; \
-		echo "build success for ${IMAGE_NAME}:$(IMAGE_TAG) "
+		echo "build success for ${IMAGE_NAME}:$(IMAGE_TAG) " ; \
+		sed -i '3 d' $(DOCKERFILE_PATH)
 endef
 
 
@@ -89,7 +90,8 @@ IMAGE_DIR=` dirname $(DOCKERFILE_PATH) ` \
 				--output type=docker \
 				--tag $(BASE_IMAGE_NAME):$${TAG}   $${IMAGE_DIR} ; \
 		(($$?==0)) || { echo "error , failed to build base image" ; exit 1 ;} ; \
-		echo "build success $(BASE_IMAGE_NAME):$${TAG} "
+		echo "build success $(BASE_IMAGE_NAME):$${TAG} " ; \
+		sed -i '3 d' $(DOCKERFILE_PATH)
 endef
 
 .PHONY: build_local_base_image
