@@ -7,7 +7,9 @@ ARG GOLANG_IMAGE=docker.io/library/golang:1.19@sha256:b850621230956a6d960d6d7cfa
 # TARGETARCH is an automatic platform ARG enabled by Docker BuildKit.
 # like amd64 arm64
 ARG TARGETARCH
-ARG BUILDPLATFORM
+
+# report error by github ci
+#ARG BUILDPLATFORM
 
 #======= build bin ==========
 FROM --platform=${BUILDPLATFORM} ${GOLANG_IMAGE} as builder

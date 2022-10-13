@@ -1,8 +1,8 @@
 # !!!!!!!!!!!! modify line 4 - 9
 
-name: Auto Nightly CI
+name: Auto CI
 
-ENV:
+env:
   E2E_LOG_PATH: test/runtime/e2edebugLog.txt
   E2E_GINKGO_REPORT_PATH: test/runtime/ginkgoreport.json
   PERFORMANCE_SCRIPT: test/scripts/getPerformanceData.sh
@@ -45,7 +45,7 @@ on:
           - all
 
 jobs:
-  get_ref:
+  prepare:
     runs-on: ubuntu-latest
     outputs:
       ref: ${{ steps.result.outputs.ref }}
@@ -164,56 +164,56 @@ jobs:
           echo ::set-output name=ref::${ref}
 
   call_unitest:
-    needs: get_ref
-    if: ${{ needs.get_ref.outputs.unitest_enabled == 'true' }}
+    needs: prepare
+    if: ${{ needs.prepare.outputs.unitest_enabled == 'true' }}
     # forbid to specify version for local workflow, GITHUB_REF Same as the caller workflow
     uses: ./.github/workflows/lint-golang.yaml
     with:
-      ref: ${{ needs.get_ref.outputs.ref }}
+      ref: ${{ needs.prepare.outputs.ref }}
     secrets: inherit
 
   call_build_ci_image:
     needs: [get_ref]
-    if: ${{ needs.get_ref.outputs.e2e_enabled == 'true' }}
-    # get  image:${{ needs.get_ref.outputs.ref }} and image-ci:${{ needs.get_ref.outputs.ref }}
+    if: ${{ needs.prepare.outputs.e2e_enabled == 'true' }}
+    # get  image:${{ needs.prepare.outputs.ref }} and image-ci:${{ needs.prepare.outputs.ref }}
     uses: ./.github/workflows/build-image-ci.yaml
     with:
-      ref: ${{ needs.get_ref.outputs.ref }}
+      ref: ${{ needs.prepare.outputs.ref }}
     secrets: inherit
 
   lint_chart_against_release_image:
-    needs: get_ref
-    if: ${{ needs.get_ref.outputs.e2e_enabled == 'true' }}
+    needs: prepare
+    if: ${{ needs.prepare.outputs.e2e_enabled == 'true' }}
     # forbid to specify version for local workflow, GITHUB_REF Same as the caller workflow
     uses: ./.github/workflows/call-lint-chart.yaml
     with:
-      ref: ${{ needs.get_ref.outputs.ref }}
+      ref: ${{ needs.prepare.outputs.ref }}
     secrets: inherit
 
   call_release_chart:
     needs: [get_ref]
-    if: ${{ needs.get_ref.outputs.e2e_enabled == 'true' }}
+    if: ${{ needs.prepare.outputs.e2e_enabled == 'true' }}
     uses: ./.github/workflows/call-release-chart.yaml
     with:
-      ref: ${{ needs.get_ref.outputs.ref }}
+      ref: ${{ needs.prepare.outputs.ref }}
       submit: false
     secrets: inherit
 
   e2e_against_commit:
     runs-on: ubuntu-latest
     needs: [call_build_ci_image, get_ref, call_release_chart]
-    if: ${{ needs.get_ref.outputs.e2e_enabled == 'true' }}
+    if: ${{ needs.prepare.outputs.e2e_enabled == 'true' }}
     steps:
       - name: Prepare
         id: prepare
         run: |
-          echo "ref: ${{ needs.get_ref.outputs.ref }} "
-          echo "e2e_labels: ${{ needs.get_ref.outputs.e2e_labels }}"
-          echo "ipfamily_ipv4only_e2e: ${{ needs.get_ref.outputs.ipfamily_ipv4only_e2e }}"
-          echo "ipfamily_ipv6only_e2e: ${{ needs.get_ref.outputs.ipfamily_ipv6only_e2e }}"
-          echo "ipfamily_dual_e2e: ${{ needs.get_ref.outputs.ipfamily_dual_e2e }}"
+          echo "ref: ${{ needs.prepare.outputs.ref }} "
+          echo "e2e_labels: ${{ needs.prepare.outputs.e2e_labels }}"
+          echo "ipfamily_ipv4only_e2e: ${{ needs.prepare.outputs.ipfamily_ipv4only_e2e }}"
+          echo "ipfamily_ipv6only_e2e: ${{ needs.prepare.outputs.ipfamily_ipv6only_e2e }}"
+          echo "ipfamily_dual_e2e: ${{ needs.prepare.outputs.ipfamily_dual_e2e }}"
           echo "===== image "
-          echo "ci image tag: ${{ needs.get_ref.outputs.ref }}"
+          echo "ci image tag: ${{ needs.prepare.outputs.ref }}"
           echo "===== chart "
           echo "chart package artifact: ${{ needs.call_release_chart.outputs.artifact }}"
           TMP=` date +%m%d%H%M%S `
@@ -224,7 +224,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           persist-credentials: false
-          ref: ${{ needs.get_ref.outputs.ref }}
+          ref: ${{ needs.prepare.outputs.ref }}
 
       - name: Setup Golang
         uses: actions/setup-go@v3
@@ -250,13 +250,13 @@ jobs:
           echo $TAR_FILES
           for ITEM in $TAR_FILES ; do
               IMAGE_NAME=${ITEM%*.tar}
-              cat test/.download/${ITEM} |  docker import - ${IMAGE_NAME}:${{ needs.get_ref.outputs.ref }}
+              cat test/.download/${ITEM} |  docker import - ${IMAGE_NAME}:${{ needs.prepare.outputs.ref }}
           done
 
       # ------------- by default , dual stack
       # test against commit version
       - name: Setup Kind Cluster For Dual-stack
-        if: ${{ needs.get_ref.outputs.ipfamily_dual_e2e == 'true' }}
+        if: ${{ needs.prepare.outputs.ipfamily_dual_e2e == 'true' }}
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 10
@@ -264,18 +264,18 @@ jobs:
           shell: bash
           command: |
             make e2e_init -e KIND_CLUSTER_NAME=${{ steps.prepare.outputs.clusterName }} \
-                -e PROJECT_IMAGE_VERSION=${{ needs.get_ref.outputs.ref }} \
+                -e PROJECT_IMAGE_VERSION=${{ needs.prepare.outputs.ref }} \
                 -e E2E_IP_FAMILY=dual
 
       - name: Run e2e Test For Dual-stack
         id: dualstack_e2e
-        if: ${{ needs.get_ref.outputs.ipfamily_dual_e2e == 'true' }}
+        if: ${{ needs.prepare.outputs.ipfamily_dual_e2e == 'true' }}
         continue-on-error: true
         run: |
           echo ${{ github.event.inputs.labels }}
           RESULT=0
           make e2e_test -e KIND_CLUSTER_NAME=${{ steps.prepare.outputs.clusterName }}  \
-              -e E2E_GINKGO_LABELS=${{ needs.get_ref.outputs.e2e_labels }} \
+              -e E2E_GINKGO_LABELS=${{ needs.prepare.outputs.e2e_labels }} \
               -e E2E_IP_FAMILY=dual || RESULT=1
           if ((RESULT==0)) ; then
               echo ::set-output name=pass::true
@@ -295,7 +295,7 @@ jobs:
           fi
 
       - name: Upload e2e log For Dual-stack
-        if: ${{ needs.get_ref.outputs.ipfamily_dual_e2e == 'true' }}
+        if: ${{ needs.prepare.outputs.ipfamily_dual_e2e == 'true' }}
         uses: actions/upload-artifact@v3.1.0
         with:
           name: dualstack-debuglog.txt
@@ -303,7 +303,7 @@ jobs:
           retention-days: 30
 
       - name: Upload e2e report For Dual-stack
-        if: ${{ steps.dualstack_e2e.outputs.upload == 'true' && needs.get_ref.outputs.ipfamily_dual_e2e == 'true' }}
+        if: ${{ steps.dualstack_e2e.outputs.upload == 'true' && needs.prepare.outputs.ipfamily_dual_e2e == 'true' }}
         uses: actions/upload-artifact@v3.1.0
         with:
           name: dualstack-e2ereport.json
@@ -311,7 +311,7 @@ jobs:
           retention-days: 30
 
       - name: Show e2e Result For Dual-stack
-        if: ${{ needs.get_ref.outputs.ipfamily_dual_e2e == 'true' }}
+        if: ${{ needs.prepare.outputs.ipfamily_dual_e2e == 'true' }}
         run: |
           if ${{ steps.dualstack_e2e.outputs.pass == 'true' }} ;then
               exit 0
@@ -322,7 +322,7 @@ jobs:
       - name: Get the E2E Performance Result For Dual-stack
         # run all e2e cases
         id: get_performance
-        if: ${{ needs.get_ref.outputs.ipfamily_dual_e2e == 'true' }}
+        if: ${{ needs.prepare.outputs.ipfamily_dual_e2e == 'true' }}
         shell: bash
         run: |
           # sudo apt-get install -y jq
@@ -331,7 +331,7 @@ jobs:
           echo ::set-output name=result::${TODO_STATUS}
 
       - name: Update Badge For Dual-stack
-        if: ${{ steps.get_performance.outputs.result != '' && needs.get_ref.outputs.ipfamily_dual_e2e == 'true' }}
+        if: ${{ steps.get_performance.outputs.result != '' && needs.prepare.outputs.ipfamily_dual_e2e == 'true' }}
         uses: schneegans/dynamic-badges-action@v1.5.0
         with:
           auth: ${{ secrets.WELAN_PAT }}
@@ -344,7 +344,7 @@ jobs:
 #      # ------------------ ipv4-only
 #      # test against commit version
 #      - name: Setup Kind Cluster For ipv4-only
-#        if: ${{ needs.get_ref.outputs.ipfamily_ipv4only_e2e == 'true' }}
+#        if: ${{ needs.prepare.outputs.ipfamily_ipv4only_e2e == 'true' }}
 #        uses: nick-invision/retry@v2
 #        with:
 #          timeout_minutes: 10
@@ -359,13 +359,13 @@ jobs:
 #
 #      - name: Run e2e Test For ipv4-only
 #        id: ipv4only_e2e
-#        if: ${{ needs.get_ref.outputs.ipfamily_ipv4only_e2e == 'true' }}
+#        if: ${{ needs.prepare.outputs.ipfamily_ipv4only_e2e == 'true' }}
 #        continue-on-error: true
 #        run: |
 #          echo ${{ github.event.inputs.labels }}
 #          RESULT=0
 #          make e2e_test -e KIND_CLUSTER_NAME=${{ steps.prepare.outputs.clusterName }}  \
-#              -e E2E_GINKGO_LABELS=${{ needs.get_ref.outputs.e2e_labels }} \
+#              -e E2E_GINKGO_LABELS=${{ needs.prepare.outputs.e2e_labels }} \
 #              -e E2E_TIMEOUT=${{ env.E2E_TIME_OUT }}  \
 #              -e E2E_IP_FAMILY=ipv4 -e PYROSCOPE_LOCAL_PORT="" || RESULT=1
 #          if ((RESULT==0)) ; then
@@ -386,7 +386,7 @@ jobs:
 #          fi
 #
 #      - name: Upload e2e log For ipv4-only
-#        if: ${{ needs.get_ref.outputs.ipfamily_ipv4only_e2e == 'true' }}
+#        if: ${{ needs.prepare.outputs.ipfamily_ipv4only_e2e == 'true' }}
 #        uses: actions/upload-artifact@v3.1.0
 #        with:
 #          name: ipv4Only-debuglog.txt
@@ -394,7 +394,7 @@ jobs:
 #          retention-days: 30
 #
 #      - name: Upload e2e report For ipv4-only
-#        if: ${{ steps.ipv4only_e2e.outputs.upload == 'true' && needs.get_ref.outputs.ipfamily_ipv4only_e2e == 'true' }}
+#        if: ${{ steps.ipv4only_e2e.outputs.upload == 'true' && needs.prepare.outputs.ipfamily_ipv4only_e2e == 'true' }}
 #        uses: actions/upload-artifact@v3.1.0
 #        with:
 #          name: ipv4Only-e2ereport.json
@@ -402,7 +402,7 @@ jobs:
 #          retention-days: 14
 #
 #      - name: Show e2e Result For ipv4-only
-#        if: ${{ needs.get_ref.outputs.ipfamily_ipv4only_e2e == 'true' }}
+#        if: ${{ needs.prepare.outputs.ipfamily_ipv4only_e2e == 'true' }}
 #        run: |
 #          if ${{ steps.ipv4only_e2e.outputs.pass == 'true' }} ;then
 #              exit 0
@@ -413,7 +413,7 @@ jobs:
 #      # ------------------ ipv6-only
 #      # test against commit version
 #      - name: Setup Kind Cluster For ipv6-only
-#        if: ${{ needs.get_ref.outputs.ipfamily_ipv6only_e2e == 'true' }}
+#        if: ${{ needs.prepare.outputs.ipfamily_ipv6only_e2e == 'true' }}
 #        uses: nick-invision/retry@v2
 #        with:
 #          timeout_minutes: 10
@@ -428,13 +428,13 @@ jobs:
 #
 #      - name: Run e2e Test For ipv6-only
 #        id: ipv6only_e2e
-#        if: ${{ needs.get_ref.outputs.ipfamily_ipv6only_e2e == 'true' }}
+#        if: ${{ needs.prepare.outputs.ipfamily_ipv6only_e2e == 'true' }}
 #        continue-on-error: true
 #        run: |
 #          echo ${{ github.event.inputs.labels }}
 #          RESULT=0
 #          make e2e_test -e KIND_CLUSTER_NAME=${{ steps.prepare.outputs.clusterName }}  \
-#              -e E2E_GINKGO_LABELS=${{ needs.get_ref.outputs.e2e_labels }} \
+#              -e E2E_GINKGO_LABELS=${{ needs.prepare.outputs.e2e_labels }} \
 #              -e E2E_TIMEOUT=${{ env.E2E_TIME_OUT }}  \
 #              -e E2E_IP_FAMILY=ipv6 -e PYROSCOPE_LOCAL_PORT="" || RESULT=1
 #          if ((RESULT==0)) ; then
@@ -455,7 +455,7 @@ jobs:
 #          fi
 #
 #      - name: Upload e2e log For ipv6-only
-#        if: ${{ needs.get_ref.outputs.ipfamily_ipv6only_e2e == 'true' }}
+#        if: ${{ needs.prepare.outputs.ipfamily_ipv6only_e2e == 'true' }}
 #        uses: actions/upload-artifact@v3.1.0
 #        with:
 #          name: ipv6Only-debuglog.txt
@@ -463,7 +463,7 @@ jobs:
 #          retention-days: 30
 #
 #      - name: Upload e2e report For ipv6-only
-#        if: ${{ steps.ipv6only_e2e.outputs.upload == 'true' && needs.get_ref.outputs.ipfamily_ipv6only_e2e == 'true' }}
+#        if: ${{ steps.ipv6only_e2e.outputs.upload == 'true' && needs.prepare.outputs.ipfamily_ipv6only_e2e == 'true' }}
 #        uses: actions/upload-artifact@v3.1.0
 #        with:
 #          name: ipv6Only-e2ereport.json
@@ -471,7 +471,7 @@ jobs:
 #          retention-days: 14
 #
 #      - name: Show e2e Result For ipv6-only
-#        if: ${{ needs.get_ref.outputs.ipfamily_ipv6only_e2e == 'true' }}
+#        if: ${{ needs.prepare.outputs.ipfamily_ipv6only_e2e == 'true' }}
 #        run: |
 #          if ${{ steps.ipv6only_e2e.outputs.pass == 'true' }} ;then
 #              exit 0
