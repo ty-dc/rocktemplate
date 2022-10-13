@@ -4,6 +4,7 @@ GO_VERSION := 1.19
 REGISTER ?= ghcr.io
 GIT_REPO ?= spidernet-io/rocktemplate
 
+
 #======================
 
 SHELL := /bin/bash
