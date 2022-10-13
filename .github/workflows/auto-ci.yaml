@@ -48,13 +48,13 @@ jobs:
   prepare:
     runs-on: ubuntu-latest
     outputs:
-      ref: ${{ steps.result.outputs.ref }}
-      e2e_labels: ${{ steps.get_ref.outputs.e2e_labels }}
-      unitest_enabled: ${{ steps.get_ref.outputs.unitest_enabled }}
-      e2e_enabled: ${{ steps.get_ref.outputs.e2e_enabled }}
-      ipfamily_ipv4only_e2e: ${{ steps.get_ref.outputs.ipfamily_ipv4only_e2e }}
-      ipfamily_ipv6only_e2e: ${{ steps.get_ref.outputs.ipfamily_ipv6only_e2e }}
-      ipfamily_dual_e2e: ${{ steps.get_ref.outputs.ipfamily_dual_e2e }}
+      ref: ${{ env.RUN_REF }}
+      e2e_labels: ${{ env.RUN_E2E_LABEL }}
+      unitest_enabled: ${{ env.RUN_UNITEST_ENABLED }}
+      e2e_enabled: ${{ env.RUN_E2E_ENABLED }}
+      ipfamily_ipv4only_e2e: ${{ env.RUN_E2E_IPV4_ONLY }}
+      ipfamily_ipv6only_e2e: ${{ env.RUN_E2E_IPV6_ONLY }}
+      ipfamily_dual_e2e: ${{ env.RUN_E2E_DUAL_STACK }}
     steps:
       - name: Check Code Changes
         uses: dorny/paths-filter@v2.10.2
@@ -81,73 +81,70 @@ jobs:
         run: |
           if ${{ github.event_name == 'workflow_dispatch' }} ; then
             echo "call by self workflow_dispatch"
-            echo ::set-output name=tag::${{ github.event.inputs.ref }}
-            echo ::set-output name=e2e_labels::${{ github.event.inputs.e2e_labels }}
-            echo ::set-output name=e2e_enabled::true
-            echo ::set-output name=unitest_enabled::true
+            echo "RUN_TAG=${{ github.event.inputs.ref }}" >> $GITHUB_ENV
+            echo "RUN_E2E_LABEL=${{ github.event.inputs.e2e_labels }}" >> $GITHUB_ENV
+            echo "RUN_E2E_ENABLED=true" >> $GITHUB_ENV
+            echo "RUN_UNITEST_ENABLED=true" >> $GITHUB_ENV
             if ${{ github.event.inputs.ipfamily == 'ipv4' }}; then
-              echo ::set-output name=ipfamily_ipv4only_e2e::true
-              echo ::set-output name=ipfamily_ipv6only_e2e::false
-              echo ::set-output name=ipfamily_dual_e2e::false
+              echo "RUN_E2E_IPV4_ONLY=true" >> $GITHUB_ENV
+              echo "RUN_E2E_IPV6_ONLY=false" >> $GITHUB_ENV
+              echo "RUN_E2E_DUAL_STACK=false" >> $GITHUB_ENV
             elif ${{ github.event.inputs.ipfamily == 'ipv6' }}; then
-              echo ::set-output name=ipfamily_ipv4only_e2e::false
-              echo ::set-output name=ipfamily_ipv6only_e2e::true
-              echo ::set-output name=ipfamily_dual_e2e::false
+              echo "RUN_E2E_IPV4_ONLY=false" >> $GITHUB_ENV
+              echo "RUN_E2E_IPV6_ONLY=true" >> $GITHUB_ENV
+              echo "RUN_E2E_DUAL_STACK=false" >> $GITHUB_ENV
             elif ${{ github.event.inputs.ipfamily == 'dual' }}; then
-              echo ::set-output name=ipfamily_ipv4only_e2e::false
-              echo ::set-output name=ipfamily_ipv6only_e2e::false
-              echo ::set-output name=ipfamily_dual_e2e::true
+              echo "RUN_E2E_IPV4_ONLY=false" >> $GITHUB_ENV
+              echo "RUN_E2E_IPV6_ONLY=false" >> $GITHUB_ENV
+              echo "RUN_E2E_DUAL_STACK=true" >> $GITHUB_ENV
             elif ${{ github.event.inputs.ipfamily == 'all' }}; then
-              echo ::set-output name=ipfamily_ipv4only_e2e::true
-              echo ::set-output name=ipfamily_ipv6only_e2e::true
-              echo ::set-output name=ipfamily_dual_e2e::true
+              echo "RUN_E2E_IPV4_ONLY=true" >> $GITHUB_ENV
+              echo "RUN_E2E_IPV6_ONLY=true" >> $GITHUB_ENV
+              echo "RUN_E2E_DUAL_STACK=true" >> $GITHUB_ENV
             else
               echo "error, unknown input ipfamily: ${{ github.event.inputs.ipfamily }} "
               exit 1
             fi
           elif ${{ github.event_name == 'push' }} ; then
             echo "trigger by push"
-            echo ::set-output name=tag::${{ github.sha }}
-            echo ::set-output name=push::false
-            echo ::set-output name=e2e_labels::smoke
-            echo ::set-output name=e2e_enabled::true
-            # do it in another workflow
-            echo ::set-output name=unitest_enabled::false
-            echo ::set-output name=ipfamily_ipv4only_e2e::false
-            echo ::set-output name=ipfamily_ipv6only_e2e::false
-            echo ::set-output name=ipfamily_dual_e2e::true
+              echo "RUN_TAG=${{ github.sha }}" >> $GITHUB_ENV
+              echo "RUN_E2E_LABEL=smoke" >> $GITHUB_ENV
+              echo "RUN_E2E_ENABLED=true" >> $GITHUB_ENV
+              # do it in another workflow
+              echo "RUN_UNITEST_ENABLED=false" >> $GITHUB_ENV
+              echo "RUN_E2E_IPV4_ONLY=false" >> $GITHUB_ENV
+              echo "RUN_E2E_IPV6_ONLY=false" >> $GITHUB_ENV
+              echo "RUN_E2E_DUAL_STACK=true" >> $GITHUB_ENV
           elif ${{ github.event_name == 'pull_request_target' }} ; then
             echo "trigger by pull_request_target"
-            echo ::set-output name=tag::${{ github.event.pull_request.head.sha }}
-            echo ::set-output name=push::false
+              echo "RUN_TAG=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
             if ${{ steps.filter_pr.outputs.all_e2e == 'true' }} ; then
                 # run all e2e
-                echo ::set-output name=e2e_labels::
-                echo ::set-output name=ipfamily_ipv4only_e2e::true
-                echo ::set-output name=ipfamily_ipv6only_e2e::true
-                echo ::set-output name=ipfamily_dual_e2e::true
+                echo "RUN_E2E_LABEL=" >> $GITHUB_ENV
+                echo "RUN_E2E_IPV4_ONLY=true" >> $GITHUB_ENV
+                echo "RUN_E2E_IPV6_ONLY=true" >> $GITHUB_ENV
+                echo "RUN_E2E_DUAL_STACK=true" >> $GITHUB_ENV
             else
-                echo ::set-output name=e2e_labels::smoke
-                echo ::set-output name=ipfamily_ipv4only_e2e::false
-                echo ::set-output name=ipfamily_ipv6only_e2e::false
-                echo ::set-output name=ipfamily_dual_e2e::true
+                echo "RUN_E2E_LABEL=smoke" >> $GITHUB_ENV
+                echo "RUN_E2E_IPV4_ONLY=false" >> $GITHUB_ENV
+                echo "RUN_E2E_IPV6_ONLY=false" >> $GITHUB_ENV
+                echo "RUN_E2E_DUAL_STACK=true" >> $GITHUB_ENV
             fi
-            echo ::set-output name=e2e_enabled::${{ steps.filter_pr.outputs.run_e2e }}
+            echo "RUN_E2E_ENABLED=${{ steps.filter_pr.outputs.run_e2e }}" >> $GITHUB_ENV
             # do it in another workflow
-            echo ::set-output name=unitest_enabled::false
+            echo "RUN_UNITEST_ENABLED=false" >> $GITHUB_ENV
           else
             # schedule event
             # use main sha for ci image tag
             echo "trigger by schedule"
-            echo ::set-output name=tag::main
-            echo ::set-output name=push::false
+              echo "RUN_TAG=main" >> $GITHUB_ENV
             # nightly ci, run all e2e
-            echo ::set-output name=e2e_labels::
-            echo ::set-output name=e2e_enabled::true
-            echo ::set-output name=unitest_enabled::true
-            echo ::set-output name=ipfamily_ipv4only_e2e::true
-            echo ::set-output name=ipfamily_ipv6only_e2e::true
-            echo ::set-output name=ipfamily_dual_e2e::true
+              echo "RUN_E2E_LABEL=" >> $GITHUB_ENV
+              echo "RUN_E2E_ENABLED=true" >> $GITHUB_ENV
+              echo "RUN_UNITEST_ENABLED=true" >> $GITHUB_ENV
+              echo "RUN_E2E_IPV4_ONLY=true" >> $GITHUB_ENV
+              echo "RUN_E2E_IPV6_ONLY=true" >> $GITHUB_ENV
+              echo "RUN_E2E_DUAL_STACK=true" >> $GITHUB_ENV
           fi
 
       # some event, the tag is not sha, so checkout it and get sha
@@ -155,13 +152,13 @@ jobs:
         uses: actions/checkout@v3
         with:
           persist-credentials: false
-          ref: ${{ steps.get_ref.outputs.tag }}
+          ref: ${{ env.RUN_TAG }}
 
       - name: Result Ref
         id: result
         run: |
           ref=$( git show -s --format='format:%H')
-          echo ::set-output name=ref::${ref}
+          echo "RUN_REF=${ref}" >> $GITHUB_ENV
 
   call_unitest:
     needs: prepare
@@ -218,7 +215,7 @@ jobs:
           echo "chart package artifact: ${{ needs.call_release_chart.outputs.artifact }}"
           TMP=` date +%m%d%H%M%S `
           E2E_CLUSTER_NAME="project{TMP}"
-          echo ::set-output name=clusterName::${E2E_CLUSTER_NAME}
+          echo "RUN_KIND_CLUSTER_NAME=${E2E_CLUSTER_NAME}" >> $GITHUB_ENV
 
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -263,7 +260,7 @@ jobs:
           max_attempts: 3
           shell: bash
           command: |
-            make e2e_init -e KIND_CLUSTER_NAME=${{ steps.prepare.outputs.clusterName }} \
+            make e2e_init -e KIND_CLUSTER_NAME=${{ env.RUN_KIND_CLUSTER_NAME }} \
                 -e PROJECT_IMAGE_VERSION=${{ needs.prepare.outputs.ref }} \
                 -e E2E_IP_FAMILY=dual
 
@@ -274,27 +271,26 @@ jobs:
         run: |
           echo ${{ github.event.inputs.labels }}
           RESULT=0
-          make e2e_test -e KIND_CLUSTER_NAME=${{ steps.prepare.outputs.clusterName }}  \
+          make e2e_test -e KIND_CLUSTER_NAME=${{ env.RUN_KIND_CLUSTER_NAME }}  \
               -e E2E_GINKGO_LABELS=${{ needs.prepare.outputs.e2e_labels }} \
               -e E2E_IP_FAMILY=dual || RESULT=1
           if ((RESULT==0)) ; then
-              echo ::set-output name=pass::true
+              echo "RUN_PASS=true" >> $GITHUB_ENV
           else
-              echo ::set-output name=pass::false
+              echo "RUN_PASS=false" >> $GITHUB_ENV
           fi
           if [ -f "${{ env.E2E_LOG_PATH }}" ] ; then
-              echo ::set-output name=updaloadlog::true
+              echo "RUN_UPLOAD_LOG=true" >> $GITHUB_ENV
           else
-              echo ::set-output name=updaloadlog::false
+              echo "RUN_UPLOAD_LOG=false" >> $GITHUB_ENV
           fi
           if [ -f "${{ env.E2E_GINKGO_REPORT_PATH }}" ] ; then
-              echo "error, did not find e2e report"
-              echo ::set-output name=upload::true
+              echo "RUN_UPLOAD_E2E_REPORT=true" >> $GITHUB_ENV
           else
-              echo ::set-output name=upload::false
+              echo "RUN_UPLOAD_E2E_REPORT=false" >> $GITHUB_ENV
           fi
 
-      - name: Upload e2e log For Dual-stack
+      - name: Upload e2e cluster log For Dual-stack
         if: ${{ needs.prepare.outputs.ipfamily_dual_e2e == 'true' }}
         uses: actions/upload-artifact@v3.1.0
         with:
@@ -302,8 +298,8 @@ jobs:
           path: ${{ env.E2E_LOG_PATH }}
           retention-days: 30
 
-      - name: Upload e2e report For Dual-stack
-        if: ${{ steps.dualstack_e2e.outputs.upload == 'true' && needs.prepare.outputs.ipfamily_dual_e2e == 'true' }}
+      - name: Upload e2e ginkgo report For Dual-stack
+        if: ${{ env.RUN_UPLOAD_LOG == 'true' && needs.prepare.outputs.ipfamily_dual_e2e == 'true' }}
         uses: actions/upload-artifact@v3.1.0
         with:
           name: dualstack-e2ereport.json
@@ -313,7 +309,7 @@ jobs:
       - name: Show e2e Result For Dual-stack
         if: ${{ needs.prepare.outputs.ipfamily_dual_e2e == 'true' }}
         run: |
-          if ${{ steps.dualstack_e2e.outputs.pass == 'true' }} ;then
+          if ${{ env.RUN_PASS == 'true' }} ;then
               exit 0
           else
               exit 1
@@ -328,10 +324,10 @@ jobs:
           # sudo apt-get install -y jq
           TOOL_PATH=${{ env.PERFORMANCE_SCRIPT }}
           TODO_STATUS=$( ${TOOL_PATH}  "${{ env.E2E_GINKGO_REPORT_PATH }}"  )
-          echo ::set-output name=result::${TODO_STATUS}
+          echo "RUN_PERFORMANCE_RESULT=${TODO_STATUS}" >> $GITHUB_ENV
 
       - name: Update Badge For Dual-stack
-        if: ${{ steps.get_performance.outputs.result != '' && needs.prepare.outputs.ipfamily_dual_e2e == 'true' }}
+        if: ${{ env.RUN_PERFORMANCE_RESULT != '' && needs.prepare.outputs.ipfamily_dual_e2e == 'true' }}
         uses: schneegans/dynamic-badges-action@v1.5.0
         with:
           auth: ${{ secrets.WELAN_PAT }}
