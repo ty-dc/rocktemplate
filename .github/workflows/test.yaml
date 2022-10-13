@@ -1,0 +1,33 @@
+name: test workflow
+
+env:
+  HELLO: sadfadsf
+
+permissions: write-all
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    steps:
+      - name: set
+        run: |
+          echo "step1_1=yellow" >> $GITHUB_ENV
+
+      - name: Get
+        run: |
+          echo ${{ env.step1_1 }}
+          echo ${{ env.HELLO }}
+
+  printevn:
+    runs-on: ubuntu-latest
+    needs: prepare
+    steps:
+      - name: print
+        run: |
+          echo ${{ env.step1_1 }}
+          echo ${{ env.HELLO }}
+
