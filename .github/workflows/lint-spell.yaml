@@ -32,23 +32,23 @@ jobs:
         run: |
           if ${{ inputs.ref != '' }} ; then
               echo "trigger by workflow_call"
-              echo ::set-output name=ref::${{ inputs.ref }}
+              echo "RUN_REF=${{ inputs.ref }}" >> $GITHUB_ENV
           elif ${{ github.event_name == 'workflow_dispatch' }} ; then
               echo "trigger by workflow_dispatch"
-              echo ::set-output name=ref::${{ github.event.inputs.ref }}
+              echo "RUN_REF=${{ github.event.inputs.ref }}" >> $GITHUB_ENV
           elif ${{ github.event_name == 'push' }} ; then
               echo "trigger by push"
-              echo ::set-output name=ref::${{ github.sha }}
+              echo "RUN_REF=${{ github.sha }}" >> $GITHUB_ENV
           else
               echo "trigger by ${{ github.event_name }}"
-              echo ::set-output name=ref::${{ github.event.pull_request.head.sha }}
+              echo "RUN_REF=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
           fi
 
       - name: Checkout
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
-          ref: ${{ steps.get_ref.outputs.ref }}
+          ref: ${{ env.RUN_REF }}
 
       - name: Set up Python
         uses: actions/setup-python@v4.0.0

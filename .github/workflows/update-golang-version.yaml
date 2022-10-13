@@ -19,15 +19,16 @@ jobs:
           make update_go_version
           if ! test -z "$$(git status --porcelain)"; then
             echo "update golang"
-            echo ::set-output name=update::true
+            echo "RUN_UPDATE=true" >> $GITHUB_ENV
           else
              echo "no need to update golang version"
-             echo ::set-output name=update::false
+             echo "RUN_UPDATE=false" >> $GITHUB_ENV
           fi
 
       # https://github.com/peter-evans/create-pull-request
       - name: Create Pull Request
         id: create_pr
+        if: ${{ env.RUN_UPDATE == 'true' }}
         uses: peter-evans/create-pull-request@v4.0.4
         with:
           title: "robot Update project owing to updated Golang Version "
