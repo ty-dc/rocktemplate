@@ -12,9 +12,9 @@ permissions: write-all
 
 jobs:
   call-workflow:
-    needs: get-ref
     uses: ./.github/workflows/call-release-image.yaml
     with:
       ref: ${{ inputs.ref }}
       push: "false"
       race: "1"
+    secrets: inherit
