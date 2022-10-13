@@ -10,9 +10,8 @@ yaml-files:
 # For all rules
 ignore: |
   vendor/
-  charts/
-  test/yamls
-  .licenserc.yaml
+  .github/
+  test/yaml/
 
 rules:
   line-length: disable

@@ -173,7 +173,7 @@ jobs:
     secrets: inherit
 
   call_build_ci_image:
-    needs: [get_ref]
+    needs: prepare
     if: ${{ needs.prepare.outputs.e2e_enabled == 'true' }}
     # get  image:${{ needs.prepare.outputs.ref }} and image-ci:${{ needs.prepare.outputs.ref }}
     uses: ./.github/workflows/build-image-ci.yaml
