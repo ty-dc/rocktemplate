@@ -191,7 +191,7 @@ jobs:
     secrets: inherit
 
   call_release_chart:
-    needs: [get_ref]
+    needs: [prepare]
     if: ${{ needs.prepare.outputs.e2e_enabled == 'true' }}
     uses: ./.github/workflows/call-release-chart.yaml
     with:
@@ -201,7 +201,7 @@ jobs:
 
   e2e_against_commit:
     runs-on: ubuntu-latest
-    needs: [call_build_ci_image, get_ref, call_release_chart]
+    needs: [call_build_ci_image, prepare, call_release_chart]
     if: ${{ needs.prepare.outputs.e2e_enabled == 'true' }}
     steps:
       - name: Prepare
