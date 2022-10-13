@@ -38,6 +38,5 @@ jobs:
           base: main
           signoff: true
           token: ${{ secrets.WELAN_PAT }}
-          labels: ${{ env.PR_LABEL }}
-          reviewers: ${{ env.PR_REVIWER }}
-
+          labels: pr/robot_update_golang_version
+          reviewers: weizhoublue
