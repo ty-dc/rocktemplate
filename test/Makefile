@@ -76,6 +76,7 @@ install_proscope:
 
 #==================
 
+# this will auto tag github ci image : agent:xxx -> github.com/spidernet-io/rocktemplate/agent:xxx
 .PHONY: check_images_ready
 check_images_ready:
 	echo "check image  " ; \

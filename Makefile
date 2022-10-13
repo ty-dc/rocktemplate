@@ -37,6 +37,7 @@ build_agent_bin:
 
 define BUILD_FINAL_IMAGE
 echo "Build Image $(IMAGE_NAME):$(IMAGE_TAG)" ; \
+		sed -i '2 a \ARG BUILDPLATFORM' $(DOCKERFILE_PATH) ; \
 		docker build  \
 				--build-arg RACE=1 \
 				--build-arg NOSTRIP=1 \
@@ -78,6 +79,7 @@ define BUILD_BASE_IMAGE
 IMAGE_DIR=` dirname $(DOCKERFILE_PATH) ` \
 		TAG=` git ls-tree --full-tree HEAD -- $${IMAGE_DIR} | awk '{ print $$3 }' ` ; \
 		echo "Build base image $(BASE_IMAGE_NAME):$${TAG}" ; \
+		sed -i '2 a \ARG BUILDPLATFORM' $(DOCKERFILE_PATH) ; \
 		docker build  \
 				--build-arg USE_PROXY_SOURCE=true \
 				--build-arg BUILDPLATFORM="linux/$(TARGETARCH)" \
