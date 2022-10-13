@@ -235,24 +235,32 @@ jobs:
         with:
           install_only: true
 
-      - name: test
-        run: |
-          docker images
-
+      # download all artifact
+      # https://github.com/actions/download-artifact#download-all-artifacts
       - name: Download images
         uses: actions/download-artifact@v3
         with:
-          name: image-tar-images
-          path: test/.download
+          path: output/artifact
 
       - name: Load Images
         run: |
-          TAR_FILES=` ls test/.download `
-          echo $TAR_FILES
-          for ITEM in $TAR_FILES ; do
-              IMAGE_NAME=${ITEM%*.tar}
-              cat test/.download/${ITEM} |  docker import - ${IMAGE_NAME}:${{ needs.prepare.outputs.ref }}
+          cd output/artifact
+          ls
+          ALL_DIR=`ls`
+          IMAGE_DIR=""
+          for ITEM in $ALL_DIR ; do
+              grep -E "^image" <<< "${ITEM}" &>/dev/null && IMAGE_DIR+=" ${ITEM} "
           done
+          echo "IMAGE_DIR=${IMAGE_DIR}"
+          for ITEM in $IMAGE_DIR ; do
+              TAR_FILES=`ls ${ITEM}`
+              for TAR in $TAR_FILES ; do
+                echo "image tar ${ITEM}/${TAR}"
+                #cat ${ITEM}/${TAR} |  docker import - ${TAR}:${{ needs.prepare.outputs.ref }}
+                cat ${ITEM}/${TAR} |  docker import -
+              done
+          done
+          docker images
 
       # ------------- by default , dual stack
       # test against commit version
