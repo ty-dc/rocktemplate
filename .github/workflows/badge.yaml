@@ -1,8 +1,12 @@
 name: Badge Status
 
 env:
-  CODESTATUSSCRIPT: "./tools/codeCoverage.sh"
-  E2ESTATUSSCRIPT: "./tools/e2ecover.sh"
+  CODESTATUSSCRIPT: "./tools/golang/codeCoverage.sh"
+  BADGE_CODELINE_FILENAME:
+  BADGE_CODELINE_ID:
+  BADGE_COMMENT_FILENAME:
+  BADGE_COMMENT_ID:
+
 
 on:
   push:
@@ -29,16 +33,13 @@ jobs:
           COMMENT_PERCENTAGE=$(  ${TOOL_PATH} --comment-percent )
           echo "CODE_LINES=${CODE_LINES}" >> $GITHUB_ENV
           echo "COMMENT_PERCENTAGE=${COMMENT_PERCENTAGE}" >> $GITHUB_ENV
-          TOOL_PATH=${{ env.E2ESTATUSSCRIPT }}
-          E2E_STATUS=$( ${TOOL_PATH} )
-          echo "E2E_STATUS=${E2E_STATUS}" >> $GITHUB_ENV
 
       - name: Create Lines-of-Code-Badge
         uses: schneegans/dynamic-badges-action@v1.4.0
         with:
           auth: ${{ secrets.WELAN_PAT }}
-          gistID: 5a49a2a9466bfbcfcc7a277b6af1bbae
-          filename: smartdoctercodeline.json
+          gistID: ${{ env.BADGE_CODELINE_ID }}
+          filename: ${{ env.BADGE_CODELINE_FILENAME }}
           label: Code Lines
           message: ${{ env.CODE_LINES }}
           color: lightgrey
@@ -47,20 +48,11 @@ jobs:
         uses: schneegans/dynamic-badges-action@v1.4.0
         with:
           auth: ${{ secrets.WELAN_PAT }}
-          gistID: 168d810ac3b6d2a17ab0877b738357a9
-          filename: smartdoctercomment.json
+          gistID: ${{ env.BADGE_COMMENT_LINE }}
+          filename: ${{ env.BADGE_COMMENT_FILENAME }}
           label: Comments
           message: ${{ env.COMMENT_PERCENTAGE }}%
           valColorRange: ${{ env.COMMENT_PERCENTAGE }}
           maxColorRange: 100
           minColorRange: 0
 
-      - name: Create E2E-Badge
-        uses: schneegans/dynamic-badges-action@v1.4.0
-        with:
-          auth: ${{ secrets.WELAN_PAT }}
-          gistID: 93ab72774cd3a028c4facd7ce5720f90
-          filename: smartdoctere2e.json
-          label: e2e
-          message: ${{ env.E2E_STATUS }}
-          color: lightgrey

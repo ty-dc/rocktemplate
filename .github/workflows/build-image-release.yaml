@@ -16,4 +16,5 @@ jobs:
     with:
       ref: ${{ github.event.inputs.ref }}
       push: "true"
+      race: "0"
     secrets: inherit

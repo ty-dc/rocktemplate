@@ -40,3 +40,4 @@ jobs:
       ref: ${{ needs.get-ref.outputs.ref }}
       suffix: 'ci'
       push: "false"
+      race: "1"

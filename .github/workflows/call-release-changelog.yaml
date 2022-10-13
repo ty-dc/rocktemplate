@@ -1,5 +1,12 @@
 name: Call Release Changelog
 
+env:
+  DEST_BRANCH: github_pages
+  DEST_DIRECTORY: 'changelogs/'
+  PR_LABEL: release/robot_update_githubpage
+  PR_REVIWER: weizhoublue
+  CHANGELOG_CONF: .github/changelog_builder_conf.json
+
 on:
   workflow_call:
     inputs:
@@ -23,12 +30,6 @@ on:
 
 permissions: write-all
 
-env:
-  DEST_BRANCH: github_pages
-  DEST_DIRECTORY: 'changelogs/'
-  PR_LABEL: pr/release/robot_update_githubpage
-  PR_REVIWER: weizhoublue
-  CHANGELOG_CONF: .github/changelog_builder_conf.json
 
 jobs:
   get_ref:

@@ -259,9 +259,13 @@ unitest_tests:
 		--cover --coverprofile=./coverage.out --covermode set  \
 		--json-report unitestreport.json \
 		-randomize-suites -randomize-all --keep-going  --timeout=1h  -p   --slow-spec-threshold=120s \
-		-vv  -r   $(UNITEST_DIR)
-	go tool cover -html=./coverage.out -o $(UNITEST_OUTPUT)/coverage-all.html && mv ./coverage.out  $(UNITEST_OUTPUT)/coverage.out
-
+		-vv  -r   $(UNITEST_DIR) \
+		&& mv ./coverage.out  $(UNITEST_OUTPUT)/coverage.out \
+		&& mv ./unitestreport.json  $(UNITEST_OUTPUT)/unitestreport.json
+	go tool cover -html=$(UNITEST_OUTPUT)/coverage.out -o $(UNITEST_OUTPUT)/coverage-all.html
+	@ echo "output coverage to $(UNITEST_OUTPUT)/coverage.out "
+	@ echo "output unitestreport to $(UNITEST_OUTPUT)/unitestreport.json "
+	@ echo "output coverage-all.html to $(UNITEST_OUTPUT)/coverage-all.html "
 
 # ================ e2e
 

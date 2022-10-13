@@ -1,5 +1,10 @@
 name: Clean Stale Issues And PR
 
+env:
+  STALE_ISSUE_LABEL: issue/stale
+  STALE_PR_LABEL: pr/stale
+
+
 on:
   schedule:
     # each day
@@ -9,9 +14,6 @@ permissions:
   issues: write
   pull-requests: write
 
-env:
-  STALE_ISSUE_LABEL: issue/stale
-  STALE_PR_LABEL: pr/stale
 
 jobs:
   stale:

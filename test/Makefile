@@ -58,10 +58,7 @@ init_one_kind: checkBin clean
 
 .PHONY: checkBin
 checkBin:
-	which kind &>/dev/null || { echo "error, please install kind " ; exit 1 ; } ; echo "kind version: `kind version` "
-	which kubectl &>/dev/null || { echo "error, please install kubectl " ; exit 1 ; } ; echo "kubectl version: `kubectl version --client=true -o json` "
-	which docker &>/dev/null || { echo "error, please install docker  " ; exit 1 ; }
-
+	$(ROOT_DIR)/test/scripts/installE2eTools.sh
 
 .PHONY: install_proscope
 install_proscope:

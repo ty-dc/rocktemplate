@@ -53,4 +53,4 @@ jobs:
         uses: apache/skywalking-eyes@main
         with:
           log: debug
-          config: .licenserc.yaml
+          config: .github/licenserc.yaml

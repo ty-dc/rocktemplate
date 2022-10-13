@@ -1,5 +1,8 @@
 name: Lint CODEOWNERS checks
 
+env:
+  REPOSITY_NAME: github.com/spidernet-io/rocktemplate
+
 # Any change in triggers needs to be reflected in the concurrency group.
 on:
   pull_request:
@@ -8,14 +11,6 @@ on:
       - release-*
 
 permissions: read-all
-
-env:
-  REPOSITY_NAME: github.com/spidernet-io/spiderpool
-
-# for each pr, queue all workflows
-# concurrency:
-#   group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
-#   cancel-in-progress: true
 
 jobs:
   # find all changed files from PR

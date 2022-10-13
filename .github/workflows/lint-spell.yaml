@@ -58,4 +58,4 @@ jobs:
 
       - name: Run Code Lint
         run: |
-          make lint-code-spell
+          make lint_code_spell
