@@ -179,7 +179,6 @@ jobs:
     uses: ./.github/workflows/build-image-ci.yaml
     with:
       ref: ${{ needs.get_ref.outputs.ref }}
-      push: false
     secrets: inherit
 
   lint_chart_against_release_image:
