@@ -1,7 +1,5 @@
-# must set branch 'github_pages' as github page
-# this workflow will create the tgz from "/charts/*" of branch main,
-# and deploy to "/charts" of branch "github_pages"
-# and on branch "github_pages", update '/index.yaml' for '/charts/*.tgz'
+env:
+  CHART_PACKAGE_PATH: output/chart/*
 
 name: Call Release Charts
 
@@ -74,12 +72,12 @@ jobs:
       - name: Package Chart
         continue-on-error: false
         run: |
-          make package-charts
+          make chart_package
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v3.0.0
         with:
           name: chart_package_artifact
-          path: output_charts/*
+          path: ${{ env.CHART_PACKAGE_PATH }}
           retention-days: 1
           if-no-files-found: error

@@ -1,4 +1,4 @@
-name: Auto Build Image CI
+name: Build Image CI
 
 on:
   # called by daily build and push image
