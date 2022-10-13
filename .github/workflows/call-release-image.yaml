@@ -168,9 +168,9 @@ jobs:
 
       # Upload artifact race images tar
       - name: Upload image artifact
-        if: ${{ ${{ env.RUN_PUSH != 'true' }}
+        if: ${{ env.RUN_PUSH != 'true' }}
         uses: actions/upload-artifact@v3.1.0
         with:
-          name: image-${{ matrix.name }}
+          name: image-tar-${{ matrix.name }}
           path: /tmp/images/${{ matrix.name }}.tar
           retention-days: 1

@@ -249,7 +249,7 @@ jobs:
           ALL_DIR=`ls`
           IMAGE_DIR=""
           for ITEM in $ALL_DIR ; do
-              grep -E "^image" <<< "${ITEM}" &>/dev/null && IMAGE_DIR+=" ${ITEM} "
+              grep -E "^image-tar" <<< "${ITEM}" &>/dev/null && IMAGE_DIR+=" ${ITEM} "
           done
           echo "IMAGE_DIR=${IMAGE_DIR}"
           for ITEM in $IMAGE_DIR ; do
