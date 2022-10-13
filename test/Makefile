@@ -86,10 +86,18 @@ check_images_ready:
 	else \
 		echo "find image from chart : $${IMAGE_LIST} " ; \
 		for IMAGE in $${IMAGE_LIST} ; do \
+		  	echo "try to find image $${IMAGE} " ; \
 			EXIST=` docker images | awk '{printf("%s:%s\n",$$1,$$2)}' | grep "$${IMAGE}" ` || true ; \
 			if [ -z "$${EXIST}" ] ; then \
-			  echo "docker pull $${IMAGE} to local" ; \
-			  docker pull $${IMAGE} || { echo "error, failed to get image $${IMAGE}" ; exit 1 ; } ; \
+					CI_IMAGE=$${IMAGE##*/} ; \
+			  		echo "try to find github CI image $${CI_IMAGE} " ; \
+			  		EXIST=` docker images | awk '{printf("%s:%s\n",$$1,$$2)}' | grep "$${CI_IMAGE}" ` || true ; \
+			  		if [ -z "$${EXIST}" ] ; then \
+			  			echo "error, failed to find image $${IMAGE}" ; \
+			  			echo "error, failed to find image $${CI_IMAGE}" ; \
+			  			exit 1 ; \
+			  		fi ; \
+			  		docker tag $${CI_IMAGE} $${IMAGE} ; \
 			fi ;\
 			echo "image exists: $${IMAGE}" ; \
 		done ; \
