@@ -280,7 +280,7 @@ lint_dockerfile_trivy:
 .PHONY: lint_image_trivy
 lint_image_trivy: IMAGE_NAME ?=
 lint_image_trivy:
-	@ [ -z "$(IMAGE_NAME)" ] && echo "error, please input IMAGE_NAME" && exit 1
+	@ [ -n "$(IMAGE_NAME)" ] || { echo "error, please input IMAGE_NAME" && exit 1 ; }
 	@ docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
  		  -v /tmp/trivy:/root/trivy.cache/  \
           aquasec/trivy:latest image --exit-code 1  --severity CRITICAL  $(IMAGE_NAME) ; \
