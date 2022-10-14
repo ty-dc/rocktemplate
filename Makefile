@@ -196,6 +196,18 @@ lint_chart_version:
    		echo "version of all chart is right"
 
 
+.PHONY: lint_chart_trivy
+lint_chart_trivy:
+	@ docker run --rm \
+ 		  -v /tmp/trivy:/root/trivy.cache/  \
+          -v $(ROOT_DIR):/tmp/src  \
+          aquasec/trivy:latest config --exit-code 1  --severity CRITICAL /tmp/src/charts  ; \
+      (($$?==0)) && echo "chart trivy check: pass" && exit 0  ; \
+      echo "error, failed to check chart trivy" && exit 1
+
+
+
+
 #=============== lint
 
 .PHONY: lint_golang_everything
@@ -253,6 +265,27 @@ lint_yaml:
 		--entrypoint sh -v $(ROOT_DIR):/data cytopia/yamllint \
 		-c '/usr/bin/yamllint -c /data/.github/yamllint-conf.yml /data' ; \
 		if (($$?==0)) ; then echo "congratulations ,all pass" ; else echo "error, pealse refer <https://yamllint.readthedocs.io/en/stable/rules.html> " ; fi
+
+
+.PHONY: lint_dockerfile_trivy
+lint_dockerfile_trivy:
+	@ docker run --rm \
+ 		  -v /tmp/trivy:/root/trivy.cache/  \
+          -v $(ROOT_DIR):/tmp/src  \
+          aquasec/trivy:latest config --exit-code 1  --severity CRITICAL /tmp/src/images  ; \
+      (($$?==0)) && echo "dockerfile trivy check: pass" && exit 0  ; \
+      echo "error, failed to check dockerfile trivy" && exit 1
+
+
+.PHONY: lint_image_trivy
+lint_image_trivy: IMAGE_NAME ?=
+lint_image_trivy:
+	@ [ -z "$(IMAGE_NAME)" ] && echo "error, please input IMAGE_NAME" && exit 1
+	@ docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+ 		  -v /tmp/trivy:/root/trivy.cache/  \
+          aquasec/trivy:latest image --exit-code 1  --severity CRITICAL  $(IMAGE_NAME) ; \
+      (($$?==0)) && echo "trivy check: $(IMAGE_NAME) pass" && exit 0  ; \
+      echo "error, failed to check dockerfile trivy", $(IMAGE_NAME)  && exit 1
 
 
 #=========== unit test
