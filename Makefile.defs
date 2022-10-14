@@ -131,8 +131,8 @@ GO_LIST = $(GO) list
 GOFILES_EVAL := $(subst _$(ROOT_DIR)/,,$(shell $(GO_LIST) -find -e $(ROOT_DIR)/...))
 GOFILES ?= $(GOFILES_EVAL)
 
-
-
+# LINT_TRIVY_SEVERITY_LEVEL ?= CRITICAL,HIGH
+LINT_TRIVY_SEVERITY_LEVEL ?= CRITICAL
 
 #===================== E2E
 
