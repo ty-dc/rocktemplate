@@ -1,4 +1,4 @@
-name: Auto Update Golang Verison
+name: Auto Update Golang Version
 
 on:
   push:

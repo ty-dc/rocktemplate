@@ -1,3 +1,6 @@
+// Copyright 2022 Authors of spidernet-io
+// SPDX-License-Identifier: Apache-2.0
+
 package cmd
 
 import (
@@ -70,7 +73,7 @@ func init() {
 				if s, err := strconv.ParseInt(m, 10, 64); err == nil {
 					v.p = int32(s)
 				} else {
-					logger.Fatal("failed to pase env value of " + v.envName + " to int32, value=" + m)
+					logger.Fatal("failed to parse env value of " + v.envName + " to int32, value=" + m)
 				}
 			case *string:
 				v.p = m
@@ -78,7 +81,7 @@ func init() {
 				if s, err := strconv.ParseBool(m); err == nil {
 					v.p = s
 				} else {
-					logger.Fatal("failed to pase env value of " + v.envName + " to bool, value=" + m)
+					logger.Fatal("failed to parse env value of " + v.envName + " to bool, value=" + m)
 				}
 			default:
 				logger.Sugar().Fatal("unsupported type to parse %v, config type=%v ", v.envName, reflect.TypeOf(v.p))
