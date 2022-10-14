@@ -72,6 +72,7 @@ jobs:
               - 'charts/**'
               - 'Makefile*'
               - '**/Makefile*'
+              - '**/Dockerfile'
             all_e2e:
               - 'test/e2e/**/*.go'
               - 'vendor/github.com/spidernet-io/**/*.go'

@@ -12,6 +12,7 @@ ignore: |
   vendor/
   .github/
   test/yaml/
+  charts/
 
 rules:
   line-length: disable
