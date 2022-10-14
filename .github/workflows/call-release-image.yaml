@@ -127,6 +127,7 @@ jobs:
       - name: Lint Image Trivy
         if: ${{ env.RUN_PUSH != 'true' }}
         run: |
+          cat /tmp/${{ matrix.name }}.tar |  docker import - ${{ env.ONLINE_REGISTER }}/${{ github.repository }}/${{ matrix.name }}${{ env.RUN_SUFFIX }}:${{ env.RUN_IMAGE_TAG }}
           make lint_image_trivy -e IMAGE_NAME=${{ env.ONLINE_REGISTER }}/${{ github.repository }}/${{ matrix.name }}${{ env.RUN_SUFFIX }}:${{ env.RUN_IMAGE_TAG }}
 
       - name: Image Release Digest
