@@ -8,13 +8,15 @@ all:
 
 
 define BUILD_BIN
-BIN_NAME=`basename $(CMD_BIN_DIR)` ; \
-    echo "begin to build $${BIN_NAME} under $(CMD_BIN_DIR)" ; \
+for SUBCMD_BIN_DIR in $(CMD_BIN_DIR); do ; \
+	BIN_NAME=`basename $${SUBCMD_BIN_DIR}` ; \
+    echo "begin to build $${BIN_NAME} under $${SUBCMD_BIN_DIR}" ; \
     mkdir -p $(DESTDIR_BIN) ; \
 	rm -f $(DESTDIR_BIN)/$${BIN_NAME} ; \
-	$(GO_BUILD) -o $(DESTDIR_BIN)/$${BIN_NAME}  $(CMD_BIN_DIR)/main.go ; \
+	$(GO_BUILD) -o $(DESTDIR_BIN)/$${BIN_NAME}  $${SUBCMD_BIN_DIR}/main.go ; \
 	(($$?!=0)) && echo "error, failed to build $${BIN_NAME}" && exit 1 ; \
-	echo "succeeded to build '$${BIN_NAME}' to $(DESTDIR_BIN)/$${BIN_NAME}"
+	echo "succeeded to build '$${BIN_NAME}' to $(DESTDIR_BIN)/$${BIN_NAME}" ; \
+done
 endef
 
 .PHONY: build_all_bin
@@ -24,12 +26,12 @@ build_all_bin:
 
 
 .PHONY: build_controller_bin
-build_controller_bin: CMD_BIN_DIR:=$(ROOT_DIR)/cmd/controller
+build_controller_bin: CMD_BIN_DIR := $(ROOT_DIR)/cmd/controller
 build_controller_bin:
 	$(BUILD_BIN)
 
 .PHONY: build_agent_bin
-build_agent_bin: CMD_BIN_DIR:=$(ROOT_DIR)/cmd/agent
+build_agent_bin: CMD_BIN_DIR := $(ROOT_DIR)/cmd/agent
 build_agent_bin:
 	$(BUILD_BIN)
 
