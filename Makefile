@@ -8,7 +8,7 @@ all:
 
 
 define BUILD_BIN
-for SUBCMD_BIN_DIR in $(CMD_BIN_DIR); do ; \
+for SUBCMD_BIN_DIR in $(CMD_BIN_DIR); do  \
 	BIN_NAME=`basename $${SUBCMD_BIN_DIR}` ; \
     echo "begin to build $${BIN_NAME} under $${SUBCMD_BIN_DIR}" ; \
     mkdir -p $(DESTDIR_BIN) ; \
