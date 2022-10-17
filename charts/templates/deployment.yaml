@@ -86,7 +86,7 @@ spec:
             protocol: TCP
           {{- end }}
           - name: http
-            containerPort: {{ .Values.rocktemplateController.healthChecking.port }}
+            containerPort: {{ .Values.rocktemplateController.healthServer.port }}
             protocol: TCP
           - name: webhook
             containerPort: {{ .Values.rocktemplateController.webhookPort }}
@@ -95,31 +95,31 @@ spec:
           startupProbe:
             httpGet:
               path: /v1/healthy/startup
-              port: {{ .Values.rocktemplateController.healthChecking.port }}
+              port: {{ .Values.rocktemplateController.healthServer.port }}
               scheme: HTTP
-            failureThreshold: {{ .Values.rocktemplateController.healthChecking.startupProbe.failureThreshold }}
-            periodSeconds: {{ .Values.rocktemplateController.healthChecking.startupProbe.periodSeconds }}
+            failureThreshold: {{ .Values.rocktemplateController.healthServer.startupProbe.failureThreshold }}
+            periodSeconds: {{ .Values.rocktemplateController.healthServer.startupProbe.periodSeconds }}
             successThreshold: 1
           {{- end }}
           livenessProbe:
             httpGet:
               path: /v1/healthy/liveness
-              port: {{ .Values.rocktemplateController.healthChecking.port }}
+              port: {{ .Values.rocktemplateController.healthServer.port }}
               scheme: HTTP
             initialDelaySeconds: 60
-            periodSeconds: {{ .Values.rocktemplateController.healthChecking.livenessProbe.periodSeconds }}
+            periodSeconds: {{ .Values.rocktemplateController.healthServer.livenessProbe.periodSeconds }}
             successThreshold: 1
-            failureThreshold: {{ .Values.rocktemplateController.healthChecking.livenessProbe.failureThreshold }}
+            failureThreshold: {{ .Values.rocktemplateController.healthServer.livenessProbe.failureThreshold }}
             timeoutSeconds: 5
           readinessProbe:
             httpGet:
               path: /v1/healthy/readiness
-              port: {{ .Values.rocktemplateController.healthChecking.port }}
+              port: {{ .Values.rocktemplateController.healthServer.port }}
               scheme: HTTP
             initialDelaySeconds: 5
-            periodSeconds: {{ .Values.rocktemplateController.healthChecking.readinessProbe.periodSeconds }}
+            periodSeconds: {{ .Values.rocktemplateController.healthServer.readinessProbe.periodSeconds }}
             successThreshold: 1
-            failureThreshold: {{ .Values.rocktemplateController.healthChecking.readinessProbe.failureThreshold }}
+            failureThreshold: {{ .Values.rocktemplateController.healthServer.readinessProbe.failureThreshold }}
             timeoutSeconds: 5
           {{- with .Values.rocktemplateController.resources }}
           resources:
@@ -137,7 +137,7 @@ spec:
             - name: ENV_WEBHOOK_PORT
               value: {{ .Values.rocktemplateController.webhookPort | quote }}
             - name: ENV_HTTP_PORT
-              value: {{ .Values.rocktemplateController.healthChecking.port | quote }}
+              value: {{ .Values.rocktemplateController.healthServer.port | quote }}
             - name: ENV_POD_NAME
               valueFrom:
                 fieldRef:

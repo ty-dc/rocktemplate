@@ -105,31 +105,31 @@ spec:
           startupProbe:
             httpGet:
               path: /v1/healthy/startup
-              port: {{ .Values.rocktemplateAgent.healthChecking.port }}
+              port: {{ .Values.rocktemplateAgent.healthServer.port }}
               scheme: HTTP
-            failureThreshold: {{ .Values.rocktemplateAgent.healthChecking.startupProbe.failureThreshold }}
-            periodSeconds: {{ .Values.rocktemplateAgent.healthChecking.startupProbe.periodSeconds }}
+            failureThreshold: {{ .Values.rocktemplateAgent.healthServer.startupProbe.failureThreshold }}
+            periodSeconds: {{ .Values.rocktemplateAgent.healthServer.startupProbe.periodSeconds }}
             successThreshold: 1
           {{- end }}
           livenessProbe:
             httpGet:
               path: /v1/healthy/liveness
-              port: {{ .Values.rocktemplateAgent.healthChecking.port }}
+              port: {{ .Values.rocktemplateAgent.healthServer.port }}
               scheme: HTTP
             initialDelaySeconds: 60
-            periodSeconds: {{ .Values.rocktemplateAgent.healthChecking.livenessProbe.periodSeconds }}
+            periodSeconds: {{ .Values.rocktemplateAgent.healthServer.livenessProbe.periodSeconds }}
             successThreshold: 1
-            failureThreshold: {{ .Values.rocktemplateAgent.healthChecking.livenessProbe.failureThreshold }}
+            failureThreshold: {{ .Values.rocktemplateAgent.healthServer.livenessProbe.failureThreshold }}
             timeoutSeconds: 5
           readinessProbe:
             httpGet:
               path: /v1/healthy/readiness
-              port: {{ .Values.rocktemplateAgent.healthChecking.port }}
+              port: {{ .Values.rocktemplateAgent.healthServer.port }}
               scheme: HTTP
             initialDelaySeconds: 5
-            periodSeconds: {{ .Values.rocktemplateAgent.healthChecking.readinessProbe.periodSeconds }}
+            periodSeconds: {{ .Values.rocktemplateAgent.healthServer.readinessProbe.periodSeconds }}
             successThreshold: 1
-            failureThreshold: {{ .Values.rocktemplateAgent.healthChecking.readinessProbe.failureThreshold }}
+            failureThreshold: {{ .Values.rocktemplateAgent.healthServer.readinessProbe.failureThreshold }}
             timeoutSeconds: 5
           {{- with .Values.rocktemplateAgent.resources }}
           resources:
@@ -143,7 +143,7 @@ spec:
             - name: ENV_METRIC_HTTP_PORT
               value: {{ .Values.rocktemplateAgent.prometheus.port | quote }}
             - name: ENV_HTTP_PORT
-              value: {{ .Values.rocktemplateAgent.httpPort | quote }}
+              value: {{ .Values.rocktemplateAgent.healthServer.port | quote }}
             - name: ENV_GOPS_LISTEN_PORT
               value: {{ .Values.rocktemplateAgent.debug.gopsPort | quote }}
             {{- with .Values.rocktemplateAgent.extraEnv }}
