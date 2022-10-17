@@ -95,7 +95,7 @@ spec:
           startupProbe:
             httpGet:
               host: {{ .Values.feature.enableIPv4 | ternary "127.0.0.1" "::1" | quote }}
-              path: /v1/runtime/startup
+              path: /v1/healthy/startup
               port: {{ .Values.rocktemplateController.healthChecking.port }}
               scheme: HTTP
             failureThreshold: {{ .Values.rocktemplateController.healthChecking.startupProbe.failureThreshold }}
@@ -105,7 +105,7 @@ spec:
           livenessProbe:
             httpGet:
               host: {{ .Values.feature.enableIPv4 | ternary "127.0.0.1" "::1" | quote }}
-              path: /v1/runtime/liveness
+              path: /v1/healthy/liveness
               port: {{ .Values.rocktemplateController.healthChecking.port }}
               scheme: HTTP
             initialDelaySeconds: 60
@@ -116,7 +116,7 @@ spec:
           readinessProbe:
             httpGet:
               host: {{ .Values.feature.enableIPv4 | ternary "127.0.0.1" "::1" | quote }}
-              path: /v1/runtime/readiness
+              path: /v1/healthy/readiness
               port: {{ .Values.rocktemplateController.healthChecking.port }}
               scheme: HTTP
             initialDelaySeconds: 5
