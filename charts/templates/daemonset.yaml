@@ -108,9 +108,6 @@ spec:
               path: /v1/runtime/startup
               port: {{ .Values.rocktemplateAgent.healthChecking.port }}
               scheme: HTTP
-              httpHeaders:
-                - name: "checkType"
-                  value: "startupProbe"
             failureThreshold: {{ .Values.rocktemplateAgent.healthChecking.startupProbe.failureThreshold }}
             periodSeconds: {{ .Values.rocktemplateAgent.healthChecking.startupProbe.periodSeconds }}
             successThreshold: 1
@@ -121,9 +118,6 @@ spec:
               path: /v1/runtime/liveness
               port: {{ .Values.rocktemplateAgent.healthChecking.port }}
               scheme: HTTP
-              httpHeaders:
-                - name: "checkType"
-                  value: "livenessProbe"
             initialDelaySeconds: 60
             periodSeconds: {{ .Values.rocktemplateAgent.healthChecking.livenessProbe.periodSeconds }}
             successThreshold: 1
@@ -135,9 +129,6 @@ spec:
               path: /v1/runtime/readiness
               port: {{ .Values.rocktemplateAgent.healthChecking.port }}
               scheme: HTTP
-              httpHeaders:
-                - name: "checkType"
-                  value: "readinessProbe"
             initialDelaySeconds: 5
             periodSeconds: {{ .Values.rocktemplateAgent.healthChecking.readinessProbe.periodSeconds }}
             successThreshold: 1
@@ -154,7 +145,7 @@ spec:
               value: {{ .Values.rocktemplateAgent.prometheus.enabled | quote }}
             - name: ENV_METRIC_HTTP_PORT
               value: {{ .Values.rocktemplateAgent.prometheus.port | quote }}
-            - name: ENV_HEALTH_PORT
+            - name: ENV_HTTP_PORT
               value: {{ .Values.rocktemplateAgent.httpPort | quote }}
             - name: ENV_GOPS_LISTEN_PORT
               value: {{ .Values.rocktemplateAgent.debug.gopsPort | quote }}

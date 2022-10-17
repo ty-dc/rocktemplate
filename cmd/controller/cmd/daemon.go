@@ -15,7 +15,7 @@ import (
 
 func SetupUtility() {
 	c := make(chan os.Signal, 1)
-	signal.Notify(c, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGUSR1, syscall.SIGUSR2)
+	signal.Notify(c, syscall.SIGHUP, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGUSR1, syscall.SIGUSR2)
 	go func() {
 		for s := range c {
 			rootLogger.Sugar().Warnf("got signal=%+v \n", s)
@@ -64,7 +64,11 @@ func SetupUtility() {
 
 func DaemonMain() {
 
+	rootLogger.Sugar().Infof("config: %+v", globalConfig)
+
 	SetupUtility()
+
+	SetupHttpServer()
 
 	rootLogger.Info("hello world")
 	time.Sleep(time.Hour)

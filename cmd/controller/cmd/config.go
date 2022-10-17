@@ -14,7 +14,7 @@ import (
 type Config struct {
 	EnableMetric           bool
 	MetricPort             int32
-	HealthPort             int32
+	HttpPort               int32
 	GopsPort               int32
 	WebhookPort            int32
 	PyroscopeServerAddress string
@@ -35,7 +35,7 @@ type _envMapping struct {
 var envMapping = []_envMapping{
 	{"ENV_ENABLED_METRIC", "false", &globalConfig.EnableMetric},
 	{"ENV_METRIC_HTTP_PORT", "", &globalConfig.MetricPort},
-	{"ENV_HEALTH_PORT", "", &globalConfig.HealthPort},
+	{"ENV_HTTP_PORT", "8787", &globalConfig.HttpPort},
 	{"ENV_GOPS_LISTEN_PORT", "", &globalConfig.GopsPort},
 	{"ENV_WEBHOOK_PORT", "", &globalConfig.WebhookPort},
 	{"ENV_PYROSCOPE_PUSH_SERVER_ADDRESS", "", &globalConfig.PyroscopeServerAddress},
@@ -62,7 +62,7 @@ func init() {
 		logger.Info("git commit timestamp " + t)
 	}
 
-	for _, v := range envMapping {
+	for n, v := range envMapping {
 		m := v.defaultValue
 		if t := viper.GetString(v.envName); len(t) > 0 {
 			m = t
@@ -71,15 +71,18 @@ func init() {
 			switch v.p.(type) {
 			case *int32:
 				if s, err := strconv.ParseInt(m, 10, 64); err == nil {
-					v.p = int32(s)
+					r := envMapping[n].p.(*int32)
+					*r = int32(s)
 				} else {
 					logger.Fatal("failed to parse env value of " + v.envName + " to int32, value=" + m)
 				}
 			case *string:
-				v.p = m
+				r := envMapping[n].p.(*string)
+				*r = m
 			case *bool:
 				if s, err := strconv.ParseBool(m); err == nil {
-					v.p = s
+					r := envMapping[n].p.(*bool)
+					*r = s
 				} else {
 					logger.Fatal("failed to parse env value of " + v.envName + " to bool, value=" + m)
 				}

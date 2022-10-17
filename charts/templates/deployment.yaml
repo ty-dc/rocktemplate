@@ -98,9 +98,6 @@ spec:
               path: /v1/runtime/startup
               port: {{ .Values.rocktemplateController.healthChecking.port }}
               scheme: HTTP
-              httpHeaders:
-                - name: "checkType"
-                  value: "startupProbe"
             failureThreshold: {{ .Values.rocktemplateController.healthChecking.startupProbe.failureThreshold }}
             periodSeconds: {{ .Values.rocktemplateController.healthChecking.startupProbe.periodSeconds }}
             successThreshold: 1
@@ -111,9 +108,6 @@ spec:
               path: /v1/runtime/liveness
               port: {{ .Values.rocktemplateController.healthChecking.port }}
               scheme: HTTP
-              httpHeaders:
-                - name: "checkType"
-                  value: "livenessProbe"
             initialDelaySeconds: 60
             periodSeconds: {{ .Values.rocktemplateController.healthChecking.livenessProbe.periodSeconds }}
             successThreshold: 1
@@ -125,9 +119,6 @@ spec:
               path: /v1/runtime/readiness
               port: {{ .Values.rocktemplateController.healthChecking.port }}
               scheme: HTTP
-              httpHeaders:
-                - name: "checkType"
-                  value: "readinessProbe"
             initialDelaySeconds: 5
             periodSeconds: {{ .Values.rocktemplateController.healthChecking.readinessProbe.periodSeconds }}
             successThreshold: 1
@@ -148,7 +139,7 @@ spec:
               value: {{ .Values.rocktemplateController.debug.gopsPort | quote }}
             - name: ENV_WEBHOOK_PORT
               value: {{ .Values.rocktemplateController.webhookPort | quote }}
-            - name: ENV_HEALTH_PORT
+            - name: ENV_HTTP_PORT
               value: {{ .Values.rocktemplateController.healthChecking.port | quote }}
             - name: ENV_POD_NAME
               valueFrom:
