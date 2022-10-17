@@ -102,6 +102,7 @@ check_images_ready:
 			fi ;\
 			echo "image exists: $${IMAGE}" ; \
 		done ; \
+		docker images ; \
 	fi
 
 

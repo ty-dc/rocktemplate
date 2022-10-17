@@ -245,6 +245,7 @@ jobs:
 
       - name: Load And Scan Images
         run: |
+          PROJECT_DIR=`pwd`
           cd output/artifact
           ls
           ALL_DIR=`ls`
@@ -259,7 +260,7 @@ jobs:
                 echo "image tar ${ITEM}/${TAR}"
                 cat ${ITEM}/${TAR} |  docker import - ${TAR%*.tar}:${{ needs.prepare.outputs.ref }}
                 echo "---------trivy checkout image ${TAR%*.tar}:${{ needs.prepare.outputs.ref }} --------------------"
-                make lint_image_trivy -e IMAGE_NAME=${TAR%*.tar}:${{ needs.prepare.outputs.ref }} \
+                make -C ${PROJECT_DIR} lint_image_trivy -e IMAGE_NAME=${TAR%*.tar}:${{ needs.prepare.outputs.ref }} \
                     || { echo "RUN_IMAGE_TRIVY_FAIL=true" >> $GITHUB_ENV ; echo "error, image ${TAR%*.tar}:${{ needs.prepare.outputs.ref }} is bad" ; }
               done
           done

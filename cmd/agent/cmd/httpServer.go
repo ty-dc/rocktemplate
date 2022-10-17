@@ -13,31 +13,31 @@ import (
 	"go.uber.org/zap"
 )
 
-// ---------- readiness Healthy Hander
-type readinessHealthyHander struct {
+// ---------- readiness Healthy Handler
+type readinessHealthyHandler struct {
 	logger *zap.Logger
 }
 
-func (s *readinessHealthyHander) Handle(r healthy.GetHealthyReadinessParams) middleware.Responder {
+func (s *readinessHealthyHandler) Handle(r healthy.GetHealthyReadinessParams) middleware.Responder {
 	// return healthy.NewGetHealthyReadinessInternalServerError()
 	return healthy.NewGetHealthyReadinessOK()
 }
 
-// ---------- liveness Healthy Hander
-type livenessHealthyHander struct {
+// ---------- liveness Healthy Handler
+type livenessHealthyHandler struct {
 	logger *zap.Logger
 }
 
-func (s *livenessHealthyHander) Handle(r healthy.GetHealthyLivenessParams) middleware.Responder {
+func (s *livenessHealthyHandler) Handle(r healthy.GetHealthyLivenessParams) middleware.Responder {
 	return healthy.NewGetHealthyLivenessOK()
 }
 
-// ---------- startup Healthy Hander
-type startupHealthyHander struct {
+// ---------- startup Healthy Handler
+type startupHealthyHandler struct {
 	logger *zap.Logger
 }
 
-func (s *startupHealthyHander) Handle(r healthy.GetHealthyStartupParams) middleware.Responder {
+func (s *startupHealthyHandler) Handle(r healthy.GetHealthyStartupParams) middleware.Responder {
 
 	return healthy.NewGetHealthyStartupOK()
 }
@@ -64,9 +64,9 @@ func SetupHttpServer() {
 	}
 
 	// setup route
-	api.HealthyGetHealthyReadinessHandler = &readinessHealthyHander{logger: logger.Named("route: readiness health")}
-	api.HealthyGetHealthyLivenessHandler = &livenessHealthyHander{logger: logger.Named("route: liveness health")}
-	api.HealthyGetHealthyStartupHandler = &startupHealthyHander{logger: logger.Named("route: startup health")}
+	api.HealthyGetHealthyReadinessHandler = &readinessHealthyHandler{logger: logger.Named("route: readiness health")}
+	api.HealthyGetHealthyLivenessHandler = &livenessHealthyHandler{logger: logger.Named("route: liveness health")}
+	api.HealthyGetHealthyStartupHandler = &startupHealthyHandler{logger: logger.Named("route: startup health")}
 
 	//
 	srv := server.NewServer(api)
@@ -87,5 +87,5 @@ func SetupHttpServer() {
 		}
 		logger.Fatal(s)
 	}()
-	return
+
 }
