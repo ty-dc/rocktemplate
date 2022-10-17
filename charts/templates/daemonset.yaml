@@ -104,7 +104,6 @@ spec:
           {{- if semverCompare ">=1.20-0" .Capabilities.KubeVersion.Version }}
           startupProbe:
             httpGet:
-              host: {{ .Values.feature.enableIPv4 | ternary "127.0.0.1" "::1" | quote }}
               path: /v1/healthy/startup
               port: {{ .Values.rocktemplateAgent.healthChecking.port }}
               scheme: HTTP
@@ -114,7 +113,6 @@ spec:
           {{- end }}
           livenessProbe:
             httpGet:
-              host: {{ .Values.feature.enableIPv4 | ternary "127.0.0.1" "::1" | quote }}
               path: /v1/healthy/liveness
               port: {{ .Values.rocktemplateAgent.healthChecking.port }}
               scheme: HTTP
@@ -125,7 +123,6 @@ spec:
             timeoutSeconds: 5
           readinessProbe:
             httpGet:
-              host: {{ .Values.feature.enableIPv4 | ternary "127.0.0.1" "::1" | quote }}
               path: /v1/healthy/readiness
               port: {{ .Values.rocktemplateAgent.healthChecking.port }}
               scheme: HTTP
