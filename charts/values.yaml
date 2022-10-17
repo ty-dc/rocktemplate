@@ -41,7 +41,7 @@ rocktemplateAgent:
   name: "rocktemplate-agent"
 
   ## @param rocktemplateAgent.cmdBinName the binary name of rocktemplateAgent
-  cmdBinName: "agent"
+  cmdBinName: "/usr/bin/agent"
 
   ## @param rocktemplateAgent.hostnetwork enable hostnetwork mode of rocktemplateAgent pod
   hostnetwork: true
@@ -247,7 +247,7 @@ rocktemplateController:
   replicas: 1
 
   ## @param rocktemplateController.binName the binName name of rocktemplateController
-  cmdBinName: "controller"
+  cmdBinName: "/usr/bin/controller"
 
   ## @param rocktemplateController.hostnetwork enable hostnetwork mode of rocktemplateController pod. Notice, if no CNI available before template installation, must enable this
   hostnetwork: false
