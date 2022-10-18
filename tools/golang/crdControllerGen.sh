@@ -7,18 +7,19 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-# CONST
 PROJECT_ROOT=$(dirname ${BASH_SOURCE[0]})/../..
-CODEGEN_PKG=${CODEGEN_PKG:-$(cd ${PROJECT_ROOT}; ls -d -1 ./vendor/sigs.k8s.io/controller-tools/cmd/controller-gen 2>/dev/null || echo ../controller-gen)}
 
+CHART_DIR=${1:-"${PROJECT_ROOT}/charts"}
+API_CODE_DIR=${2:-"${PROJECT_ROOT}/pkg/k8s/apis/rocktemplate.spidernet.io/v1"}
+
+#======================
+
+# CONST
+CODEGEN_PKG=${CODEGEN_PKG:-$(cd ${PROJECT_ROOT}; ls -d -1 ./vendor/sigs.k8s.io/controller-tools/cmd/controller-gen 2>/dev/null || echo ../controller-gen)}
 
 controllerGenCmd() {
   go run ${PROJECT_ROOT}/${CODEGEN_PKG}/main.go "$@"
 }
-
-
-CHART_DIR=${1:-"${PROJECT_ROOT}/charts"}
-API_CODE_DIR=${2:-"${PROJECT_ROOT}/pkg/k8s/api/v1"}
 
 echo "generate role yaml to chart"
 controllerGenCmd rbac:roleName="exampleClusterRole" paths="${API_CODE_DIR}" output:stdout \
@@ -29,7 +30,3 @@ controllerGenCmd crd paths="${API_CODE_DIR}"  output:crd:artifacts:config="${CHA
 
 echo "generate deepcode to api code"
 controllerGenCmd crd paths="${API_CODE_DIR}"  object
-
-
-
-
