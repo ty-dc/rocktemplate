@@ -4,9 +4,11 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
 	"github.com/google/gops/agent"
 	"github.com/pyroscope-io/client/pyroscope"
+	"go.opentelemetry.io/otel/attribute"
 	"os"
 	"os/signal"
 	"syscall"
@@ -70,6 +72,25 @@ func DaemonMain() {
 
 	SetupHttpServer()
 
+	// ------
+	RunMetricsServer("controller")
+	MetricGaugeEndpoint.Add(context.Background(), 100)
+	MetricGaugeEndpoint.Add(context.Background(), -10)
+	MetricGaugeEndpoint.Add(context.Background(), 5)
+
+	attrs := []attribute.KeyValue{
+		attribute.Key("pod1").String("value1"),
+	}
+	MetricCounterRequest.Add(context.Background(), 10, attrs...)
+	attrs = []attribute.KeyValue{
+		attribute.Key("pod2").String("value1"),
+	}
+	MetricCounterRequest.Add(context.Background(), 5, attrs...)
+
+	MetricHistogramDuration.Record(context.Background(), 10)
+	MetricHistogramDuration.Record(context.Background(), 20)
+
+	// ------------
 	rootLogger.Info("hello world")
 	time.Sleep(time.Hour)
 }

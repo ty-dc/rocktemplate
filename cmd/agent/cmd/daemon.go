@@ -68,6 +68,8 @@ func DaemonMain() {
 
 	SetupHttpServer()
 
+	RunMetricsServer("agent")
+
 	rootLogger.Info("hello world")
 	time.Sleep(time.Hour)
 }
