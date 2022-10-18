@@ -208,6 +208,13 @@ lint_chart_trivy:
       echo "chart trivy check: pass"
 
 
+.PHONY: update_crd_sdk
+update_crd_sdk:
+	@ echo "update crd manifest" && ./tools/golang/crdControllerGen.sh
+
+
+
+
 #=============== lint
 
 .PHONY: lint_golang_everything

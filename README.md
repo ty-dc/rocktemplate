@@ -21,6 +21,9 @@
 
 8. repo -> settings -> branch -> add protection rules for 'main' and 'github_pages'
 
+9 define CRD in pkg/k8s/v1, and `make update_crd_sdk`
+
+
 
 ## local develop
 
