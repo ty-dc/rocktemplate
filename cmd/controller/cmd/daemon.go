@@ -90,6 +90,10 @@ func DaemonMain() {
 	MetricHistogramDuration.Record(context.Background(), 10)
 	MetricHistogramDuration.Record(context.Background(), 20)
 
+	// ----------
+	SetupExampleInformer(rootLogger.Named("mybook informer"))
+	SetupExampleWebhook(rootLogger.Named("mybook wehbook"))
+
 	// ------------
 	rootLogger.Info("hello world")
 	time.Sleep(time.Hour)
