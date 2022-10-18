@@ -53,7 +53,7 @@ func RegisterMetricInstance(metricMapping []MetricMappingType, meter metric.Mete
 			logger.Info("new histogram metric: " + v.Name)
 
 		default:
-			logger.Sugar().Fatalf("unspported metric: %+v", v)
+			logger.Sugar().Fatalf("unsupported metric: %+v", v)
 		}
 	}
 

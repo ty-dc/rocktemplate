@@ -15,9 +15,9 @@ var (
 )
 
 var metricMapping = []pkgmetric.MetricMappingType{
-	pkgmetric.MetricMappingType{P: &MetricCounterRequest, Name: "request_counts", Description: "the request counter"},
-	pkgmetric.MetricMappingType{P: &MetricGaugeEndpoint, Name: "endpoint_number", Description: "the endpoint number"},
-	pkgmetric.MetricMappingType{P: &MetricHistogramDuration, Name: "request_duration_seconds", Description: "the request duration histogram"},
+	{P: &MetricCounterRequest, Name: "request_counts", Description: "the request counter"},
+	{P: &MetricGaugeEndpoint, Name: "endpoint_number", Description: "the endpoint number"},
+	{P: &MetricHistogramDuration, Name: "request_duration_seconds", Description: "the request duration histogram"},
 }
 
 var globalMeter metric.Meter
