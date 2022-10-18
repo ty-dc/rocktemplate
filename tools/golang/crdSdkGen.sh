@@ -10,6 +10,7 @@ set -o pipefail
 
 APIS_PKG="pkg/k8s/apis"
 OUTPUT_PKG="pkg/k8s/client"
+# ====modify====
 GROUPS_WITH_VERSIONS="rocktemplate.spidernet.io:v1"
 
 #===================

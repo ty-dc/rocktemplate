@@ -2,6 +2,8 @@
 
 ## copy
 
+0. grep "====modify====" * -RHn --colour  and modify all of them
+
 1. copy repo and replace all 'rocktemplate' to 'YourRepoName'
 
 2. add e2e tools in test/scripts/installE2eTools.sh for github CI
@@ -19,9 +21,9 @@
 
 8. repo -> settings -> pages -> add branch 'github_pages', directory 'docs'
 
-8. repo -> settings -> branch -> add protection rules for 'main' and 'github_pages'
+9. repo -> settings -> branch -> add protection rules for 'main' and 'github_pages'
 
-9 define CRD in pkg/k8s/v1, update "./tools/golang/crdControllerGen.sh" "./tools/golang/crdSdkGen.sh" and `make update_crd_sdk`
+9 redefine CRD in pkg/k8s/v1, and `make update_crd_sdk`
 
 
 

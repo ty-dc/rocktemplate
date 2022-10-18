@@ -2,79 +2,83 @@
 {{- $_ := include "generate-ca-certs" . }}
 {{- end }}
 
-#apiVersion: admissionregistration.k8s.io/v1
-#kind: MutatingWebhookConfiguration
-#metadata:
-#  name: {{ .Values.rocktemplateController.name | trunc 63 | trimSuffix "-" }}
-#  annotations:
-#    {{- if (eq .Values.rocktemplateController.tls.method "certmanager") }}
-#    cert-manager.io/inject-ca-from: {{ .Release.Namespace }}/{{ .Values.rocktemplateController.name | trunc 63 | trimSuffix "-" }}-server-certs
-#    {{- end }}
-#webhooks:
-#  - admissionReviewVersions:
-#      - v1
-#    clientConfig:
-#      service:
-#        name: {{ .Values.rocktemplateController.name | trunc 63 | trimSuffix "-" }}
-#        namespace: {{ .Release.Namespace }}
-#        path: "/mutate-template-crd-name"
-#        port: {{ .Values.rocktemplateController.webhookPort }}
-#      {{- if (eq .Values.rocktemplateController.tls.method "provided") }}
-#      caBundle: {{ .Values.rocktemplateController.tls.provided.tlsCa | required "missing tls.provided.tlsCa" }}
-#      {{- else if (eq .Values.rocktemplateController.tls.method "auto") }}
-#      caBundle: {{ .ca.Cert | b64enc }}
-#      {{- end }}
-#    failurePolicy: Fail
-#    name: template.spidernet.io
-#    rules:
-#      - apiGroups:
-#          - template.spidernet.io
-#        apiVersions:
-#          - v1
-#        operations:
-#          - CREATE
-#          - UPDATE
-#        resources:
-#          - templateCrdName
-#    sideEffects: None
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: {{ .Values.rocktemplateController.name | trunc 63 | trimSuffix "-" }}
+  annotations:
+    {{- if (eq .Values.rocktemplateController.tls.method "certmanager") }}
+    cert-manager.io/inject-ca-from: {{ .Release.Namespace }}/{{ .Values.rocktemplateController.name | trunc 63 | trimSuffix "-" }}-server-certs
+    {{- end }}
+webhooks:
+  - admissionReviewVersions:
+      - v1
+    clientConfig:
+      service:
+        name: {{ .Values.rocktemplateController.name | trunc 63 | trimSuffix "-" }}
+        namespace: {{ .Release.Namespace }}
+        # ====modify==== url format "/mutate-${apiGroup}-${version}-${crdName}"
+        path: "/mutate-rocktemplate-spidernet-io-v1-mybook"
+        port: {{ .Values.rocktemplateController.webhookPort }}
+      {{- if (eq .Values.rocktemplateController.tls.method "provided") }}
+      caBundle: {{ .Values.rocktemplateController.tls.provided.tlsCa | required "missing tls.provided.tlsCa" }}
+      {{- else if (eq .Values.rocktemplateController.tls.method "auto") }}
+      caBundle: {{ .ca.Cert | b64enc }}
+      {{- end }}
+    failurePolicy: Fail
+    name: template.spidernet.io
+    rules:
+      - apiGroups:
+          - template.spidernet.io
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          # ====modify==== crdName
+          - mybook
+    sideEffects: None
 
 ---
-#apiVersion: admissionregistration.k8s.io/v1
-#kind: ValidatingWebhookConfiguration
-#metadata:
-#  name: {{ .Values.rocktemplateController.name | trunc 63 | trimSuffix "-" }}
-#  annotations:
-#    {{- if (eq .Values.rocktemplateController.tls.method "certmanager") }}
-#    cert-manager.io/inject-ca-from: {{ .Release.Namespace }}/{{ .Values.rocktemplateController.name | trunc 63 | trimSuffix "-" }}-server-certs
-#    {{- end }}
-#webhooks:
-#  - admissionReviewVersions:
-#      - v1
-#    clientConfig:
-#      service:
-#        name: {{ .Values.rocktemplateController.name | trunc 63 | trimSuffix "-" }}
-#        namespace: {{ .Release.Namespace }}
-#        path: "/validating-template-crd-name"
-#        port: {{ .Values.rocktemplateController.webhookPort }}
-#      {{- if (eq .Values.rocktemplateController.tls.method "provided") }}
-#      caBundle: {{ .Values.rocktemplateController.tls.provided.tlsCa | required "missing tls.provided.tlsCa" }}
-#      {{- else if (eq .Values.rocktemplateController.tls.method "auto") }}
-#      caBundle: {{ .ca.Cert | b64enc }}
-#      {{- end }}
-#    failurePolicy: Fail
-#    name: template.spidernet.io
-#    rules:
-#      - apiGroups:
-#          - template.spidernet.io
-#        apiVersions:
-#          - v1
-#        operations:
-#          - CREATE
-#          - UPDATE
-#          - DELETE
-#        resources:
-#          - templateCrdName
-#    sideEffects: None
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: {{ .Values.rocktemplateController.name | trunc 63 | trimSuffix "-" }}
+  annotations:
+    {{- if (eq .Values.rocktemplateController.tls.method "certmanager") }}
+    cert-manager.io/inject-ca-from: {{ .Release.Namespace }}/{{ .Values.rocktemplateController.name | trunc 63 | trimSuffix "-" }}-server-certs
+    {{- end }}
+webhooks:
+  - admissionReviewVersions:
+      - v1
+    clientConfig:
+      service:
+        name: {{ .Values.rocktemplateController.name | trunc 63 | trimSuffix "-" }}
+        namespace: {{ .Release.Namespace }}
+        # ====modify==== url format "/validating-${apiGroup}-${version}-${crdName}"
+        path: "/validating-rocktemplate-spidernet-io-v1-mybook"
+        port: {{ .Values.rocktemplateController.webhookPort }}
+      {{- if (eq .Values.rocktemplateController.tls.method "provided") }}
+      caBundle: {{ .Values.rocktemplateController.tls.provided.tlsCa | required "missing tls.provided.tlsCa" }}
+      {{- else if (eq .Values.rocktemplateController.tls.method "auto") }}
+      caBundle: {{ .ca.Cert | b64enc }}
+      {{- end }}
+    failurePolicy: Fail
+    name: template.spidernet.io
+    rules:
+      - apiGroups:
+          - template.spidernet.io
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+          - DELETE
+        resources:
+          # ====modify==== crdName
+          - mybook
+    sideEffects: None
 
 {{- if eq .Values.rocktemplateController.tls.method "certmanager" -}}
 ---
