@@ -29,6 +29,7 @@ func (s *webhookhander) Default(ctx context.Context, obj runtime.Object) error {
 		return apierrors.NewBadRequest(s)
 	}
 	logger.Sugar().Infof("obj: %+v", r)
+	r.Annotations["test"] = "add-by-mutating-wehbook"
 
 	return nil
 
