@@ -15,13 +15,3 @@ header:
       - 'vendor'
       - 'pkg/k8s'
     comment: on-failure
-  - license:
-      content: |
-        Copyright 2019 The Kubernetes Authors
-        SPDX-License-Identifier: Apache-2.0
-    paths:
-      - '**/*.go'
-      - '**/*.sh'
-    paths-ignore:
-      - 'vendor'
-    comment: on-failure

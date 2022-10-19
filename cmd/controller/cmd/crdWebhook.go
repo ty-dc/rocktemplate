@@ -1,3 +1,6 @@
+// Copyright 2022 Authors of spidernet-io
+// SPDX-License-Identifier: Apache-2.0
+
 package cmd
 
 import (
@@ -28,7 +31,7 @@ func (s *webhookhander) Default(ctx context.Context, obj runtime.Object) error {
 
 	r, ok := obj.(*crd.Mybook)
 	if !ok {
-		s := fmt.Sprintf("failed to get obj")
+		s := "failed to get obj"
 		logger.Error(s)
 		return apierrors.NewBadRequest(s)
 	}
@@ -49,7 +52,7 @@ func (s *webhookhander) ValidateCreate(ctx context.Context, obj runtime.Object) 
 
 	r, ok := obj.(*crd.Mybook)
 	if !ok {
-		s := fmt.Sprintf("failed to get obj")
+		s := "failed to get obj"
 		logger.Error(s)
 		return apierrors.NewBadRequest(s)
 	}
@@ -63,7 +66,7 @@ func (s *webhookhander) ValidateUpdate(ctx context.Context, oldObj, newObj runti
 
 	old, ok := oldObj.(*crd.Mybook)
 	if !ok {
-		s := fmt.Sprintf("failed to get oldObj")
+		s := "failed to get oldObj"
 		logger.Error(s)
 		return apierrors.NewBadRequest(s)
 	}
