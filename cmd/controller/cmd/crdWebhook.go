@@ -15,7 +15,7 @@ type webhookhander struct {
 	logger *zap.Logger
 }
 
-var _ webhook.CustomValidator = (*webhook)(nil)
+var _ webhook.CustomValidator = (*webhookhander)(nil)
 
 // mutating webhook
 func (s *webhookhander) Default(ctx context.Context, obj runtime.Object) error {
@@ -27,6 +27,7 @@ func (s *webhookhander) Default(ctx context.Context, obj runtime.Object) error {
 		logger.Error(s)
 		return apierrors.NewBadRequest(s)
 	}
+	logger.Sugar().Infof("obj: %+v", r)
 
 	return nil
 
@@ -41,7 +42,7 @@ func (s *webhookhander) ValidateCreate(ctx context.Context, obj runtime.Object) 
 		logger.Error(s)
 		return apierrors.NewBadRequest(s)
 	}
-	logger.Info("obj: %+v", r)
+	logger.Sugar().Infof("obj: %+v", r)
 
 	return nil
 }
@@ -61,8 +62,8 @@ func (s *webhookhander) ValidateUpdate(ctx context.Context, oldObj, newObj runti
 		logger.Error(s)
 		return apierrors.NewBadRequest(s)
 	}
-	logger.Info("oldObj: %+v", old)
-	logger.Info("newObj: %+v", new)
+	logger.Sugar().Infof("oldObj: %+v", old)
+	logger.Sugar().Infof("newObj: %+v", new)
 
 	return nil
 }
@@ -77,7 +78,7 @@ func (s *webhookhander) ValidateDelete(ctx context.Context, obj runtime.Object) 
 		logger.Error(s)
 		return apierrors.NewBadRequest(s)
 	}
-	logger.Info("obj: %+v", r)
+	logger.Sugar().Infof("obj: %+v", r)
 
 	return nil
 }
@@ -90,8 +91,11 @@ func SetupExampleWebhook(logger *zap.Logger) {
 		MetricsBindAddress:     "0",
 		HealthProbeBindAddress: "0",
 	})
+	if err != nil {
+		logger.Sugar().Fatalf("failed to NewManager, reason=%v", err)
+	}
 
-	r := webhookhander{
+	r := &webhookhander{
 		logger: logger,
 	}
 	e := ctrl.NewWebhookManagedBy(mgr).

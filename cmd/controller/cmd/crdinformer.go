@@ -3,10 +3,10 @@ package cmd
 import (
 	"context"
 	"fmt"
+	crdclientset "github.com/spidernet-io/rocktemplate/pkg/k8s/client/clientset/versioned"
 	"github.com/spidernet-io/rocktemplate/pkg/k8s/client/informers/externalversions"
 	"github.com/spidernet-io/rocktemplate/pkg/lease"
 	"go.uber.org/zap"
-	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/cache"
 	"os"
@@ -36,7 +36,7 @@ func (s *ExampleInformer) RunInformer() {
 	if err != nil {
 		s.logger.Sugar().Fatalf("failed to InClusterConfig, reason=%v", err)
 	}
-	clientset, err := kubernetes.NewForConfig(config) // 初始化 client
+	clientset, err := crdclientset.NewForConfig(config) // 初始化 client
 	if err != nil {
 		s.logger.Sugar().Fatalf("failed to NewForConfig, reason=%v", err)
 		return
@@ -48,7 +48,8 @@ func (s *ExampleInformer) RunInformer() {
 	leaseNamespace := "kube-system"
 	leaseName := "testlease"
 	rlogger := s.logger.Named(fmt.Sprintf("lease %s/%s", leaseNamespace, leaseName))
-	getLease, lossLease, err := lease.NewLeaseElector(ctx, leaseNamespace, leaseName, os.Hostname(), rlogger)
+	id, _ := os.Hostname()
+	getLease, lossLease, err := lease.NewLeaseElector(ctx, leaseNamespace, leaseName, id, rlogger)
 	if err != nil {
 		s.logger.Sugar().Fatalf("failed to generate lease, reason=%v ", err)
 	}
@@ -77,7 +78,7 @@ func SetupExampleInformer(logger *zap.Logger) {
 	s := ExampleInformer{
 		logger: logger,
 	}
-	go func {
+	go func() {
 		for {
 			s.RunInformer()
 			time.Sleep(time.Duration(5) * time.Second)

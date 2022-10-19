@@ -43,7 +43,7 @@ func NewLeaseElector(ctx context.Context, leaseNamespace, leaseName, leaseID str
 
 	coordinationClient, e := coordinationv1client.NewForConfig(ctrl.GetConfigOrDie())
 	if e != nil {
-		return nil, fmt.Errorf("fail to new coordination client: %w", e)
+		return nil, nil, fmt.Errorf("fail to new coordination client: %w", e)
 	}
 
 	leaseLock := &resourcelock.LeaseLock{
@@ -82,15 +82,13 @@ func NewLeaseElector(ctx context.Context, leaseNamespace, leaseName, leaseID str
 	go func() {
 		// Run will not return before leader election loop is stopped by ctx or it has stopped holding the leader lease
 		le.Run(ctx)
-
 		select {
 		case <-ctx.Done():
 			logger.Sugar().Warnf("context is done, exit lease goroutine, detail=%v", ctx.Err())
 			return
 		default:
 		}
-
-	}
+	}()
 
 	return
 }
