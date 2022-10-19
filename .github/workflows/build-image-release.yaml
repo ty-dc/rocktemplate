@@ -4,9 +4,8 @@ on:
   workflow_call:
     inputs:
       ref:
-        description: 'tag, sha, branch'
         required: true
-        default: main
+        type: string
 
 permissions: write-all
 
@@ -14,7 +13,7 @@ jobs:
   call-workflow:
     uses: ./.github/workflows/call-release-image.yaml
     with:
-      ref: ${{ github.event.inputs.ref }}
+      ref: ${{ inputs.ref }}
       push: "true"
       race: "0"
     secrets: inherit
