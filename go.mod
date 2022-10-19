@@ -12,7 +12,7 @@ require (
 	github.com/go-swagger/go-swagger v0.30.3
 	github.com/google/gops v0.3.25
 	github.com/jessevdk/go-flags v1.5.0
-	github.com/onsi/ginkgo/v2 v2.3.0
+	github.com/onsi/ginkgo/v2 v2.3.1
 	github.com/onsi/gomega v1.22.1
 	github.com/prometheus/client_golang v1.13.0
 	github.com/pyroscope-io/client v0.4.0
