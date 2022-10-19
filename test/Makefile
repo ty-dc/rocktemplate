@@ -157,9 +157,9 @@ install_example_app:
 		echo "succeeded to deploy test deployment "
 	@echo "========================================================"
 	@echo "   deploy kind cluster $(KIND_CLUSTER_NAME)             "
-	@echo "  kubectl get node --kubeconfig $(KIND_KUBECONFIG)      "
+	@echo "   export KUBECONFIG=$(KIND_KUBECONFIG)                 "
+	@echo "   kubectl get pod -o wide -A                           "
 	@echo "========================================================"
-
 
 
 .PHONY: clean
