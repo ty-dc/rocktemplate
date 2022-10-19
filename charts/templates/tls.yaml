@@ -27,7 +27,7 @@ webhooks:
       {{- end }}
     failurePolicy: Fail
     # ====modify====
-    name: mybook.rocktemplate.spidernet.io
+    name: mybooks.rocktemplate.spidernet.io
     rules:
       - apiGroups:
           # ====modify====
@@ -38,7 +38,7 @@ webhooks:
           - *
         resources:
           # ====modify==== crdName
-          - mybook
+          - mybooks
     sideEffects: None
 
 ---
@@ -67,7 +67,7 @@ webhooks:
       {{- end }}
     failurePolicy: Fail
     # ====modify====
-    name: mybook.rocktemplate.spidernet.io
+    name: mybooks.rocktemplate.spidernet.io
     rules:
       - apiGroups:
           # ====modify====
@@ -78,7 +78,7 @@ webhooks:
           - *
         resources:
           # ====modify==== crdName
-          - mybook
+          - mybooks
     sideEffects: None
 
 {{- if eq .Values.rocktemplateController.tls.method "certmanager" -}}
