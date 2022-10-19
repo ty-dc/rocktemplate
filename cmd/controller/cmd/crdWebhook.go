@@ -83,13 +83,22 @@ func (s *webhookhander) ValidateDelete(ctx context.Context, obj runtime.Object) 
 	return nil
 }
 
-func SetupExampleWebhook(logger *zap.Logger) {
+func SetupExampleWebhook(webhookPort int, tlsDir string, logger *zap.Logger) {
 	logger.Info("setup webhook")
 
+	schema := runtime.NewScheme()
+	if e := crd.AddToScheme(schema); e != nil {
+		logger.Sugar().Fatalf("failed to add crd schema, reason=%v", e)
+	}
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
-		Scheme:                 runtime.NewScheme(),
+		Scheme:                 schema,
+		LeaderElection:         false,
 		MetricsBindAddress:     "0",
 		HealthProbeBindAddress: "0",
+		// webhook port
+		Port: webhookPort,
+		// directory that contains the webhook server key and certificate, The server key and certificate must be named tls.key and tls.crt
+		CertDir: tlsDir,
 	})
 	if err != nil {
 		logger.Sugar().Fatalf("failed to NewManager, reason=%v", err)

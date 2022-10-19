@@ -11,6 +11,7 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"syscall"
 	"time"
 )
@@ -92,7 +93,7 @@ func DaemonMain() {
 
 	// ----------
 	SetupExampleInformer(rootLogger.Named("mybook informer"))
-	SetupExampleWebhook(rootLogger.Named("mybook wehbook"))
+	SetupExampleWebhook(int(globalConfig.WebhookPort), filepath.Dir(globalConfig.TlsServerCertPath), rootLogger.Named("mybook wehbook"))
 
 	// ------------
 	rootLogger.Info("hello world")
