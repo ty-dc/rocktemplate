@@ -333,7 +333,7 @@ jobs:
       - name: Get the E2E Performance Result For Dual-stack
         # run all e2e cases
         id: get_performance
-        if: ${{ needs.prepare.outputs.ipfamily_dual_e2e == 'true' }}
+        if: ${{ needs.prepare.outputs.ipfamily_dual_e2e == 'true' && env.PERFORMANCE_BADGE_ID != ''}}
         shell: bash
         run: |
           # sudo apt-get install -y jq
@@ -342,7 +342,7 @@ jobs:
           echo "RUN_PERFORMANCE_RESULT=${TODO_STATUS}" >> $GITHUB_ENV
 
       - name: Update Badge For Dual-stack
-        if: ${{ env.RUN_PERFORMANCE_RESULT != '' && needs.prepare.outputs.ipfamily_dual_e2e == 'true' || env.PERFORMANCE_BADGE_ID != '' }}
+        if: ${{ env.RUN_PERFORMANCE_RESULT != '' && needs.prepare.outputs.ipfamily_dual_e2e == 'true' && env.PERFORMANCE_BADGE_ID != '' }}
         uses: schneegans/dynamic-badges-action@v1.5.0
         with:
           auth: ${{ secrets.WELAN_PAT }}
