@@ -59,6 +59,7 @@ func (s *ExampleInformer) RunInformer() {
 	go func(lossLease chan struct{}) {
 		<-lossLease
 		close(stopInfomer)
+		s.logger.Warn("lease leader is loss, informer is broken")
 	}(lossLease)
 
 	// setup informer

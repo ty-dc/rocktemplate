@@ -26,10 +26,12 @@ webhooks:
       caBundle: {{ .ca.Cert | b64enc }}
       {{- end }}
     failurePolicy: Fail
-    name: template.spidernet.io
+    # ====modify====
+    name: mybook.rocktemplate.spidernet.io
     rules:
       - apiGroups:
-          - template.spidernet.io
+          # ====modify====
+          - rocktemplate.spidernet.io
         apiVersions:
           - v1
         operations:
@@ -65,10 +67,12 @@ webhooks:
       caBundle: {{ .ca.Cert | b64enc }}
       {{- end }}
     failurePolicy: Fail
-    name: template.spidernet.io
+    # ====modify====
+    name: mybook.rocktemplate.spidernet.io
     rules:
       - apiGroups:
-          - template.spidernet.io
+          # ====modify====
+          - rocktemplate.spidernet.io
         apiVersions:
           - v1
         operations:
