@@ -17,7 +17,7 @@ webhooks:
       service:
         name: {{ .Values.rocktemplateController.name | trunc 63 | trimSuffix "-" }}
         namespace: {{ .Release.Namespace }}
-        # ====modify==== url format "/mutate-${apiGroup}-${version}-${crdName}"
+        # ====modify==== the mutating route path : "/mutate-" + strings.ReplaceAll(gvk.Group, ".", "-") + "-" + gvk.Version + "-" + strings.ToLower(gvk.Kind)
         path: "/mutate-rocktemplate-spidernet-io-v1-mybook"
         port: {{ .Values.rocktemplateController.webhookPort }}
       {{- if (eq .Values.rocktemplateController.tls.method "provided") }}
@@ -59,8 +59,8 @@ webhooks:
       service:
         name: {{ .Values.rocktemplateController.name | trunc 63 | trimSuffix "-" }}
         namespace: {{ .Release.Namespace }}
-        # ====modify==== url format "/validating-${apiGroup}-${version}-${crdName}"
-        path: "/validating-rocktemplate-spidernet-io-v1-mybook"
+        # ====modify==== the validate route path : "/validate-" + strings.ReplaceAll(gvk.Group, ".", "-") + "-" + gvk.Version + "-" + strings.ToLower(gvk.Kind)
+        path: "/validate-rocktemplate-spidernet-io-v1-mybook"
         port: {{ .Values.rocktemplateController.webhookPort }}
       {{- if (eq .Values.rocktemplateController.tls.method "provided") }}
       caBundle: {{ .Values.rocktemplateController.tls.provided.tlsCa | required "missing tls.provided.tlsCa" }}

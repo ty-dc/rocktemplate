@@ -153,15 +153,17 @@ func (s *webhookhander) ValidateDelete(ctx context.Context, obj runtime.Object) 
 //
 // }
 
+// https://github.com/kubernetes-sigs/controller-runtime/blob/master/pkg/builder/example_webhook_test.go
+// https://github.com/kubernetes-sigs/controller-runtime/blob/master/pkg/builder/webhook_test.go
 func SetupExampleWebhook(webhookPort int, tlsDir string, logger *zap.Logger) {
 	logger.Sugar().Infof("setup webhook on port %v, with tls under %v", webhookPort, tlsDir)
 
-	schema := runtime.NewScheme()
-	if e := crd.AddToScheme(schema); e != nil {
-		logger.Sugar().Fatalf("failed to add crd schema, reason=%v", e)
+	scheme := runtime.NewScheme()
+	if e := crd.AddToScheme(scheme); e != nil {
+		logger.Sugar().Fatalf("failed to add crd scheme, reason=%v", e)
 	}
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
-		Scheme:                 schema,
+		Scheme:                 scheme,
 		LeaderElection:         false,
 		MetricsBindAddress:     "0",
 		HealthProbeBindAddress: "0",
@@ -177,6 +179,8 @@ func SetupExampleWebhook(webhookPort int, tlsDir string, logger *zap.Logger) {
 	r := &webhookhander{
 		logger: logger,
 	}
+	// the mutating route path : "/mutate-" + strings.ReplaceAll(gvk.Group, ".", "-") + "-" + gvk.Version + "-" + strings.ToLower(gvk.Kind)
+	// the validate route path : "/validate-" + strings.ReplaceAll(gvk.Group, ".", "-") + "-" + gvk.Version + "-" + strings.ToLower(gvk.Kind)
 	e := ctrl.NewWebhookManagedBy(mgr).
 		For(&crd.Mybook{}).
 		WithDefaulter(r).
@@ -185,12 +189,13 @@ func SetupExampleWebhook(webhookPort int, tlsDir string, logger *zap.Logger) {
 	if e != nil {
 		logger.Sugar().Fatalf("failed to NewWebhookManagedBy, reason=%v", e)
 	}
-	server := mgr.GetWebhookServer()
+
+	// server := mgr.GetWebhookServer()
 	// mgr.Start()
 
 	go func() {
 		logger.Info("start wehbhook server")
-		if err := server.Start(context.Background()); err != nil {
+		if err := mgr.Start(context.Background()); err != nil {
 			logger.Sugar().Errorf("wehbhook down, reason=%v", err)
 		}
 		time.Sleep(time.Second)
