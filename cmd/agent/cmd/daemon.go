@@ -46,8 +46,10 @@ func SetupUtility() {
 		_, e = pyroscope.Start(pyroscope.Config{
 			ApplicationName: BinName,
 			ServerAddress:   globalConfig.PyroscopeServerAddress,
-			Logger:          pyroscope.StandardLogger,
-			Tags:            map[string]string{"node": node},
+			// too much log
+			// Logger:          pyroscope.StandardLogger,
+			Logger: pyroscope.noopLogger,
+			Tags:   map[string]string{"node": node},
 			ProfileTypes: []pyroscope.ProfileType{
 				pyroscope.ProfileCPU,
 				pyroscope.ProfileAllocObjects,

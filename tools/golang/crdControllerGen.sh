@@ -24,7 +24,7 @@ controllerGenCmd() {
 
 echo "generate role yaml to chart"
 controllerGenCmd rbac:roleName="exampleClusterRole" paths="${API_CODE_DIR}" output:stdout \
-    | sed 's?name: exampleClusterRole?name: {{ include "project.name" . }}?' > ${CHART_DIR}/role.yaml
+    | sed 's?name: exampleClusterRole?name: {{ include "project.name" . }}?' > ${CHART_DIR}/templates/role.yaml
 
 echo "generate CRD yaml to chart"
 controllerGenCmd crd paths="${API_CODE_DIR}"  output:crd:artifacts:config="${CHART_DIR}/crds"
