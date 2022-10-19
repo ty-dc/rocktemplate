@@ -23,7 +23,6 @@ var metricMapping = []pkgmetric.MetricMappingType{
 }
 
 // var globalMeter metric.Meter
-
 func RunMetricsServer(metricName string) {
 	logger := rootLogger.Named("metric")
 

@@ -30,6 +30,11 @@
 
 8. update images/
 
+9. enable third app
+
+    codefactor: https://www.codefactor.io/dashboard
+
+    sonarCloud: https://sonarcloud.io/projects/create
 
 ## local develop
 
