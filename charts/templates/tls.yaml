@@ -35,8 +35,7 @@ webhooks:
         apiVersions:
           - v1
         operations:
-          - CREATE
-          - UPDATE
+          - *
         resources:
           # ====modify==== crdName
           - mybook
@@ -76,9 +75,7 @@ webhooks:
         apiVersions:
           - v1
         operations:
-          - CREATE
-          - UPDATE
-          - DELETE
+          - *
         resources:
           # ====modify==== crdName
           - mybook
