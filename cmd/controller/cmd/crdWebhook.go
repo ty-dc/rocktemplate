@@ -8,6 +8,8 @@ import (
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
 	"time"
 )
@@ -32,6 +34,11 @@ func (s *webhookhander) Default(ctx context.Context, obj runtime.Object) error {
 	}
 	logger.Sugar().Infof("obj: %+v", r)
 	r.Annotations["test"] = "add-by-mutating-webhook"
+
+	finalizerName := "rocktemplate.spidernet.io"
+	if dt := r.GetDeletionTimestamp(); dt.IsZero() && !controllerutil.ContainsFinalizer(client.Object(r), finalizerName) {
+		controllerutil.AddFinalizer(client.Object(r), finalizerName)
+	}
 
 	return nil
 
@@ -127,7 +134,7 @@ func SetupExampleWebhook(webhookPort int, tlsDir string, logger *zap.Logger) {
 	}
 
 	go func() {
-		s := "wehbhook down"
+		s := "webhook down"
 
 		// mgr.Start()
 		if err := mgr.GetWebhookServer().Start(context.Background()); err != nil {
