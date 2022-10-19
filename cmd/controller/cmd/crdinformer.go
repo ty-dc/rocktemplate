@@ -9,12 +9,13 @@ import (
 	"go.uber.org/zap"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/cache"
-	"os"
 	"time"
 )
 
 type ExampleInformer struct {
-	logger *zap.Logger
+	logger         *zap.Logger
+	leaseName      string
+	leaseNameSpace string
 }
 
 func (s *ExampleInformer) informerAddHandler(obj interface{}) {
@@ -42,25 +43,30 @@ func (s *ExampleInformer) RunInformer() {
 		return
 	}
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
-	leaseNamespace := "kube-system"
-	leaseName := "testlease"
-	rlogger := s.logger.Named(fmt.Sprintf("lease %s/%s", leaseNamespace, leaseName))
-	id, _ := os.Hostname()
-	getLease, lossLease, err := lease.NewLeaseElector(ctx, leaseNamespace, leaseName, id, rlogger)
-	if err != nil {
-		s.logger.Sugar().Fatalf("failed to generate lease, reason=%v ", err)
-	}
-	<-getLease
-
 	stopInfomer := make(chan struct{})
-	go func(lossLease chan struct{}) {
-		<-lossLease
-		close(stopInfomer)
-		s.logger.Warn("lease leader is loss, informer is broken")
-	}(lossLease)
+
+	if len(s.leaseName) > 0 && len(s.leaseNameSpace) > 0 {
+		s.logger.Sugar().Infof("try to get lease %s/%s to run informer", s.leaseNameSpace, s.leaseName)
+
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+
+		rlogger := s.logger.Named(fmt.Sprintf("lease %s/%s", s.leaseNameSpace, s.leaseName))
+		// id, _ := os.Hostname()
+		id := globalConfig.PodName
+		getLease, lossLease, err := lease.NewLeaseElector(ctx, s.leaseNameSpace, s.leaseName, id, rlogger)
+		if err != nil {
+			s.logger.Sugar().Fatalf("failed to generate lease, reason=%v ", err)
+		}
+		<-getLease
+		s.logger.Sugar().Infof("succeed to get lease %s/%s to run informer", s.leaseNameSpace, s.leaseName)
+
+		go func(lossLease chan struct{}) {
+			<-lossLease
+			close(stopInfomer)
+			s.logger.Sugar().Warnf("lease %s/%s is loss, informer is broken", s.leaseNameSpace, s.leaseName)
+		}(lossLease)
+	}
 
 	// setup informer
 	s.logger.Info("begin to setup informer")
@@ -75,9 +81,11 @@ func (s *ExampleInformer) RunInformer() {
 
 }
 
-func SetupExampleInformer(logger *zap.Logger) {
+func SetupExampleInformer(leaseName, leaseNameSpace string, logger *zap.Logger) {
 	s := ExampleInformer{
-		logger: logger,
+		logger:         logger,
+		leaseName:      leaseName,
+		leaseNameSpace: leaseNameSpace,
 	}
 	go func() {
 		for {

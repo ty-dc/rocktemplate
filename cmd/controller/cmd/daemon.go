@@ -94,7 +94,7 @@ func DaemonMain() {
 	MetricHistogramDuration.Record(context.Background(), 20)
 
 	// ----------
-	SetupExampleInformer(rootLogger.Named("mybook informer"))
+	SetupExampleInformer("testlease", globalConfig.PodNamespace, rootLogger.Named("mybook informer"))
 	SetupExampleWebhook(int(globalConfig.WebhookPort), filepath.Dir(globalConfig.TlsServerCertPath), rootLogger.Named("mybook wehbook"))
 
 	// ------------

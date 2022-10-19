@@ -12,16 +12,22 @@ import (
 )
 
 type Config struct {
-	EnableMetric           bool
-	MetricPort             int32
-	HttpPort               int32
-	GopsPort               int32
-	WebhookPort            int32
+	EnableMetric bool
+	MetricPort   int32
+	HttpPort     int32
+	GopsPort     int32
+	WebhookPort  int32
+
 	PyroscopeServerAddress string
-	ConfigMapPath          string
-	TlsCaCertPath          string
-	TlsServerCertPath      string
-	TlsServerKeyPath       string
+
+	ConfigMapPath string
+
+	TlsCaCertPath     string
+	TlsServerCertPath string
+	TlsServerKeyPath  string
+
+	PodName      string
+	PodNamespace string
 }
 
 var globalConfig Config
@@ -39,6 +45,8 @@ var envMapping = []_envMapping{
 	{"ENV_GOPS_LISTEN_PORT", "", &globalConfig.GopsPort},
 	{"ENV_WEBHOOK_PORT", "", &globalConfig.WebhookPort},
 	{"ENV_PYROSCOPE_PUSH_SERVER_ADDRESS", "", &globalConfig.PyroscopeServerAddress},
+	{"ENV_POD_NAME", "", &globalConfig.PodName},
+	{"ENV_POD_NAMESPACE", "", &globalConfig.PodNamespace},
 }
 
 func init() {

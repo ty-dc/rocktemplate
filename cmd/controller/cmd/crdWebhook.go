@@ -12,6 +12,8 @@ import (
 	"time"
 )
 
+// --------------------
+
 type webhookhander struct {
 	logger *zap.Logger
 }
@@ -29,14 +31,14 @@ func (s *webhookhander) Default(ctx context.Context, obj runtime.Object) error {
 		return apierrors.NewBadRequest(s)
 	}
 	logger.Sugar().Infof("obj: %+v", r)
-	r.Annotations["test"] = "add-by-mutating-wehbook"
+	r.Annotations["test"] = "add-by-mutating-webhook"
 
 	return nil
 
 }
 
 func (s *webhookhander) ValidateCreate(ctx context.Context, obj runtime.Object) error {
-	logger := s.logger.Named("validating create wehbook")
+	logger := s.logger.Named("validating create webhook")
 
 	r, ok := obj.(*crd.Mybook)
 	if !ok {
@@ -50,7 +52,7 @@ func (s *webhookhander) ValidateCreate(ctx context.Context, obj runtime.Object) 
 }
 
 func (s *webhookhander) ValidateUpdate(ctx context.Context, oldObj, newObj runtime.Object) error {
-	logger := s.logger.Named("validating update wehbook")
+	logger := s.logger.Named("validating update webhook")
 
 	old, ok := oldObj.(*crd.Mybook)
 	if !ok {
@@ -72,7 +74,7 @@ func (s *webhookhander) ValidateUpdate(ctx context.Context, oldObj, newObj runti
 
 // ValidateDelete implements webhook.CustomValidator so a webhook will be registered for the type
 func (s *webhookhander) ValidateDelete(ctx context.Context, obj runtime.Object) error {
-	logger := s.logger.Named("validating delete wehbook")
+	logger := s.logger.Named("validating delete webhook")
 
 	r, ok := obj.(*crd.Mybook)
 	if !ok {
@@ -84,6 +86,8 @@ func (s *webhookhander) ValidateDelete(ctx context.Context, obj runtime.Object) 
 
 	return nil
 }
+
+// --------------------
 
 // https://github.com/kubernetes-sigs/controller-runtime/blob/master/pkg/builder/example_webhook_test.go
 // https://github.com/kubernetes-sigs/controller-runtime/blob/master/pkg/builder/webhook_test.go
@@ -122,11 +126,10 @@ func SetupExampleWebhook(webhookPort int, tlsDir string, logger *zap.Logger) {
 		logger.Sugar().Fatalf("failed to NewWebhookManagedBy, reason=%v", e)
 	}
 
-	// server := mgr.GetWebhookServer()
-	// mgr.Start()
-
 	go func() {
 		s := "wehbhook down"
+
+		// mgr.Start()
 		if err := mgr.GetWebhookServer().Start(context.Background()); err != nil {
 			s += fmt.Sprintf(", reason=%v", err)
 		}
