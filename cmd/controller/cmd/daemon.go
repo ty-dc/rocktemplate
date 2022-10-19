@@ -51,7 +51,7 @@ func SetupUtility() {
 			ServerAddress:   globalConfig.PyroscopeServerAddress,
 			// too much log
 			// Logger:          pyroscope.StandardLogger,
-			Logger: pyroscope.noopLogger,
+			Logger: nil,
 			Tags:   map[string]string{"node": node},
 			ProfileTypes: []pyroscope.ProfileType{
 				pyroscope.ProfileCPU,
