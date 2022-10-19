@@ -51,10 +51,9 @@ jobs:
 
   build-release-image:
     needs: get-tag
-    uses: ./.github/workflows/call-release-image.yaml
+    uses: ./.github/workflows/build-image-release.yaml
     with:
       ref: ${{ needs.get-tag.outputs.tag }}
-      push: 'true'
     secrets: inherit
 
   release-chart:
