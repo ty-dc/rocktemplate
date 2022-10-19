@@ -56,7 +56,7 @@ jobs:
       ipfamily_dual_e2e: ${{ env.RUN_E2E_DUAL_STACK }}
     steps:
       - name: Check Code Changes
-        uses: dorny/paths-filter@v2.10.2
+        uses: dorny/paths-filter@v2.11.1
         if: ${{ github.event_name == 'pull_request_target' }}
         id: filter_pr
         with:
