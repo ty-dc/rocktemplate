@@ -5,14 +5,14 @@ go 1.19
 require (
 	github.com/go-openapi/errors v0.20.3
 	github.com/go-openapi/loads v0.21.2
-	github.com/go-openapi/runtime v0.24.1
+	github.com/go-openapi/runtime v0.24.2
 	github.com/go-openapi/spec v0.20.7
 	github.com/go-openapi/strfmt v0.21.3
 	github.com/go-openapi/swag v0.22.3
 	github.com/go-swagger/go-swagger v0.30.3
 	github.com/google/gops v0.3.25
 	github.com/jessevdk/go-flags v1.5.0
-	github.com/onsi/ginkgo/v2 v2.3.0
+	github.com/onsi/ginkgo/v2 v2.3.1
 	github.com/onsi/gomega v1.22.1
 	github.com/prometheus/client_golang v1.13.0
 	github.com/pyroscope-io/client v0.4.0
@@ -26,9 +26,9 @@ require (
 	go.opentelemetry.io/otel/sdk/metric v0.32.3
 	go.uber.org/zap v1.23.0
 	golang.org/x/net v0.0.0-20220826154423-83b083e8dc8b
-	k8s.io/apimachinery v0.25.0
+	k8s.io/apimachinery v0.25.3
 	k8s.io/client-go v0.25.0
-	k8s.io/code-generator v0.25.0
+	k8s.io/code-generator v0.25.3
 	sigs.k8s.io/controller-runtime v0.13.0
 	sigs.k8s.io/controller-tools v0.10.0
 )
