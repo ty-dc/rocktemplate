@@ -72,7 +72,7 @@ func (s *webhookhander) ValidateUpdate(ctx context.Context, oldObj, newObj runti
 	}
 	new, ok := newObj.(*crd.Mybook)
 	if !ok {
-		s := fmt.Sprintf("failed to get newObj")
+		s := "failed to get newObj"
 		logger.Error(s)
 		return apierrors.NewBadRequest(s)
 	}
@@ -88,7 +88,7 @@ func (s *webhookhander) ValidateDelete(ctx context.Context, obj runtime.Object) 
 
 	r, ok := obj.(*crd.Mybook)
 	if !ok {
-		s := fmt.Sprintf("failed to get obj")
+		s := "failed to get obj"
 		logger.Error(s)
 		return apierrors.NewBadRequest(s)
 	}
