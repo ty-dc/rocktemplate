@@ -1,4 +1,3 @@
-# validate any chart changes under charts directory
 name: Auto Chart Lint
 
 env:

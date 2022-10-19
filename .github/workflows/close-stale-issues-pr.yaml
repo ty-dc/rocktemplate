@@ -4,7 +4,6 @@ env:
   STALE_ISSUE_LABEL: issue/stale
   STALE_PR_LABEL: pr/stale
 
-
 on:
   schedule:
     # each day

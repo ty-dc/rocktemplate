@@ -25,11 +25,13 @@ build_all_bin:
 	make build_agent_bin
 
 
+# ====modify====
 .PHONY: build_controller_bin
 build_controller_bin: CMD_BIN_DIR := $(ROOT_DIR)/cmd/controller
 build_controller_bin:
 	$(BUILD_BIN)
 
+# ====modify====
 .PHONY: build_agent_bin
 build_agent_bin: CMD_BIN_DIR := $(ROOT_DIR)/cmd/agent
 build_agent_bin:
@@ -60,6 +62,7 @@ endef
 .PHONY: build_local_image
 build_local_image: build_local_agent_image build_local_controller_image
 
+# ====modify====
 .PHONY: build_local_agent_image
 build_local_agent_image: IMAGE_NAME := ${REGISTER}/${GIT_REPO}/agent
 build_local_agent_image: DOCKERFILE_PATH := $(ROOT_DIR)/images/agent/Dockerfile
@@ -67,7 +70,7 @@ build_local_agent_image: IMAGE_TAG := $(GIT_COMMIT_VERSION)
 build_local_agent_image:
 	$(BUILD_FINAL_IMAGE)
 
-
+# ====modify====
 .PHONY: build_local_controller_image
 build_local_controller_image: IMAGE_NAME := ${REGISTER}/${GIT_REPO}/controller
 build_local_controller_image: DOCKERFILE_PATH := $(ROOT_DIR)/images/controller/Dockerfile
@@ -99,6 +102,7 @@ endef
 .PHONY: build_local_base_image
 build_local_base_image: build_local_agent_base_image
 
+# ====modify====
 .PHONY: build_local_agent_base_image
 build_local_agent_base_image: DOCKERFILE_PATH := $(ROOT_DIR)/images/agent-base/Dockerfile
 build_local_agent_base_image: BASE_IMAGE_NAME := ${REGISTER}/${GIT_REPO}/agent-base
@@ -186,7 +190,8 @@ update_chart_version:
 lint_chart_format:
 	mkdir -p $(DESTDIR_CHART) ; \
    			echo "check chart" ; \
-   			helm lint --with-subcharts $(CHART_DIR) ; \
+   			helm lint --with-subcharts $(CHART_DIR)
+
 
 .PHONY: lint_chart_version
 lint_chart_version:
@@ -212,6 +217,7 @@ lint_chart_trivy:
 update_crd_sdk:
 	@ echo "update crd manifest" && ./tools/golang/crdControllerGen.sh
 	@ echo "update crd sdk" && ./tools/golang/crdSdkGen.sh
+
 
 .PHONY: validate_crd_sdk
 validate_crd_sdk:
@@ -261,6 +267,7 @@ lint_golang_lock:
 	    	 exit 1 ;\
 	    fi ; \
 	  done
+
 
 # should label for each test file
 .PHONY: lint_test_label
@@ -323,6 +330,7 @@ unitest_tests:
 	@ echo "output coverage to $(UNITEST_OUTPUT)/coverage.out "
 	@ echo "output unitestreport to $(UNITEST_OUTPUT)/unitestreport.json "
 	@ echo "output coverage-all.html to $(UNITEST_OUTPUT)/coverage-all.html "
+
 
 # ================ e2e
 

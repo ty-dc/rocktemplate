@@ -1,5 +1,3 @@
-# !!!!!!!!!!!! modify line 20 , 43
-
 name: Auto Build Image Base
 
 env:
@@ -16,7 +14,7 @@ on:
       - synchronize
       - reopened
     paths:
-      # can not use env here
+      # ====modify====
       - images/agent-base/**
   workflow_dispatch:
     inputs:
@@ -40,6 +38,7 @@ jobs:
     strategy:
       matrix:
         include:
+          # ====modify====
           - name: agent-base
             context: ./images/agent-base
 

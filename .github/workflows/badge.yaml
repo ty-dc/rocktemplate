@@ -1,5 +1,6 @@
 name: Badge Status
 
+# ====modify====
 env:
   CODESTATUSSCRIPT: "./tools/golang/codeCoverage.sh"
   BADGE_CODELINE_FILENAME:
@@ -35,6 +36,7 @@ jobs:
           echo "COMMENT_PERCENTAGE=${COMMENT_PERCENTAGE}" >> $GITHUB_ENV
 
       - name: Create Lines-of-Code-Badge
+        if: ${{ env.BADGE_CODELINE_ID != '' }}
         uses: schneegans/dynamic-badges-action@v1.4.0
         with:
           auth: ${{ secrets.WELAN_PAT }}
@@ -45,6 +47,7 @@ jobs:
           color: lightgrey
 
       - name: Create Comments-Badge
+        if: ${{ env.BADGE_COMMENT_LINE != '' }}
         uses: schneegans/dynamic-badges-action@v1.4.0
         with:
           auth: ${{ secrets.WELAN_PAT }}

@@ -2,29 +2,33 @@
 
 ## copy
 
-0. grep "====modify====" * -RHn --colour  and modify all of them
+1. copy repo  
 
-1. copy repo and replace all 'rocktemplate' to 'YourRepoName'
+    replace all 'rocktemplate' to 'YourRepoName'
 
-2. add e2e tools in test/scripts/installE2eTools.sh for github CI
+    replace all 'spidernet-io' and 'spidernet.io' to 'YourOrigin'
 
-3. image name 
-    .github/workflows/call-release-image.ymal  line 30-35 , rename image name
+2. grep "====modify====" * -RHn --colour  and modify all of them
 
-4. github/workflows/auto-nightly-ci.yaml  line 3 
+3. create badge for github/workflows/auto-nightly-ci.yaml, github/workflows/badge.yaml
 
-5. create badge for github/workflows/auto-nightly-ci.yaml, github/workflows/badge.yaml
+4. github seetings: 
 
-6. spidernet.io  -> settings -> secrets -> actions -> grant secret to repo
+    spidernet.io  -> settings -> secrets -> actions -> grant secret to repo
 
-7. repo -> packages -> package settings -> Change package visibility
+    repo -> packages -> package settings -> Change package visibility
 
-8. repo -> settings -> pages -> add branch 'github_pages', directory 'docs'
+    create 'github_pages' branch, and repo -> settings -> pages -> add branch 'github_pages', directory 'docs'
 
-9. repo -> settings -> branch -> add protection rules for 'main' and 'github_pages'
+    repo -> settings -> branch -> add protection rules for 'main' and 'github_pages'
 
-9 redefine CRD in pkg/k8s/v1, and `make update_crd_sdk`
+5. redefine CRD in pkg/k8s/v1, and `make update_crd_sdk`
 
+6. update api/v1/openapi.yaml and `update_openapi_sdk` 
+
+7. update charts/
+
+8. update images/
 
 
 ## local develop

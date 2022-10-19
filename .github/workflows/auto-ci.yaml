@@ -1,11 +1,10 @@
-# !!!!!!!!!!!! modify line 4 - 9
-
 name: Auto CI
 
 env:
   E2E_LOG_PATH: test/runtime/e2edebugLog.txt
   E2E_GINKGO_REPORT_PATH: test/runtime/ginkgoreport.json
   PERFORMANCE_SCRIPT: test/scripts/getPerformanceData.sh
+  # ====modify====
   PERFORMANCE_BADGE_ID:
   PERFORMANCE_BADGE_FILENAME:
 
@@ -343,7 +342,7 @@ jobs:
           echo "RUN_PERFORMANCE_RESULT=${TODO_STATUS}" >> $GITHUB_ENV
 
       - name: Update Badge For Dual-stack
-        if: ${{ env.RUN_PERFORMANCE_RESULT != '' && needs.prepare.outputs.ipfamily_dual_e2e == 'true' }}
+        if: ${{ env.RUN_PERFORMANCE_RESULT != '' && needs.prepare.outputs.ipfamily_dual_e2e == 'true' || env.PERFORMANCE_BADGE_ID != '' }}
         uses: schneegans/dynamic-badges-action@v1.5.0
         with:
           auth: ${{ secrets.WELAN_PAT }}

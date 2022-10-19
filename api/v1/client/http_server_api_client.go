@@ -13,7 +13,6 @@ import (
 	httptransport "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
 
-	"github.com/spidernet-io/rocktemplate/api/v1/client/controller"
 	"github.com/spidernet-io/rocktemplate/api/v1/client/healthy"
 )
 
@@ -59,7 +58,6 @@ func New(transport runtime.ClientTransport, formats strfmt.Registry) *HTTPServer
 
 	cli := new(HTTPServerAPI)
 	cli.Transport = transport
-	cli.Controller = controller.New(transport, formats)
 	cli.Healthy = healthy.New(transport, formats)
 	return cli
 }
@@ -105,8 +103,6 @@ func (cfg *TransportConfig) WithSchemes(schemes []string) *TransportConfig {
 
 // HTTPServerAPI is a client for HTTP server API
 type HTTPServerAPI struct {
-	Controller controller.ClientService
-
 	Healthy healthy.ClientService
 
 	Transport runtime.ClientTransport
@@ -115,6 +111,5 @@ type HTTPServerAPI struct {
 // SetTransport changes the transport on the client and all its subresources
 func (c *HTTPServerAPI) SetTransport(transport runtime.ClientTransport) {
 	c.Transport = transport
-	c.Controller.SetTransport(transport)
 	c.Healthy.SetTransport(transport)
 }

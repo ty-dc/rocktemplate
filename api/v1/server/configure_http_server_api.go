@@ -14,7 +14,6 @@ import (
 	"github.com/go-openapi/runtime/middleware"
 
 	"github.com/spidernet-io/rocktemplate/api/v1/server/restapi"
-	"github.com/spidernet-io/rocktemplate/api/v1/server/restapi/controller"
 	"github.com/spidernet-io/rocktemplate/api/v1/server/restapi/healthy"
 )
 
@@ -42,16 +41,6 @@ func configureAPI(api *restapi.HTTPServerAPIAPI) http.Handler {
 
 	api.JSONProducer = runtime.JSONProducer()
 
-	if api.ControllerDeleteEndpointIDHandler == nil {
-		api.ControllerDeleteEndpointIDHandler = controller.DeleteEndpointIDHandlerFunc(func(params controller.DeleteEndpointIDParams) middleware.Responder {
-			return middleware.NotImplemented("operation controller.DeleteEndpointID has not yet been implemented")
-		})
-	}
-	if api.ControllerGetEndpointIDHandler == nil {
-		api.ControllerGetEndpointIDHandler = controller.GetEndpointIDHandlerFunc(func(params controller.GetEndpointIDParams) middleware.Responder {
-			return middleware.NotImplemented("operation controller.GetEndpointID has not yet been implemented")
-		})
-	}
 	if api.HealthyGetHealthyLivenessHandler == nil {
 		api.HealthyGetHealthyLivenessHandler = healthy.GetHealthyLivenessHandlerFunc(func(params healthy.GetHealthyLivenessParams) middleware.Responder {
 			return middleware.NotImplemented("operation healthy.GetHealthyLiveness has not yet been implemented")
@@ -65,16 +54,6 @@ func configureAPI(api *restapi.HTTPServerAPIAPI) http.Handler {
 	if api.HealthyGetHealthyStartupHandler == nil {
 		api.HealthyGetHealthyStartupHandler = healthy.GetHealthyStartupHandlerFunc(func(params healthy.GetHealthyStartupParams) middleware.Responder {
 			return middleware.NotImplemented("operation healthy.GetHealthyStartup has not yet been implemented")
-		})
-	}
-	if api.ControllerPatchEndpointIDHandler == nil {
-		api.ControllerPatchEndpointIDHandler = controller.PatchEndpointIDHandlerFunc(func(params controller.PatchEndpointIDParams) middleware.Responder {
-			return middleware.NotImplemented("operation controller.PatchEndpointID has not yet been implemented")
-		})
-	}
-	if api.ControllerPutEndpointIDHandler == nil {
-		api.ControllerPutEndpointIDHandler = controller.PutEndpointIDHandlerFunc(func(params controller.PutEndpointIDParams) middleware.Responder {
-			return middleware.NotImplemented("operation controller.PutEndpointID has not yet been implemented")
 		})
 	}
 

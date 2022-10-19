@@ -22,7 +22,6 @@ import (
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
 
-	"github.com/spidernet-io/rocktemplate/api/v1/server/restapi/controller"
 	"github.com/spidernet-io/rocktemplate/api/v1/server/restapi/healthy"
 )
 
@@ -48,12 +47,6 @@ func NewHTTPServerAPIAPI(spec *loads.Document) *HTTPServerAPIAPI {
 
 		JSONProducer: runtime.JSONProducer(),
 
-		ControllerDeleteEndpointIDHandler: controller.DeleteEndpointIDHandlerFunc(func(params controller.DeleteEndpointIDParams) middleware.Responder {
-			return middleware.NotImplemented("operation controller.DeleteEndpointID has not yet been implemented")
-		}),
-		ControllerGetEndpointIDHandler: controller.GetEndpointIDHandlerFunc(func(params controller.GetEndpointIDParams) middleware.Responder {
-			return middleware.NotImplemented("operation controller.GetEndpointID has not yet been implemented")
-		}),
 		HealthyGetHealthyLivenessHandler: healthy.GetHealthyLivenessHandlerFunc(func(params healthy.GetHealthyLivenessParams) middleware.Responder {
 			return middleware.NotImplemented("operation healthy.GetHealthyLiveness has not yet been implemented")
 		}),
@@ -62,12 +55,6 @@ func NewHTTPServerAPIAPI(spec *loads.Document) *HTTPServerAPIAPI {
 		}),
 		HealthyGetHealthyStartupHandler: healthy.GetHealthyStartupHandlerFunc(func(params healthy.GetHealthyStartupParams) middleware.Responder {
 			return middleware.NotImplemented("operation healthy.GetHealthyStartup has not yet been implemented")
-		}),
-		ControllerPatchEndpointIDHandler: controller.PatchEndpointIDHandlerFunc(func(params controller.PatchEndpointIDParams) middleware.Responder {
-			return middleware.NotImplemented("operation controller.PatchEndpointID has not yet been implemented")
-		}),
-		ControllerPutEndpointIDHandler: controller.PutEndpointIDHandlerFunc(func(params controller.PutEndpointIDParams) middleware.Responder {
-			return middleware.NotImplemented("operation controller.PutEndpointID has not yet been implemented")
 		}),
 	}
 }
@@ -105,20 +92,12 @@ type HTTPServerAPIAPI struct {
 	//   - application/json
 	JSONProducer runtime.Producer
 
-	// ControllerDeleteEndpointIDHandler sets the operation handler for the delete endpoint ID operation
-	ControllerDeleteEndpointIDHandler controller.DeleteEndpointIDHandler
-	// ControllerGetEndpointIDHandler sets the operation handler for the get endpoint ID operation
-	ControllerGetEndpointIDHandler controller.GetEndpointIDHandler
 	// HealthyGetHealthyLivenessHandler sets the operation handler for the get healthy liveness operation
 	HealthyGetHealthyLivenessHandler healthy.GetHealthyLivenessHandler
 	// HealthyGetHealthyReadinessHandler sets the operation handler for the get healthy readiness operation
 	HealthyGetHealthyReadinessHandler healthy.GetHealthyReadinessHandler
 	// HealthyGetHealthyStartupHandler sets the operation handler for the get healthy startup operation
 	HealthyGetHealthyStartupHandler healthy.GetHealthyStartupHandler
-	// ControllerPatchEndpointIDHandler sets the operation handler for the patch endpoint ID operation
-	ControllerPatchEndpointIDHandler controller.PatchEndpointIDHandler
-	// ControllerPutEndpointIDHandler sets the operation handler for the put endpoint ID operation
-	ControllerPutEndpointIDHandler controller.PutEndpointIDHandler
 
 	// ServeError is called when an error is received, there is a default handler
 	// but you can set your own with this
@@ -196,12 +175,6 @@ func (o *HTTPServerAPIAPI) Validate() error {
 		unregistered = append(unregistered, "JSONProducer")
 	}
 
-	if o.ControllerDeleteEndpointIDHandler == nil {
-		unregistered = append(unregistered, "controller.DeleteEndpointIDHandler")
-	}
-	if o.ControllerGetEndpointIDHandler == nil {
-		unregistered = append(unregistered, "controller.GetEndpointIDHandler")
-	}
 	if o.HealthyGetHealthyLivenessHandler == nil {
 		unregistered = append(unregistered, "healthy.GetHealthyLivenessHandler")
 	}
@@ -210,12 +183,6 @@ func (o *HTTPServerAPIAPI) Validate() error {
 	}
 	if o.HealthyGetHealthyStartupHandler == nil {
 		unregistered = append(unregistered, "healthy.GetHealthyStartupHandler")
-	}
-	if o.ControllerPatchEndpointIDHandler == nil {
-		unregistered = append(unregistered, "controller.PatchEndpointIDHandler")
-	}
-	if o.ControllerPutEndpointIDHandler == nil {
-		unregistered = append(unregistered, "controller.PutEndpointIDHandler")
 	}
 
 	if len(unregistered) > 0 {
@@ -305,14 +272,6 @@ func (o *HTTPServerAPIAPI) initHandlerCache() {
 		o.handlers = make(map[string]map[string]http.Handler)
 	}
 
-	if o.handlers["DELETE"] == nil {
-		o.handlers["DELETE"] = make(map[string]http.Handler)
-	}
-	o.handlers["DELETE"]["/endpoint/{id}"] = controller.NewDeleteEndpointID(o.context, o.ControllerDeleteEndpointIDHandler)
-	if o.handlers["GET"] == nil {
-		o.handlers["GET"] = make(map[string]http.Handler)
-	}
-	o.handlers["GET"]["/endpoint/{id}"] = controller.NewGetEndpointID(o.context, o.ControllerGetEndpointIDHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
@@ -325,14 +284,6 @@ func (o *HTTPServerAPIAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/healthy/startup"] = healthy.NewGetHealthyStartup(o.context, o.HealthyGetHealthyStartupHandler)
-	if o.handlers["PATCH"] == nil {
-		o.handlers["PATCH"] = make(map[string]http.Handler)
-	}
-	o.handlers["PATCH"]["/endpoint/{id}"] = controller.NewPatchEndpointID(o.context, o.ControllerPatchEndpointIDHandler)
-	if o.handlers["PUT"] == nil {
-		o.handlers["PUT"] = make(map[string]http.Handler)
-	}
-	o.handlers["PUT"]["/endpoint/{id}"] = controller.NewPutEndpointID(o.context, o.ControllerPutEndpointIDHandler)
 }
 
 // Serve creates a http handler to serve the API over HTTP

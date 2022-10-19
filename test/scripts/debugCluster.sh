@@ -51,6 +51,8 @@ if [ "$TYPE"x == "gops"x ] ; then
 
 elif [ "$TYPE"x == "detail"x ] ; then
 
+    # ====modify==== add more log here
+
     echo "=============== nodes status ============== "
     echo "-------- kubectl get node -o wide"
     kubectl get node -o wide --kubeconfig ${E2E_KUBECONFIG} --show-labels

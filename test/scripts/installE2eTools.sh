@@ -65,4 +65,7 @@ else
     echo "pass   'docker' installed:  $(docker -v) "
 fi
 
+# ====modify==== add more e2e binray
+
+
 exit 0
