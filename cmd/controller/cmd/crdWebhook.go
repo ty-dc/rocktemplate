@@ -85,75 +85,6 @@ func (s *webhookhander) ValidateDelete(ctx context.Context, obj runtime.Object) 
 	return nil
 }
 
-// func runWebhookServer(mux *http.ServeMux, webhookPort int, keyPath, certPath string, logger *zap.Logger) {
-//
-// 	logger.Sugar().Infof("setup webhook on port %v, with tls under %v", webhookPort, tlsDir)
-//
-// 	ctx, cancel := context.WithCancel(context.Background())
-//
-// 	// tls
-// 	certWatcher, err := certwatcher.New(certPath, keyPath)
-// 	if err != nil {
-// 		logger.Sugar().Fatalf("failed to certwatcher, reason=%v", err)
-// 	}
-// 	go func() {
-// 		certWatcher.Start(ctx)
-// 	}()
-//
-// 	tlscfg := &tls.Config{
-// 		// NextProtos:     []string{"h2"},
-// 		GetCertificate:     certWatcher.GetCertificate,
-// 		MinVersion:         tls.VersionTLS12,
-// 		InsecureSkipVerify: true,
-// 	}
-//
-// 	srv := &http.Server{
-// 		Addr:              fmt.Sprintf(":%v", webhookPort),
-// 		TLSConfig:         tlscfg,
-// 		Handler:           mux,
-// 		MaxHeaderBytes:    1 << 20,
-// 		IdleTimeout:       90 * time.Second, // matches http.DefaultTransport keep-alive timeout
-// 		ReadHeaderTimeout: 32 * time.Second,
-// 	}
-//
-// 	s := "wehbhook server exit"
-// 	if e := srv.ListenAndServe(); e != nil {
-// 		s += fmt.Sprintf(", reason=%v", e)
-// 	}
-// 	// cancel tls watch
-// 	cancel()
-// 	logger.Error(s)
-//
-// }
-//
-// type WebhookValidating struct {
-// 	logger *zap.Logger
-// }
-//
-// func SetuptExampleWebhook(webhookPort int, keyPath, certPath string, logger *zap.Logger) {
-//
-// 	schema := runtime.NewScheme()
-// 	if e := crd.AddToScheme(schema); e != nil {
-// 		logger.Sugar().Fatalf("failed to add crd schema, reason=%v", e)
-// 	}
-// 	t := admission.Webhook{
-// 		Handler:
-// 	}
-// 	hook, err := admission.StandaloneWebhook(t, admission.StandaloneOptions{
-// 		Scheme: schema,
-// 		Logger: logger.Named("validating wehbhook"),
-// 	})
-// 	if err != nil {
-// 		logger.Sugar().Fatalf("failed to StandaloneWebhook, reason=%v", err)
-// 	}
-//
-// 	mux := http.NewServeMux()
-// 	mux.Handle("/failing", hook)
-//
-// 	runWebhookServer(mux, webhookPort, keyPath, certPath, logger)
-//
-// }
-
 // https://github.com/kubernetes-sigs/controller-runtime/blob/master/pkg/builder/example_webhook_test.go
 // https://github.com/kubernetes-sigs/controller-runtime/blob/master/pkg/builder/webhook_test.go
 func SetupExampleWebhook(webhookPort int, tlsDir string, logger *zap.Logger) {
@@ -195,10 +126,11 @@ func SetupExampleWebhook(webhookPort int, tlsDir string, logger *zap.Logger) {
 	// mgr.Start()
 
 	go func() {
-		logger.Info("start wehbhook server")
-		if err := mgr.Start(context.Background()); err != nil {
-			logger.Sugar().Errorf("wehbhook down, reason=%v", err)
+		s := "wehbhook down"
+		if err := mgr.GetWebhookServer().Start(context.Background()); err != nil {
+			s += fmt.Sprintf(", reason=%v", err)
 		}
+		logger.Error(s)
 		time.Sleep(time.Second)
 	}()
 

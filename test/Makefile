@@ -160,6 +160,7 @@ install_example_app:
 	@echo "   export KUBECONFIG=$(KIND_KUBECONFIG)                 "
 	@echo "   kubectl get pod -o wide -A                           "
 	@echo "========================================================"
+	@ KUBECONFIG=$(KIND_KUBECONFIG)  kubectl get pod -o wide -A
 
 
 .PHONY: clean
