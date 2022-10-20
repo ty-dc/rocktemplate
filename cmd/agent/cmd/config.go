@@ -7,11 +7,14 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/spidernet-io/rocktemplate/pkg/logger"
+	"gopkg.in/yaml.v3"
+	"os"
 	"reflect"
 	"strconv"
 )
 
 type Config struct {
+	// from env
 	EnableMetric bool
 	MetricPort   int32
 	HttpPort     int32
@@ -20,16 +23,25 @@ type Config struct {
 
 	PyroscopeServerAddress string
 
+	PodName      string
+	PodNamespace string
+
+	GolangMaxProcs int32
+
+	// from flags
 	ConfigMapPath string
 
 	TlsCaCertPath     string
 	TlsServerCertPath string
 	TlsServerKeyPath  string
 
-	PodName      string
-	PodNamespace string
+	// from configmap
+	Configmap ConfigmapConfig
+}
 
-	GolangMaxProcs int32
+type ConfigmapConfig struct {
+	enableIPv4 bool `yaml:"enableIPv4"`
+	enableIPv6 bool `yaml:"enableIPv6"`
 }
 
 var globalConfig Config
@@ -113,6 +125,17 @@ func init() {
 	}
 	printFlag := func() {
 		logger.Info("config-path = " + globalConfig.ConfigMapPath)
+
+		// load configmap
+		if len(globalConfig.ConfigMapPath) > 0 {
+			configmapBytes, err := os.ReadFile(globalConfig.ConfigMapPath)
+			if nil != err {
+				logger.Sugar().Fatalf("failed to read configmap file %v, error: %v", globalConfig.ConfigMapPath, err)
+			}
+			if err := yaml.Unmarshal(configmapBytes, &globalConfig.Configmap); nil != err {
+				logger.Sugar().Fatalf("failed to parse configmap data, error: %v", err)
+			}
+		}
 	}
 	cobra.OnInitialize(printFlag)
 
