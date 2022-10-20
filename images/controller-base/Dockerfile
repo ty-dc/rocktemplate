@@ -32,15 +32,12 @@ RUN chmod +x /build-gops.sh && /build-gops.sh
 FROM ${UBUNTU_IMAGE} as rootfs
 ARG TARGETARCH
 COPY /install-others.sh /install-others.sh
-COPY /configure-iptables-wrapper.sh /configure-iptables-wrapper.sh
-COPY /iptables-wrapper /usr/sbin/iptables-wrapper
 
 #fix warning: debconf: delaying package configuration, since apt-utils is not installed
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get upgrade -y
 
 WORKDIR /
-RUN chmod +x /configure-iptables-wrapper.sh && /configure-iptables-wrapper.sh && rm -f /configure-iptables-wrapper.sh
 
 ARG BUILDPLATFORM
 COPY --from=gops-cni-builder /out/${BUILDPLATFORM}/bin/gops /bin/gops
