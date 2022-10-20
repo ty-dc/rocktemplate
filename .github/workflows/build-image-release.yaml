@@ -15,5 +15,6 @@ jobs:
     with:
       ref: ${{ inputs.ref }}
       push: "true"
+      upload: "false"
       race: "0"
     secrets: inherit
