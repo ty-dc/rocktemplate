@@ -14,6 +14,8 @@ type mybookManager struct {
 	informer *informerHandler
 }
 
+var _ types.MybookManager = (*mybookManager)(nil)
+
 func New(logger *zap.Logger) types.MybookManager {
 	return &mybookManager{
 		logger: logger.Named("mybookManager"),
