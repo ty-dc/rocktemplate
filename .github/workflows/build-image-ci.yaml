@@ -20,10 +20,20 @@ on:
 permissions: write-all
 
 jobs:
-  call-by:
+  call-by-workflow:
     uses: ./.github/workflows/call-release-image.yaml
+    if: ${{ inputs.ref != '' }}
     with:
       ref: ${{ inputs.ref }}
+      push: "false"
+      race: "1"
+    secrets: inherit
+
+  call-by-pr:
+    uses: ./.github/workflows/call-release-image.yaml
+    if: ${{ github.event_name == 'pull_request_target' }}
+    with:
+      ref: ${{ github.event.pull_request.head.sha }}
       push: "false"
       race: "1"
     secrets: inherit

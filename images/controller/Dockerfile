@@ -52,4 +52,6 @@ ENV ENV_VERSION=${VERSION}
 
 COPY --from=builder /tmp/install/${TARGETOS}/${TARGETARCH}/bin/*   /usr/bin/
 
+#====modify====
 CMD ["/usr/bin/controller"]
+
