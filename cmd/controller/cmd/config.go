@@ -28,6 +28,8 @@ type Config struct {
 
 	PodName      string
 	PodNamespace string
+
+	GolangMaxProcs int32
 }
 
 var globalConfig Config
@@ -47,6 +49,7 @@ var envMapping = []_envMapping{
 	{"ENV_PYROSCOPE_PUSH_SERVER_ADDRESS", "", &globalConfig.PyroscopeServerAddress},
 	{"ENV_POD_NAME", "", &globalConfig.PodName},
 	{"ENV_POD_NAMESPACE", "", &globalConfig.PodNamespace},
+	{"ENV_GOLANG_MAXPROCS", "8", &globalConfig.GolangMaxProcs},
 }
 
 func init() {

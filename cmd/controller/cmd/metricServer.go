@@ -42,6 +42,6 @@ func RunMetricsServer(metricName string) {
 	}
 
 	// globalMeter = pkgmetric.NewMetricsServer(metricName, globalConfig.MetricPort, metricMapping, customBucketsView, logger)
-	pkgmetric.NewMetricsServer(metricName, globalConfig.MetricPort, metricMapping, customBucketsView, logger)
+	pkgmetric.RunMetricsServer(metricName, globalConfig.MetricPort, metricMapping, customBucketsView, logger)
 
 }

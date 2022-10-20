@@ -146,6 +146,14 @@ spec:
               value: {{ .Values.rocktemplateAgent.healthServer.port | quote }}
             - name: ENV_GOPS_LISTEN_PORT
               value: {{ .Values.rocktemplateAgent.debug.gopsPort | quote }}
+            - name: ENV_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: ENV_POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
             {{- with .Values.rocktemplateAgent.extraEnv }}
             {{- toYaml . | nindent 12 }}
             {{- end }}

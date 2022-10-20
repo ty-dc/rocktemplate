@@ -64,7 +64,7 @@ func RegisterMetricInstance(metricMapping []MetricMappingType, meter metric.Mete
 
 // example: https://github.com/open-telemetry/opentelemetry-go/blob/main/example/prometheus/main.go
 // https://github.com/open-telemetry/opentelemetry-go/blob/main/example/view/main.go
-func NewMetricsServer(meterName string, metricPort int32, metricMapping []MetricMappingType, histogramBucketsView view.View, logger *zap.Logger) metric.Meter {
+func RunMetricsServer(meterName string, metricPort int32, metricMapping []MetricMappingType, histogramBucketsView view.View, logger *zap.Logger) metric.Meter {
 
 	logger.Sugar().Infof("metric server '%v' will listen on port %v", meterName, metricPort)
 

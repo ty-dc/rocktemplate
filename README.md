@@ -22,15 +22,13 @@
 
     repo -> settings -> branch -> add protection rules for 'main' and 'github_pages'
 
-5. redefine CRD in pkg/k8s/v1, and `make update_crd_sdk`
+5. redefine CRD in pkg/k8s/v1, and `make update_crd_sdk`, and code pkg/mybookManager
 
 6. update api/v1/openapi.yaml and `update_openapi_sdk` 
 
-7. update charts/
+7. update charts/ , and images/ , and CODEOWNERS
 
-8. update images/
-
-9. enable third app
+8. enable third app
 
     codefactor: https://www.codefactor.io/dashboard
 
