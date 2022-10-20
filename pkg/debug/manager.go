@@ -46,7 +46,7 @@ func (s *debugManager) RunPyroscope(serverAddress string, localHostName string) 
 		// too much log
 		// Logger:          pyroscope.StandardLogger,
 		Logger: nil,
-		Tags:   map[string]string{"host": localHostName},
+		Tags:   map[string]string{"node": localHostName},
 		ProfileTypes: []pyroscope.ProfileType{
 			pyroscope.ProfileCPU,
 			pyroscope.ProfileAllocObjects,
