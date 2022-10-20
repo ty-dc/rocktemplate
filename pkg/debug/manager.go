@@ -38,7 +38,7 @@ func (s *debugManager) RunGops(listerPort int) {
 
 func (s *debugManager) RunPyroscope(serverAddress string, localHostName string) {
 	// push mode ,  push to pyroscope server
-	s.logger.Sugar().Infof("pyroscope works in push mode, server %s ", serverAddress)
+	s.logger.Sugar().Infof("%v pyroscope works in push mode, server %s ", localHostName, serverAddress)
 
 	_, e := pyroscope.Start(pyroscope.Config{
 		ApplicationName: filepath.Base(os.Args[0]),
