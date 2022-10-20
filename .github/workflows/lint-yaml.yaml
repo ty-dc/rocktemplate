@@ -4,16 +4,12 @@ on:
   push:
     branches:
       - main
-      - release-*
-      - github_pages
     paths:
       - '**.yml'
       - '**.yaml'
   pull_request:
     branches:
       - main
-      - release-*
-      - github_pages
     paths:
       - '**.yml'
       - '**.yaml'

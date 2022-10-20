@@ -1,7 +1,7 @@
 name: Call Release Charts
 
 env:
-  PR_LABEL: pr/robot_update_githubpage
+  PR_LABEL: pr/robot_update
   PR_REVIWER: weizhoublue
   MERGE_BRANCH: github_pages
   CHART_OUTPUT_PATH: output/chart/*

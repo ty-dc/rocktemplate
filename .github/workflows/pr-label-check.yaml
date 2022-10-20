@@ -7,7 +7,7 @@ on:
     types: [opened, labeled, unlabeled, synchronize]
 
 env:
-  RELEASE_LABELS: "release/bug, release/feature, release/none"
+  RELEASE_LABELS: "release/bug, release/feature, release/none, pr/robot_update"
 
 jobs:
   check-label:

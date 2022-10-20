@@ -79,7 +79,7 @@ jobs:
     secrets: inherit
 
   create-release:
-    needs: [release-chart, release-changelog, get-tag]
+    needs: [release-chart, release-changelog, get-tag, release-doc]
     name: create release
     runs-on: ubuntu-latest
     steps:

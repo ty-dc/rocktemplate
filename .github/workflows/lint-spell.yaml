@@ -9,8 +9,6 @@ on:
   push:
     branches:
       - main
-      - release-*
-      - github_pages
   workflow_call:
     inputs:
       ref:

@@ -4,7 +4,7 @@ env:
   MERGE_BRANCH: github_pages
   SRC_DIRECTORY: 'docs'
   DEST_DIRECTORY: 'docs'
-  PR_LABEL: release/robot_update_githubpage
+  PR_LABEL: pr/robot_update
   PR_REVIWER: weizhoublue
 
 on:
