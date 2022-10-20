@@ -23,8 +23,13 @@ var metricMapping = []pkgmetric.MetricMappingType{
 }
 
 // var globalMeter metric.Meter
-func RunMetricsServer(metricName string) {
+func RunMetricsServer(meterName string) {
 	logger := rootLogger.Named("metric")
+
+	if globalConfig.MetricPort == 0 || globalConfig.EnableMetric == false {
+		logger.Info("metric server is disabled")
+		return
+	}
 
 	// View to customize histogram buckets
 	customBucketsView, err := view.New(
@@ -41,7 +46,7 @@ func RunMetricsServer(metricName string) {
 		logger.Sugar().Fatalf("failed to generate view, reason=%v", err)
 	}
 
-	// globalMeter = pkgmetric.NewMetricsServer(metricName, globalConfig.MetricPort, metricMapping, customBucketsView, logger)
-	pkgmetric.RunMetricsServer(metricName, globalConfig.MetricPort, metricMapping, customBucketsView, logger)
+	// globalMeter = pkgmetric.NewMetricsServer(meterName, globalConfig.MetricPort, metricMapping, customBucketsView, logger)
+	pkgmetric.RunMetricsServer(meterName, globalConfig.MetricPort, metricMapping, customBucketsView, logger)
 
 }
