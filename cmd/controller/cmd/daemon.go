@@ -63,7 +63,7 @@ func DaemonMain() {
 
 	// ----------
 	s := mybookManager.New(rootLogger.Named("mybook"))
-	s.RunInformer("testlease", globalConfig.PodNamespace)
+	s.RunInformer("testlease", globalConfig.PodNamespace, globalConfig.PodName)
 	s.RunWebhookServer(int(globalConfig.WebhookPort), filepath.Dir(globalConfig.TlsServerCertPath))
 
 	// ------------

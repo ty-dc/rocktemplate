@@ -12,7 +12,6 @@ import (
 	"go.uber.org/zap"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/cache"
-	"os"
 	"time"
 )
 
@@ -20,6 +19,7 @@ type informerHandler struct {
 	logger         *zap.Logger
 	leaseName      string
 	leaseNameSpace string
+	leaseId        string
 }
 
 func (s *informerHandler) informerAddHandler(obj interface{}) {
@@ -35,7 +35,7 @@ func (s *informerHandler) informerDeleteHandler(obj interface{}) {
 	s.logger.Sugar().Infof("crd delete: %+v", obj)
 }
 
-func (s *informerHandler) RunInformer() {
+func (s *informerHandler) executeInformer() {
 
 	config, err := rest.InClusterConfig()
 	if err != nil {
@@ -49,16 +49,15 @@ func (s *informerHandler) RunInformer() {
 
 	stopInfomer := make(chan struct{})
 
-	if len(s.leaseName) > 0 && len(s.leaseNameSpace) > 0 {
-		s.logger.Sugar().Infof("try to get lease %s/%s to run informer", s.leaseNameSpace, s.leaseName)
+	if len(s.leaseName) > 0 && len(s.leaseNameSpace) > 0 && len(s.leaseId) > 0 {
+		s.logger.Sugar().Infof("%v try to get lease %s/%s to run informer", s.leaseId, s.leaseNameSpace, s.leaseName)
 
 		ctx, cancel := context.WithCancel(context.Background())
 		defer cancel()
 
 		rlogger := s.logger.Named(fmt.Sprintf("lease %s/%s", s.leaseNameSpace, s.leaseName))
-		id, _ := os.Hostname()
 		// id := globalConfig.PodName
-		getLease, lossLease, err := lease.NewLeaseElector(ctx, s.leaseNameSpace, s.leaseName, id, rlogger)
+		getLease, lossLease, err := lease.NewLeaseElector(ctx, s.leaseNameSpace, s.leaseName, s.leaseId, rlogger)
 		if err != nil {
 			s.logger.Sugar().Fatalf("failed to generate lease, reason=%v ", err)
 		}
@@ -85,17 +84,18 @@ func (s *informerHandler) RunInformer() {
 
 }
 
-func (s *mybookManager) RunInformer(leaseName, leaseNameSpace string) {
+func (s *mybookManager) RunInformer(leaseName, leaseNameSpace string, leaseId string) {
 	t := &informerHandler{
 		logger:         s.logger,
 		leaseName:      leaseName,
 		leaseNameSpace: leaseNameSpace,
+		leaseId:        leaseId,
 	}
 	s.informer = t
 
 	go func() {
 		for {
-			t.RunInformer()
+			t.executeInformer()
 			time.Sleep(time.Duration(5) * time.Second)
 		}
 	}()
