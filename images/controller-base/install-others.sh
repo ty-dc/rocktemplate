@@ -11,7 +11,6 @@ set -o pipefail
 set -o nounset
 
 packages=(
-
 )
 
 TARGETARCH="$1"
