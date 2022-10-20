@@ -64,7 +64,14 @@ func RegisterMetricInstance(metricMapping []MetricMappingType, meter metric.Mete
 
 // example: https://github.com/open-telemetry/opentelemetry-go/blob/main/example/prometheus/main.go
 // https://github.com/open-telemetry/opentelemetry-go/blob/main/example/view/main.go
-func RunMetricsServer(meterName string, metricPort int32, metricMapping []MetricMappingType, histogramBucketsView view.View, logger *zap.Logger) metric.Meter {
+func RunMetricsServer(enabled bool, meterName string, metricPort int32, metricMapping []MetricMappingType, histogramBucketsView view.View, logger *zap.Logger) metric.Meter {
+
+	if !enabled {
+		logger.Sugar().Infof("metric server '%v' is disabled, create a fake metric server ", meterName)
+		globalMeter := metric.NewNoopMeterProvider().Meter(meterName)
+		RegisterMetricInstance(metricMapping, globalMeter, logger)
+		return globalMeter
+	}
 
 	logger.Sugar().Infof("metric server '%v' will listen on port %v", meterName, metricPort)
 
