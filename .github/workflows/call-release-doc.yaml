@@ -59,7 +59,7 @@ jobs:
         uses: actions/upload-artifact@v3.1.0
         with:
           name: site_artifact
-          path: docs/site.tar.gz
+          path: output/docs/site.tar.gz
           retention-days: 0
           if-no-files-found: error
 
