@@ -36,7 +36,7 @@ func DaemonMain() {
 	// ------
 
 	RunMetricsServer("controller")
-	if globalConfig.EnableMetric == true {
+	if globalConfig.EnableMetric {
 		MetricGaugeEndpoint.Add(context.Background(), 100)
 		MetricGaugeEndpoint.Add(context.Background(), -10)
 		MetricGaugeEndpoint.Add(context.Background(), 5)

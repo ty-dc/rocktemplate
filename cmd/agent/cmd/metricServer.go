@@ -27,7 +27,7 @@ var metricMapping = []pkgmetric.MetricMappingType{
 func RunMetricsServer(meterName string) {
 	logger := rootLogger.Named("metric")
 
-	if globalConfig.MetricPort == 0 || globalConfig.EnableMetric == false {
+	if globalConfig.MetricPort == 0 || !globalConfig.EnableMetric {
 		logger.Info("metric server is disabled")
 		return
 	}
