@@ -64,9 +64,7 @@ func RegisterMetricInstance(metricMapping []MetricMappingType, meter metric.Mete
 
 // example: https://github.com/open-telemetry/opentelemetry-go/blob/main/example/prometheus/main.go
 // https://github.com/open-telemetry/opentelemetry-go/blob/main/example/view/main.go
-func RunMetricsServer(meterName string, metricPort int32, metricMapping []MetricMappingType, histogramBucketsView view.View, logger *zap.Logger) metric.Meter {
-
-	logger.Sugar().Infof("metric server '%v' will listen on port %v", meterName, metricPort)
+func RunMetricsServer(enabled bool, meterName string, metricPort int32, metricMapping []MetricMappingType, histogramBucketsView view.View, logger *zap.Logger) metric.Meter {
 
 	// The exporter embeds a default OpenTelemetry Reader and
 	// implements prometheus.Collector, allowing it to be used as
@@ -79,8 +77,14 @@ func RunMetricsServer(meterName string, metricPort int32, metricMapping []Metric
 		logger.Sugar().Fatalf("failed to generate view, reason=%v", err)
 	}
 
-	provider := metricsdk.NewMeterProvider(metricsdk.WithReader(exporter, defaultView, histogramBucketsView))
-	globalMeter := provider.Meter(meterName)
+	globalMeter := metric.NewNoopMeterProvider().Meter(meterName)
+	if enabled {
+		provider := metricsdk.NewMeterProvider(metricsdk.WithReader(exporter, defaultView, histogramBucketsView))
+		globalMeter = provider.Meter(meterName)
+		logger.Sugar().Infof("metric server '%v' will listen on port %v", meterName, metricPort)
+	} else {
+		logger.Sugar().Infof("metric server '%v' is disabled, create a fake metric server ")
+	}
 
 	registry := prometheus.NewRegistry()
 	err = registry.Register(exporter.Collector)

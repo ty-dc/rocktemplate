@@ -26,7 +26,7 @@ func DaemonMain() {
 
 	SetupHttpServer()
 
-	RunMetricsServer("agent")
+	RunMetricsServer(globalConfig.PodName)
 
 	rootLogger.Info("hello world")
 	time.Sleep(time.Hour)

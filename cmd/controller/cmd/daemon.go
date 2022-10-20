@@ -35,24 +35,22 @@ func DaemonMain() {
 
 	// ------
 
-	RunMetricsServer("controller")
-	if globalConfig.EnableMetric {
-		MetricGaugeEndpoint.Add(context.Background(), 100)
-		MetricGaugeEndpoint.Add(context.Background(), -10)
-		MetricGaugeEndpoint.Add(context.Background(), 5)
+	RunMetricsServer(globalConfig.PodName)
+	MetricGaugeEndpoint.Add(context.Background(), 100)
+	MetricGaugeEndpoint.Add(context.Background(), -10)
+	MetricGaugeEndpoint.Add(context.Background(), 5)
 
-		attrs := []attribute.KeyValue{
-			attribute.Key("pod1").String("value1"),
-		}
-		MetricCounterRequest.Add(context.Background(), 10, attrs...)
-		attrs = []attribute.KeyValue{
-			attribute.Key("pod2").String("value1"),
-		}
-		MetricCounterRequest.Add(context.Background(), 5, attrs...)
-
-		MetricHistogramDuration.Record(context.Background(), 10)
-		MetricHistogramDuration.Record(context.Background(), 20)
+	attrs := []attribute.KeyValue{
+		attribute.Key("pod1").String("value1"),
 	}
+	MetricCounterRequest.Add(context.Background(), 10, attrs...)
+	attrs = []attribute.KeyValue{
+		attribute.Key("pod2").String("value1"),
+	}
+	MetricCounterRequest.Add(context.Background(), 5, attrs...)
+
+	MetricHistogramDuration.Record(context.Background(), 10)
+	MetricHistogramDuration.Record(context.Background(), 20)
 
 	// ----------
 	s := mybookManager.New(rootLogger.Named("mybook"))
