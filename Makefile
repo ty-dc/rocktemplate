@@ -109,6 +109,13 @@ build_local_agent_base_image: BASE_IMAGE_NAME := ${REGISTER}/${GIT_REPO}/agent-b
 build_local_agent_base_image:
 	$(BUILD_BASE_IMAGE)
 
+# ====modify====
+.PHONY: build_local_controller_base_image
+build_local_controller_base_image: DOCKERFILE_PATH := $(ROOT_DIR)/images/controller-base/Dockerfile
+build_local_controller_base_image: BASE_IMAGE_NAME := ${REGISTER}/${GIT_REPO}/controller-base
+build_local_controller_base_image:
+	$(BUILD_BASE_IMAGE)
+
 
 #================= update golang
 

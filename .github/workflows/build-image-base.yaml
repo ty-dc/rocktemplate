@@ -16,6 +16,7 @@ on:
     paths:
       # ====modify====
       - images/agent-base/**
+      - images/controller-base/**
   workflow_dispatch:
     inputs:
       ref:
@@ -41,6 +42,8 @@ jobs:
           # ====modify====
           - name: agent-base
             context: ./images/agent-base
+          - name: controller-base
+            context: ./images/controller-base
 
     steps:
       - name: Set up Docker Buildx
