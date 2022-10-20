@@ -67,7 +67,7 @@ func RegisterMetricInstance(metricMapping []MetricMappingType, meter metric.Mete
 func RunMetricsServer(enabled bool, meterName string, metricPort int32, metricMapping []MetricMappingType, histogramBucketsView view.View, logger *zap.Logger) metric.Meter {
 
 	if !enabled {
-		logger.Sugar().Infof("metric server '%v' is disabled, create a fake metric server ")
+		logger.Sugar().Infof("metric server '%v' is disabled, create a fake metric server ", meterName)
 		globalMeter := metric.NewNoopMeterProvider().Meter(meterName)
 		RegisterMetricInstance(metricMapping, globalMeter, logger)
 		return globalMeter
