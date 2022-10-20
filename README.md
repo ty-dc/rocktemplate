@@ -57,4 +57,7 @@
         EOF
         kubectl apply -f mybook.yaml
 
+## chart develop
+
+helm repo add rock https://spidernet-io.github.io/rocktemplate/
 
