@@ -1,7 +1,7 @@
 // Copyright 2022 Authors of spidernet-io
 // SPDX-License-Identifier: Apache-2.0
 
-package cmd
+package mybookManager
 
 import (
 	"context"
@@ -101,7 +101,13 @@ func (s *webhookhander) ValidateDelete(ctx context.Context, obj runtime.Object) 
 
 // https://github.com/kubernetes-sigs/controller-runtime/blob/master/pkg/builder/example_webhook_test.go
 // https://github.com/kubernetes-sigs/controller-runtime/blob/master/pkg/builder/webhook_test.go
-func SetupExampleWebhook(webhookPort int, tlsDir string, logger *zap.Logger) {
+func (s *mybookManager) RunWebhookServer(webhookPort int, tlsDir string) {
+	logger := s.logger
+	r := &webhookhander{
+		logger: logger,
+	}
+	s.webhook = r
+
 	logger.Sugar().Infof("setup webhook on port %v, with tls under %v", webhookPort, tlsDir)
 
 	scheme := runtime.NewScheme()
@@ -122,9 +128,6 @@ func SetupExampleWebhook(webhookPort int, tlsDir string, logger *zap.Logger) {
 		logger.Sugar().Fatalf("failed to NewManager, reason=%v", err)
 	}
 
-	r := &webhookhander{
-		logger: logger,
-	}
 	// the mutating route path : "/mutate-" + strings.ReplaceAll(gvk.Group, ".", "-") + "-" + gvk.Version + "-" + strings.ToLower(gvk.Kind)
 	// the validate route path : "/validate-" + strings.ReplaceAll(gvk.Group, ".", "-") + "-" + gvk.Version + "-" + strings.ToLower(gvk.Kind)
 	e := ctrl.NewWebhookManagedBy(mgr).

@@ -22,7 +22,7 @@
 
     repo -> settings -> branch -> add protection rules for 'main' and 'github_pages'
 
-5. redefine CRD in pkg/k8s/v1, and `make update_crd_sdk`
+5. redefine CRD in pkg/k8s/v1, and `make update_crd_sdk`, and code pkg/mybookManager
 
 6. update api/v1/openapi.yaml and `update_openapi_sdk` 
 

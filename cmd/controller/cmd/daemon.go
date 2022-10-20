@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/google/gops/agent"
 	"github.com/pyroscope-io/client/pyroscope"
+	"github.com/spidernet-io/rocktemplate/pkg/mybookManager"
 	"go.opentelemetry.io/otel/attribute"
 	"os"
 	"os/signal"
@@ -94,8 +95,9 @@ func DaemonMain() {
 	MetricHistogramDuration.Record(context.Background(), 20)
 
 	// ----------
-	SetupExampleInformer("testlease", globalConfig.PodNamespace, rootLogger.Named("mybook informer"))
-	SetupExampleWebhook(int(globalConfig.WebhookPort), filepath.Dir(globalConfig.TlsServerCertPath), rootLogger.Named("mybook wehbook"))
+	s := mybookManager.New(rootLogger.Named("mybook"))
+	s.RunInformer("testlease", globalConfig.PodNamespace)
+	s.RunWebhookServer(int(globalConfig.WebhookPort), filepath.Dir(globalConfig.TlsServerCertPath))
 
 	// ------------
 	rootLogger.Info("hello world")

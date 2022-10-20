@@ -1,7 +1,7 @@
 // Copyright 2022 Authors of spidernet-io
 // SPDX-License-Identifier: Apache-2.0
 
-package cmd
+package mybookManager
 
 import (
 	"context"
@@ -12,29 +12,30 @@ import (
 	"go.uber.org/zap"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/cache"
+	"os"
 	"time"
 )
 
-type ExampleInformer struct {
+type informerHandler struct {
 	logger         *zap.Logger
 	leaseName      string
 	leaseNameSpace string
 }
 
-func (s *ExampleInformer) informerAddHandler(obj interface{}) {
+func (s *informerHandler) informerAddHandler(obj interface{}) {
 	s.logger.Sugar().Infof("crd add: %+v", obj)
 }
 
-func (s *ExampleInformer) informerUpdateHandler(oldObj interface{}, newObj interface{}) {
+func (s *informerHandler) informerUpdateHandler(oldObj interface{}, newObj interface{}) {
 	s.logger.Sugar().Infof("crd update old: %+v", oldObj)
 	s.logger.Sugar().Infof("crd update new: %+v", newObj)
 }
 
-func (s *ExampleInformer) informerDeleteHandler(obj interface{}) {
+func (s *informerHandler) informerDeleteHandler(obj interface{}) {
 	s.logger.Sugar().Infof("crd delete: %+v", obj)
 }
 
-func (s *ExampleInformer) RunInformer() {
+func (s *informerHandler) RunInformer() {
 
 	config, err := rest.InClusterConfig()
 	if err != nil {
@@ -55,8 +56,8 @@ func (s *ExampleInformer) RunInformer() {
 		defer cancel()
 
 		rlogger := s.logger.Named(fmt.Sprintf("lease %s/%s", s.leaseNameSpace, s.leaseName))
-		// id, _ := os.Hostname()
-		id := globalConfig.PodName
+		id, _ := os.Hostname()
+		// id := globalConfig.PodName
 		getLease, lossLease, err := lease.NewLeaseElector(ctx, s.leaseNameSpace, s.leaseName, id, rlogger)
 		if err != nil {
 			s.logger.Sugar().Fatalf("failed to generate lease, reason=%v ", err)
@@ -84,15 +85,17 @@ func (s *ExampleInformer) RunInformer() {
 
 }
 
-func SetupExampleInformer(leaseName, leaseNameSpace string, logger *zap.Logger) {
-	s := ExampleInformer{
-		logger:         logger,
+func (s *mybookManager) RunInformer(leaseName, leaseNameSpace string) {
+	t := &informerHandler{
+		logger:         s.logger,
 		leaseName:      leaseName,
 		leaseNameSpace: leaseNameSpace,
 	}
+	s.informer = t
+
 	go func() {
 		for {
-			s.RunInformer()
+			t.RunInformer()
 			time.Sleep(time.Duration(5) * time.Second)
 		}
 	}()
