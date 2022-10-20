@@ -26,11 +26,9 @@
 
 6. update api/v1/openapi.yaml and `update_openapi_sdk` 
 
-7. update charts/
+7. update charts/ , and images/ , and CODEOWNERS
 
-8. update images/
-
-9. enable third app
+8. enable third app
 
     codefactor: https://www.codefactor.io/dashboard
 
