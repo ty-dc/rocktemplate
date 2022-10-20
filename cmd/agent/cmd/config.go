@@ -40,8 +40,8 @@ type Config struct {
 }
 
 type ConfigmapConfig struct {
-	enableIPv4 bool `yaml:"enableIPv4"`
-	enableIPv6 bool `yaml:"enableIPv6"`
+	EnableIPv4 bool `yaml:"enableIPv4"`
+	EnableIPv6 bool `yaml:"enableIPv6"`
 }
 
 var globalConfig Config
