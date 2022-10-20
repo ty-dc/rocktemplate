@@ -17,6 +17,13 @@ on:
       # ====modify====
       - images/agent-base/**
       - images/controller-base/**
+  push:
+    branches:
+      - main
+    paths:
+      # ====modify====
+      - images/agent-base/**
+      - images/controller-base/**
   workflow_dispatch:
     inputs:
       ref:
@@ -69,10 +76,16 @@ jobs:
             ref=${{ github.event.inputs.ref }}
             echo "use re $ref , by workflow_dispatch"
             echo "RUN_event_ref=${ref}" >> $GITHUB_ENV
-          else
+            echo "RUN_PUSH=true" >> $GITHUB_ENV
+          if ${{ github.event_name == 'pull_request_target' }} ; then
             #trigger by pr
             echo "use sha ${{ github.event.pull_request.head.sha }} , by pr"
             echo "RUN_event_ref=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
+            echo "RUN_PUSH=false" >> $GITHUB_ENV
+          elif ${{ github.event_name == 'push' }} ; then
+            echo "use sha ${{ github.sha }} , by push"
+            echo "RUN_event_ref=${{ github.sha }}" >> $GITHUB_ENV
+            echo "RUN_PUSH=true" >> $GITHUB_ENV
           fi
 
       - name: Checkout Source Code
@@ -118,7 +131,7 @@ jobs:
         with:
           context: ${{ matrix.context }}
           file: ./${{ matrix.context }}/Dockerfile
-          push: true
+          push: ${{ env.RUN_PUSH }}
           github-token: ${{ secrets.WELAN_PAT }}
           platforms: ${{ env.BUILD_PLATFORM }}
           tags: |
