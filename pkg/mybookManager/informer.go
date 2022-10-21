@@ -86,7 +86,9 @@ func (s *informerHandler) executeInformer() {
 		UpdateFunc: s.informerUpdateHandler,
 		DeleteFunc: s.informerDeleteHandler,
 	})
-	// 如果注册 第二个 AddEventHandler，那么，对于同一个 事件，两套 handler 是 使用 独立协程 并发调用的
+	
+	// 如果注册 第二个 AddEventHandler，那么，对于同一个 事件，两套 handler 是 使用 独立协程 并发调用的 . 
+	// 这样，就能实现对同一个事件 并发调用不同的回调，好处是，他们底层是基于同一个 NewSharedInformer ， 共用一个cache，能降低api server 之间的数据同步
 	inform.AddEventHandler(cache.ResourceEventHandlerFuncs{
 		AddFunc:    s.informerAddHandler,
 		UpdateFunc: s.informerUpdateHandler,
