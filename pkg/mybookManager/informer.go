@@ -23,7 +23,10 @@ type informerHandler struct {
 }
 
 func (s *informerHandler) informerAddHandler(obj interface{}) {
-	s.logger.Sugar().Infof("crd add: %+v", obj)
+	s.logger.Sugar().Infof("start crd add: %+v", obj)
+
+	time.Sleep(30 * time.Second)
+	s.logger.Sugar().Infof("done crd add: %+v", obj)
 }
 
 func (s *informerHandler) informerUpdateHandler(oldObj interface{}, newObj interface{}) {
@@ -74,12 +77,25 @@ func (s *informerHandler) executeInformer() {
 	// setup informer
 	s.logger.Info("begin to setup informer")
 	factory := externalversions.NewSharedInformerFactory(clientset, 0)
+	// 注意，一个 factory 下  对同一种 CRD 不能 创建 多个Informer，不然会 数据竞争 问题。 而 一个 factory 下， 可对不同 CRD 产生 各种的 Informer
 	inform := factory.Rocktemplate().V1().Mybooks().Informer()
+
+	// 在一个 Handler 逻辑中，是顺序消费所有的 crd 事件的
+	// 简单说：有2个 crd add 事件，那么，先会调用 informerAddHandler 完成 事件1 后，才会 调用 informerAddHandler 处理 事件2
 	inform.AddEventHandler(cache.ResourceEventHandlerFuncs{
 		AddFunc:    s.informerAddHandler,
 		UpdateFunc: s.informerUpdateHandler,
 		DeleteFunc: s.informerDeleteHandler,
 	})
+	
+	// 一个 inform 下  如果注册 第二套 AddEventHandler，那么，对于同一个 事件，两套 handler 是 使用 独立协程 并发调用的 . 
+	// 这样，就能实现对同一个事件 并发调用不同的回调，好处是，他们底层是基于同一个 NewSharedInformer ， 共用一个cache，能降低api server 之间的数据同步
+	inform.AddEventHandler(cache.ResourceEventHandlerFuncs{
+		AddFunc:    s.informerAddHandler,
+		UpdateFunc: s.informerUpdateHandler,
+		DeleteFunc: s.informerDeleteHandler,
+	})
+
 	inform.Run(stopInfomer)
 
 }
