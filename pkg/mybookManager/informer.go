@@ -78,11 +78,15 @@ func (s *informerHandler) executeInformer() {
 	s.logger.Info("begin to setup informer")
 	factory := externalversions.NewSharedInformerFactory(clientset, 0)
 	inform := factory.Rocktemplate().V1().Mybooks().Informer()
+
+	// 在一个 Handler 逻辑中，是顺序消费所有的 crd 事件的
+	// 简单说：有2个 crd add 事件，那么，先会调用 informerAddHandler 完成 事件1 后，才会 调用 informerAddHandler 处理 事件2
 	inform.AddEventHandler(cache.ResourceEventHandlerFuncs{
 		AddFunc:    s.informerAddHandler,
 		UpdateFunc: s.informerUpdateHandler,
 		DeleteFunc: s.informerDeleteHandler,
 	})
+	// 如果注册 第二个 AddEventHandler，那么，对于同一个 事件，两套 handler 是 使用 独立协程 并发调用的
 	inform.AddEventHandler(cache.ResourceEventHandlerFuncs{
 		AddFunc:    s.informerAddHandler,
 		UpdateFunc: s.informerUpdateHandler,
