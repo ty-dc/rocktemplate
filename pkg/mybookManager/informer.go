@@ -23,7 +23,10 @@ type informerHandler struct {
 }
 
 func (s *informerHandler) informerAddHandler(obj interface{}) {
-	s.logger.Sugar().Infof("crd add: %+v", obj)
+	s.logger.Sugar().Infof("start crd add: %+v", obj)
+
+	time.Sleep(30 * time.Second)
+	s.logger.Sugar().Infof("done crd add: %+v", obj)
 }
 
 func (s *informerHandler) informerUpdateHandler(oldObj interface{}, newObj interface{}) {
@@ -80,6 +83,12 @@ func (s *informerHandler) executeInformer() {
 		UpdateFunc: s.informerUpdateHandler,
 		DeleteFunc: s.informerDeleteHandler,
 	})
+	inform.AddEventHandler(cache.ResourceEventHandlerFuncs{
+		AddFunc:    s.informerAddHandler,
+		UpdateFunc: s.informerUpdateHandler,
+		DeleteFunc: s.informerDeleteHandler,
+	})
+
 	inform.Run(stopInfomer)
 
 }
