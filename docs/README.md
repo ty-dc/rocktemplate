@@ -10,9 +10,20 @@
 
 2. grep "====modify====" * -RHn --colour  and modify all of them
 
-3. create badge for github/workflows/auto-nightly-ci.yaml, github/workflows/badge.yaml
+3. update api/v1/openapi.yaml and `make update_openapi_sdk`
 
-4. github seetings:
+4. redefine CRD in pkg/k8s/v1
+    rename directory name 'pkg/k8s/v1/rocktemplate.spidernet.io' 
+    replace all 'mybook' to 'YourCRDName'
+    and `make update_crd_sdk`, and code pkg/mybookManager
+
+5. update charts/ , and images/ , and CODEOWNERS
+
+6. go mod tidy , go mod vendor , go vet ./... , double check all is ok
+
+7. create an empty branch 'github_pages' and mkdir 'docs'
+
+8. github seetings:
 
    spidernet.io  -> settings -> secrets -> actions -> grant secret to repo
 
@@ -22,17 +33,18 @@
 
    repo -> settings -> branch -> add protection rules for 'main' and 'github_pages'
 
-5. redefine CRD in pkg/k8s/v1, and `make update_crd_sdk`, and code pkg/mybookManager
-
-6. update api/v1/openapi.yaml and `update_openapi_sdk`
-
-7. update charts/ , and images/ , and CODEOWNERS
-
-8. enable third app
+9. enable third app
 
    codefactor: https://www.codefactor.io/dashboard
 
    sonarCloud: https://sonarcloud.io/projects/create
+
+10. create badge for github/workflows/auto-ci.yaml, github/workflows/badge.yaml
+
+11. build base image , 
+    update BASE_IMAGE in images/agent/Dockerfile and images/controller/Dockerfile
+    run test
+
 
 ## local develop
 
