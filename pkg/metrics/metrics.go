@@ -88,6 +88,7 @@ func RunMetricsServer(enabled bool, meterName string, metricPort int32, metricMa
 		logger.Sugar().Fatalf("failed to generate view, reason=%v", err)
 	}
 
+	// notice, view should rank to take priority
 	provider := metricsdk.NewMeterProvider(metricsdk.WithReader(exporter, histogramBucketsView, defaultView))
 	globalMeter := provider.Meter(meterName)
 
