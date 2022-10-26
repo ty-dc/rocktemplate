@@ -7,6 +7,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/spidernet-io/rocktemplate/pkg/logger"
+	"github.com/spidernet-io/rocktemplate/pkg/types"
 	"gopkg.in/yaml.v3"
 	"os"
 	"reflect"
@@ -36,12 +37,7 @@ type Config struct {
 	TlsServerKeyPath  string
 
 	// from configmap
-	Configmap ConfigmapConfig
-}
-
-type ConfigmapConfig struct {
-	EnableIPv4 bool `yaml:"enableIPv4"`
-	EnableIPv6 bool `yaml:"enableIPv6"`
+	Configmap types.ConfigmapConfig
 }
 
 var globalConfig Config
