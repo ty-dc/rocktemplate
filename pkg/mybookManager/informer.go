@@ -122,7 +122,7 @@ func (s *mybookManager) RunInformer(leaseName, leaseNameSpace string, leaseId st
 
 	scheme, e := crd.SchemeBuilder.Build()
 	if e != nil {
-		s.logger.Sugar().Fatalf("failed to get crd sheme: %+v", e)
+		s.logger.Sugar().Fatalf("failed to get crd scheme: %+v", e)
 	}
 	/*
 		Events:
