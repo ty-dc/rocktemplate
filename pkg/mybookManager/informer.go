@@ -6,12 +6,16 @@ package mybookManager
 import (
 	"context"
 	"fmt"
+	"github.com/spidernet-io/rocktemplate/pkg/k8s"
+	crd "github.com/spidernet-io/rocktemplate/pkg/k8s/apis/rocktemplate.spidernet.io/v1"
 	crdclientset "github.com/spidernet-io/rocktemplate/pkg/k8s/client/clientset/versioned"
 	"github.com/spidernet-io/rocktemplate/pkg/k8s/client/informers/externalversions"
 	"github.com/spidernet-io/rocktemplate/pkg/lease"
 	"go.uber.org/zap"
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/cache"
+	"k8s.io/client-go/tools/record"
 	"time"
 )
 
@@ -20,10 +24,21 @@ type informerHandler struct {
 	leaseName      string
 	leaseNameSpace string
 	leaseId        string
+	eventRecord    record.EventRecorder
 }
 
 func (s *informerHandler) informerAddHandler(obj interface{}) {
 	s.logger.Sugar().Infof("start crd add: %+v", obj)
+
+	r, ok := obj.(*crd.Mybook)
+	if !ok {
+		s.logger.Sugar().Errorf("failed to get crd: %+v", obj)
+		return
+	}
+	s.logger.Sugar().Infof("mybook crd: %+v", r)
+
+	// generate crd event
+	s.eventRecord.Eventf(r, corev1.EventTypeNormal, "newMybook", "crd event, new mybook %v", r.Name)
 
 	time.Sleep(30 * time.Second)
 	s.logger.Sugar().Infof("done crd add: %+v", obj)
@@ -32,14 +47,18 @@ func (s *informerHandler) informerAddHandler(obj interface{}) {
 func (s *informerHandler) informerUpdateHandler(oldObj interface{}, newObj interface{}) {
 	s.logger.Sugar().Infof("crd update old: %+v", oldObj)
 	s.logger.Sugar().Infof("crd update new: %+v", newObj)
+
 }
 
 func (s *informerHandler) informerDeleteHandler(obj interface{}) {
 	s.logger.Sugar().Infof("crd delete: %+v", obj)
 }
 
+// ===================================
+
 func (s *informerHandler) executeInformer() {
 
+	// ------- client set
 	config, err := rest.InClusterConfig()
 	if err != nil {
 		s.logger.Sugar().Fatalf("failed to InClusterConfig, reason=%v", err)
@@ -47,7 +66,6 @@ func (s *informerHandler) executeInformer() {
 	clientset, err := crdclientset.NewForConfig(config) // 初始化 client
 	if err != nil {
 		s.logger.Sugar().Fatalf("failed to NewForConfig, reason=%v", err)
-		return
 	}
 
 	stopInfomer := make(chan struct{})
@@ -87,8 +105,8 @@ func (s *informerHandler) executeInformer() {
 		UpdateFunc: s.informerUpdateHandler,
 		DeleteFunc: s.informerDeleteHandler,
 	})
-	
-	// 一个 inform 下  如果注册 第二套 AddEventHandler，那么，对于同一个 事件，两套 handler 是 使用 独立协程 并发调用的 . 
+
+	// 一个 inform 下  如果注册 第二套 AddEventHandler，那么，对于同一个 事件，两套 handler 是 使用 独立协程 并发调用的 .
 	// 这样，就能实现对同一个事件 并发调用不同的回调，好处是，他们底层是基于同一个 NewSharedInformer ， 共用一个cache，能降低api server 之间的数据同步
 	inform.AddEventHandler(cache.ResourceEventHandlerFuncs{
 		AddFunc:    s.informerAddHandler,
@@ -101,11 +119,26 @@ func (s *informerHandler) executeInformer() {
 }
 
 func (s *mybookManager) RunInformer(leaseName, leaseNameSpace string, leaseId string) {
+
+	scheme, e := crd.SchemeBuilder.Build()
+	if e != nil {
+		s.logger.Sugar().Fatalf("failed to get crd scheme: %+v", e)
+	}
+	/*
+		Events:
+		  Type    Reason     Age   From    Message
+		  ----    ------     ----  ----    -------
+		  Normal  newMybook  13s   mybook  crd event, new mybook test
+	*/
+	p := k8s.NewEventRecord(scheme, "mybook", s.logger)
+
+	// ----------
 	t := &informerHandler{
 		logger:         s.logger,
 		leaseName:      leaseName,
 		leaseNameSpace: leaseNameSpace,
 		leaseId:        leaseId,
+		eventRecord:    p,
 	}
 	s.informer = t
 
