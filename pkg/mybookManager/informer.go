@@ -124,7 +124,13 @@ func (s *mybookManager) RunInformer(leaseName, leaseNameSpace string, leaseId st
 	if e != nil {
 		s.logger.Sugar().Fatalf("failed to get crd sheme: %+v", e)
 	}
-	p := k8s.NewEventRecord(scheme, "mybook", s.logger)
+	/*
+		Events:
+		  Type    Reason     Age   From    Message
+		  ----    ------     ----  ----    -------
+		  Normal  newMybook  13s   mybook  crd event, new mybook test
+	*/
+	p := k8s.NewEventRecord(scheme, "mybook", "testnode", s.logger)
 
 	// ----------
 	t := &informerHandler{
