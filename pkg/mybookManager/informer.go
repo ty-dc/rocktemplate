@@ -130,7 +130,7 @@ func (s *mybookManager) RunInformer(leaseName, leaseNameSpace string, leaseId st
 		  ----    ------     ----  ----    -------
 		  Normal  newMybook  13s   mybook  crd event, new mybook test
 	*/
-	p := k8s.NewEventRecord(scheme, "mybook", "testnode", s.logger)
+	p := k8s.NewEventRecord(scheme, "mybook", s.logger)
 
 	// ----------
 	t := &informerHandler{

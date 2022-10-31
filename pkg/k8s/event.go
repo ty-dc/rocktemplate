@@ -11,10 +11,9 @@ import (
 	typedv1 "k8s.io/client-go/kubernetes/typed/core/v1"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/record"
-	"os"
 )
 
-func NewEventRecord(scheme *runtime.Scheme, EventSourceName string, nodeName string, logger *zap.Logger) record.EventRecorder {
+func NewEventRecord(scheme *runtime.Scheme, EventSourceName string, logger *zap.Logger) record.EventRecorder {
 	// ------------- for generate event for the crd
 	config, err := rest.InClusterConfig()
 	if err != nil {
@@ -32,13 +31,8 @@ func NewEventRecord(scheme *runtime.Scheme, EventSourceName string, nodeName str
 		Interface: typedv1.New(clientset.CoreV1().RESTClient()).Events(""),
 	})
 
-	if len(nodeName) == 0 {
-		nodeName, _ = os.Hostname()
-	}
-
 	return eventBroadcaster.NewRecorder(scheme,
 		corev1.EventSource{
 			Component: EventSourceName,
-			Host:      nodeName,
 		})
 }
