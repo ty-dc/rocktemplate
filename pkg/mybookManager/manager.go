@@ -17,6 +17,7 @@ type mybookManager struct {
 var _ types.MybookManager = (*mybookManager)(nil)
 
 func New(logger *zap.Logger) types.MybookManager {
+
 	return &mybookManager{
 		logger: logger.Named("mybookManager"),
 	}
