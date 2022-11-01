@@ -186,11 +186,11 @@ elif [ "$TYPE"x == "error"x ] ; then
         fi
 
         echo ""
-        PROCESS_NUM=` kubectl exec ${POD} -n ${COMPONENT_NAMESPACE} --kubeconfig ${E2E_KUBECONFIG} -- ps aux `
+        PROCESS_NUM=` kubectl exec ${POD} -n ${COMPONENT_NAMESPACE} --kubeconfig ${E2E_KUBECONFIG} -- ps aux | wc -l `
         if [ -z "$PROCESS_NUM" ] ; then
             echo "warning, failed to find process in ${COMPONENT_NAMESPACE}/${POD} "
         elif (( PROCESS_NUM >= COMPONENT_PS_PROCESS_MAX )) ; then
-             echo "error, found ${PROCESS_NUM} process"
+             echo "error, found ${PROCESS_NUM} process more than default $COMPONENT_PS_PROCESS_MAX "
              RESUTL_CODE=1
         fi
     done
