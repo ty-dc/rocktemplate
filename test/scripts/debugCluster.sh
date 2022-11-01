@@ -35,21 +35,6 @@ if [ -n "$E2E_LOG_FILE_NAME" ] ; then
     exec >>${E2E_LOG_FILE_NAME} 2>&1
 fi
 
-CHECK_ERROR(){
-  LOG_MARK="$1"
-  POD="$2"
-  NAMESPACE="$3"
-
-  echo ""
-  echo "---------${POD}--------"
-  if kubectl logs ${POD} -n ${NAMESPACE} --kubeconfig ${E2E_KUBECONFIG} | grep -E -i "${LOG_MARK}" &>/dev/null ; then
-      echo "error, in ${POD}, found error, ${LOG_MARK} !!!!!!!"
-      kubectl logs ${POD} -n ${NAMESPACE} --kubeconfig ${E2E_KUBECONFIG}
-      RESUTL_CODE=1
-  else
-      echo "no error "
-  fi
-}
 
 RESUTL_CODE=0
 if [ "$TYPE"x == "gops"x ] ; then
@@ -140,6 +125,22 @@ elif [ "$TYPE"x == "detail"x ] ; then
 
 
 elif [ "$TYPE"x == "error"x ] ; then
+    CHECK_ERROR(){
+        LOG_MARK="$1"
+        POD="$2"
+        NAMESPACE="$3"
+
+        echo ""
+        echo "---------${POD}--------"
+        if kubectl logs ${POD} -n ${NAMESPACE} --kubeconfig ${E2E_KUBECONFIG} | grep -E -i "${LOG_MARK}" &>/dev/null ; then
+            echo "error, in ${POD}, found error, ${LOG_MARK} !!!!!!!"
+            kubectl logs ${POD} -n ${NAMESPACE} --kubeconfig ${E2E_KUBECONFIG}
+            RESUTL_CODE=1
+        else
+            echo "no error "
+        fi
+    }
+
     DATA_RACE_LOG_MARK="WARNING: DATA RACE"
     LOCK_LOG_MARK="Goroutine took lock"
     PANIC_LOG_MARK="panic .* runtime error"
@@ -161,7 +162,7 @@ elif [ "$TYPE"x == "error"x ] ; then
 
         echo ""
         echo "----- check gorouting leak in ${COMPONENT_NAMESPACE}/${POD} "
-        GOROUTINE_NUM=`kubectl exec ${POD} -n ${COMPONENT_NAMESPACE} --kubeconfig ${E2E_KUBECONFIG}  gops stats 1 | grep "goroutines:" `
+        GOROUTINE_NUM=`kubectl exec ${POD} -n ${COMPONENT_NAMESPACE} --kubeconfig ${E2E_KUBECONFIG}  gops stats 1 | grep "goroutines:" | grep -E -o "[0-9]+" `
         if [ -z "$GOROUTINE_NUM" ] ; then
             echo "warning, failed to find GOROUTINE_NUM in ${COMPONENT_NAMESPACE}/${POD} "
         elif (( GOROUTINE_NUM >= COMPONENT_GOROUTINE_MAX )) ; then
