@@ -132,7 +132,7 @@ func (s *mybookManager) RunInformer(leaseName, leaseNameSpace string, leaseId st
 	*/
 	p := k8s.NewEventRecord(scheme, "mybook", s.logger)
 
-	// -----------
+	// ----------
 	t := &informerHandler{
 		logger:         s.logger,
 		leaseName:      leaseName,
