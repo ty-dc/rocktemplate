@@ -513,9 +513,11 @@ jobs:
       - name: create an issue
         uses: dacbd/create-issue-action@v1.2.1
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.WELAN_PAT }}
           #owner: spidernet-io
-          #repo: rocktemplate
+          #repo: rocktemplae
           title: "Night CI ${{ ENV.TIMESTAMP }}: Failed"
           body: |
             action url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          labels: "kind/bug"
+          assignees: "weizhoublue"
