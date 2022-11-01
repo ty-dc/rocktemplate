@@ -43,8 +43,8 @@ if [ "$TYPE"x == "gops"x ] ; then
     for POD in $CONTROLLER_POD_LIST ; do
       echo ""
       echo "---------${POD}--------"
-      kubectl exec ${POD} -n ${COMPONENT_NAMESPACE} --kubeconfig ${E2E_KUBECONFIG}  gops stats 1
-      kubectl exec ${POD} -n ${COMPONENT_NAMESPACE} --kubeconfig ${E2E_KUBECONFIG}  gops memstats 1
+      kubectl exec ${POD} -n ${COMPONENT_NAMESPACE} --kubeconfig ${E2E_KUBECONFIG} -- gops stats 1
+      kubectl exec ${POD} -n ${COMPONENT_NAMESPACE} --kubeconfig ${E2E_KUBECONFIG} -- gops memstats 1
     done
 
     echo ""
@@ -52,8 +52,8 @@ if [ "$TYPE"x == "gops"x ] ; then
     for POD in $AGENT_POD_LIST ; do
       echo ""
       echo "---------${POD}--------"
-      kubectl exec ${POD} -n ${COMPONENT_NAMESPACE} --kubeconfig ${E2E_KUBECONFIG}  gops stats 1
-      kubectl exec ${POD} -n ${COMPONENT_NAMESPACE} --kubeconfig ${E2E_KUBECONFIG}  gops memstats 1
+      kubectl exec ${POD} -n ${COMPONENT_NAMESPACE} --kubeconfig ${E2E_KUBECONFIG} -- gops stats 1
+      kubectl exec ${POD} -n ${COMPONENT_NAMESPACE} --kubeconfig ${E2E_KUBECONFIG} -- gops memstats 1
     done
 
 elif [ "$TYPE"x == "detail"x ] ; then
@@ -162,7 +162,7 @@ elif [ "$TYPE"x == "error"x ] ; then
 
         echo ""
         echo "----- check gorouting leak in ${COMPONENT_NAMESPACE}/${POD} "
-        GOROUTINE_NUM=`kubectl exec ${POD} -n ${COMPONENT_NAMESPACE} --kubeconfig ${E2E_KUBECONFIG}  gops stats 1 | grep "goroutines:" | grep -E -o "[0-9]+" `
+        GOROUTINE_NUM=`kubectl exec ${POD} -n ${COMPONENT_NAMESPACE} --kubeconfig ${E2E_KUBECONFIG} -- gops stats 1 | grep "goroutines:" | grep -E -o "[0-9]+" `
         if [ -z "$GOROUTINE_NUM" ] ; then
             echo "warning, failed to find GOROUTINE_NUM in ${COMPONENT_NAMESPACE}/${POD} "
         elif (( GOROUTINE_NUM >= COMPONENT_GOROUTINE_MAX )) ; then
@@ -172,7 +172,7 @@ elif [ "$TYPE"x == "error"x ] ; then
 
         echo ""
         echo "----- check pod restart in ${COMPONENT_NAMESPACE}/${POD}"
-        RESTARTS=` kubectl get pod ${POD} -n ${COMPONENT_NAMESPACE} -o wide | sed '1 d'  | awk '{print $4}' `
+        RESTARTS=` kubectl get pod ${POD} -n ${COMPONENT_NAMESPACE} -o wide --kubeconfig ${E2E_KUBECONFIG} | sed '1 d'  | awk '{print $4}' `
         if [ -z "$RESTARTS" ] ; then
             echo "warning, failed to find RESTARTS in ${COMPONENT_NAMESPACE}/${POD} "
         elif (( RESTARTS != 0 )) ; then
