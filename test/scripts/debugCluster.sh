@@ -44,6 +44,7 @@ if [ "$TYPE"x == "system"x ] ; then
     for POD in $CONTROLLER_POD_LIST $AGENT_POD_LIST ; do
       echo ""
       echo "--------- gops ${COMPONENT_NAMESPACE}/${POD} "
+      # ====modify==== pid number
       kubectl exec ${POD} -n ${COMPONENT_NAMESPACE} --kubeconfig ${E2E_KUBECONFIG} -- gops stats 1
       kubectl exec ${POD} -n ${COMPONENT_NAMESPACE} --kubeconfig ${E2E_KUBECONFIG} -- gops memstats 1
 
@@ -165,6 +166,7 @@ elif [ "$TYPE"x == "error"x ] ; then
 
         echo ""
         echo "----- check gorouting leak in ${COMPONENT_NAMESPACE}/${POD} "
+        # ====modify==== pid number
         GOROUTINE_NUM=`kubectl exec ${POD} -n ${COMPONENT_NAMESPACE} --kubeconfig ${E2E_KUBECONFIG} -- gops stats 1 | grep "goroutines:" | grep -E -o "[0-9]+" `
         if [ -z "$GOROUTINE_NUM" ] ; then
             echo "warning, failed to find GOROUTINE_NUM in ${COMPONENT_NAMESPACE}/${POD} "
