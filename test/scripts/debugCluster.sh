@@ -19,10 +19,12 @@ echo "$CURRENT_FILENAME : E2E_KUBECONFIG $E2E_KUBECONFIG "
 # ====modify====
 COMPONENT_NAMESPACE="kube-system"
 COMPONENT_GOROUTINE_MAX=300
-CONTROLLER_POD_LIST=$( kubectl get pods --no-headers --kubeconfig ${E2E_KUBECONFIG}  --namespace ${COMPONENT_NAMESPACE} --selector app.kubernetes.io/component=rocktemplate-controller --output jsonpath={.items[*].metadata.name} )
-AGENT_POD_LIST=$( kubectl get pods --no-headers --kubeconfig ${E2E_KUBECONFIG}  --namespace ${COMPONENT_NAMESPACE} --selector app.kubernetes.io/component=rocktemplate-agent --output jsonpath={.items[*].metadata.name} )
+CONTROLLER_LABEL="app.kubernetes.io/component=rocktemplate-controller"
+AGENT_LABEL="app.kubernetes.io/component=rocktemplate-agent"
 
 
+CONTROLLER_POD_LIST=$( kubectl get pods --no-headers --kubeconfig ${E2E_KUBECONFIG}  --namespace ${COMPONENT_NAMESPACE} --selector ${CONTROLLER_LABEL} --output jsonpath={.items[*].metadata.name} )
+AGENT_POD_LIST=$( kubectl get pods --no-headers --kubeconfig ${E2E_KUBECONFIG}  --namespace ${COMPONENT_NAMESPACE} --selector ${AGENT_LABEL} --output jsonpath={.items[*].metadata.name} )
 [ -z "$CONTROLLER_POD_LIST" ] && echo "error, failed to find any spider controller pod" && exit 1
 [ -z "$AGENT_POD_LIST" ] && echo "error, failed to find any spider agent pod" && exit 1
 
@@ -148,21 +150,35 @@ elif [ "$TYPE"x == "error"x ] ; then
         echo ""
         echo "----- check data race in ${COMPONENT_NAMESPACE}/${POD} "
         CHECK_ERROR "${DATA_RACE_LOG_MARK}" "${POD}" "${COMPONENT_NAMESPACE}"
+
         echo ""
         echo "----- check long lock in ${COMPONENT_NAMESPACE}/${POD} "
         CHECK_ERROR "${LOCK_LOG_MARK}" "${POD}" "${COMPONENT_NAMESPACE}"
+
         echo ""
         echo "----- check panic in ${COMPONENT_NAMESPACE}/${POD} "
         CHECK_ERROR "${PANIC_LOG_MARK}" "${POD}" "${COMPONENT_NAMESPACE}"
+
         echo ""
         echo "----- check gorouting leak in ${COMPONENT_NAMESPACE}/${POD} "
         GOROUTINE_NUM=`kubectl exec ${POD} -n ${COMPONENT_NAMESPACE} --kubeconfig ${E2E_KUBECONFIG}  gops stats 1 | grep "goroutines:" `
         if [ -z "$GOROUTINE_NUM" ] ; then
             echo "warning, failed to find GOROUTINE_NUM in ${COMPONENT_NAMESPACE}/${POD} "
-        elif ((GOROUTINE_NUM>=COMPONENT_GOROUTINE_MAX)) ; then
+        elif (( GOROUTINE_NUM >= COMPONENT_GOROUTINE_MAX )) ; then
              echo "maybe goroutine leak, found ${GOROUTINE_NUM} goroutines in ${COMPONENT_NAMESPACE}/${POD} , which is bigger than default ${COMPONENT_GOROUTINE_MAX}"
              RESUTL_CODE=1
         fi
+
+        echo ""
+        echo "----- check pod restart in ${COMPONENT_NAMESPACE}/${POD}"
+        RESTARTS=` kubectl get pod ${POD} -n ${COMPONENT_NAMESPACE} -o wide | sed '1 d'  | awk '{print $4}' `
+        if [ -z "$RESTARTS" ] ; then
+            echo "warning, failed to find RESTARTS in ${COMPONENT_NAMESPACE}/${POD} "
+        elif (( RESTARTS != 0 )) ; then
+             echo "found pod restart event"
+             RESUTL_CODE=1
+        fi
+
     done
 
 else
