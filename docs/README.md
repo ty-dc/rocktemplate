@@ -27,6 +27,8 @@
 
    spidernet.io  -> settings -> secrets -> actions -> grant secret to repo
 
+   spidernet.io  -> settings -> general -> feature -> issue
+
    repo -> packages -> package settings -> Change package visibility
 
    create 'github_pages' branch, and repo -> settings -> pages -> add branch 'github_pages', directory 'docs'
