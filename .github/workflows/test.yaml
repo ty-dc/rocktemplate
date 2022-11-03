@@ -16,7 +16,7 @@ jobs:
   result:
     runs-on: ubuntu-latest
     needs: [get_ref]
-    if: ${{ needs.get_ref.outputs.result == 'failure' }}
+    if: ${{ always() && needs.get_ref.outputs.result == 'failure' }}
     steps:
       - name: result
         run: |
