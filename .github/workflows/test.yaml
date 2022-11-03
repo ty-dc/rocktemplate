@@ -16,7 +16,6 @@ jobs:
   result:
     runs-on: ubuntu-latest
     needs: [get_ref]
-    if: ${{ always() }}
     steps:
       - name: result
         run: |
