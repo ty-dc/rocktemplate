@@ -20,4 +20,4 @@ jobs:
     steps:
       - name: result
         run: |
-          echo succeed
+          echo ${{ needs.get_ref.outputs.result }}
