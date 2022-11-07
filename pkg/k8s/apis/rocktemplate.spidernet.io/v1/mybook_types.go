@@ -65,7 +65,6 @@ type Mybook struct {
 
 // +kubebuilder:object:root=true
 
-// SpiderIPPoolList contains a list of SpiderIPPool
 type MybookList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata"`
