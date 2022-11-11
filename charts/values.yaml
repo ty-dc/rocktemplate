@@ -163,26 +163,26 @@ rocktemplateAgent:
   securityContext: {}
   # runAsUser: 0
 
-  healthServer:
-    ## @param rocktemplateAgent.healthServer.port the http Port for rocktemplateAgent, for health checking
+  httpServer:
+    ## @param rocktemplateAgent.httpServer.port the http Port for rocktemplateAgent, for health checking
     port: 5710
 
     startupProbe:
-      ## @param rocktemplateAgent.healthServer.startupProbe.failureThreshold the failure threshold of startup probe for rocktemplateAgent health checking
+      ## @param rocktemplateAgent.httpServer.startupProbe.failureThreshold the failure threshold of startup probe for rocktemplateAgent health checking
       failureThreshold: 60
-      ## @param rocktemplateAgent.healthServer.startupProbe.periodSeconds the period seconds of startup probe for rocktemplateAgent health checking
+      ## @param rocktemplateAgent.httpServer.startupProbe.periodSeconds the period seconds of startup probe for rocktemplateAgent health checking
       periodSeconds: 2
 
     livenessProbe:
-      ## @param rocktemplateAgent.healthServer.livenessProbe.failureThreshold the failure threshold of startup probe for rocktemplateAgent health checking
+      ## @param rocktemplateAgent.httpServer.livenessProbe.failureThreshold the failure threshold of startup probe for rocktemplateAgent health checking
       failureThreshold: 6
-      ## @param rocktemplateAgent.healthServer.livenessProbe.periodSeconds the period seconds of startup probe for rocktemplateAgent health checking
+      ## @param rocktemplateAgent.httpServer.livenessProbe.periodSeconds the period seconds of startup probe for rocktemplateAgent health checking
       periodSeconds: 10
 
     readinessProbe:
-      ## @param rocktemplateAgent.healthServer.readinessProbe.failureThreshold the failure threshold of startup probe for rocktemplateAgent health checking
+      ## @param rocktemplateAgent.httpServer.readinessProbe.failureThreshold the failure threshold of startup probe for rocktemplateAgent health checking
       failureThreshold: 3
-      ## @param rocktemplateAgent.healthServer.readinessProbe.periodSeconds the period seconds of startup probe for rocktemplateAgent health checking
+      ## @param rocktemplateAgent.httpServer.readinessProbe.periodSeconds the period seconds of startup probe for rocktemplateAgent health checking
       periodSeconds: 10
 
   prometheus:
@@ -372,29 +372,29 @@ rocktemplateController:
     ## @param rocktemplateController.podDisruptionBudget.minAvailable minimum number/percentage of pods that should remain scheduled.
     minAvailable: 1
 
-  healthServer:
+  httpServer:
     ## @param rocktemplateController.port the http Port for rocktemplateController, for health checking and http service
     port: 5720
 
     startupProbe:
-      ## @param rocktemplateController.healthServer.startupProbe.failureThreshold the failure threshold of startup probe for rocktemplateController health checking
+      ## @param rocktemplateController.httpServer.startupProbe.failureThreshold the failure threshold of startup probe for rocktemplateController health checking
       failureThreshold: 30
 
-      ## @param rocktemplateController.healthServer.startupProbe.periodSeconds the period seconds of startup probe for rocktemplateController health checking
+      ## @param rocktemplateController.httpServer.startupProbe.periodSeconds the period seconds of startup probe for rocktemplateController health checking
       periodSeconds: 2
 
     livenessProbe:
-      ## @param rocktemplateController.healthServer.livenessProbe.failureThreshold the failure threshold of startup probe for rocktemplateController health checking
+      ## @param rocktemplateController.httpServer.livenessProbe.failureThreshold the failure threshold of startup probe for rocktemplateController health checking
       failureThreshold: 6
 
-      ## @param rocktemplateController.healthServer.livenessProbe.periodSeconds the period seconds of startup probe for rocktemplateController health checking
+      ## @param rocktemplateController.httpServer.livenessProbe.periodSeconds the period seconds of startup probe for rocktemplateController health checking
       periodSeconds: 10
 
     readinessProbe:
-      ## @param rocktemplateController.healthServer.readinessProbe.failureThreshold the failure threshold of startup probe for rocktemplateController health checking
+      ## @param rocktemplateController.httpServer.readinessProbe.failureThreshold the failure threshold of startup probe for rocktemplateController health checking
       failureThreshold: 3
 
-      ## @param rocktemplateController.healthServer.readinessProbe.periodSeconds the period seconds of startup probe for rocktemplateController health checking
+      ## @param rocktemplateController.httpServer.readinessProbe.periodSeconds the period seconds of startup probe for rocktemplateController health checking
       periodSeconds: 10
 
   ## @param rocktemplateController.webhookPort the http port for rocktemplateController webhook
