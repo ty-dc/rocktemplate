@@ -3,6 +3,8 @@
 # Copyright 2022 Authors of spidernet-io
 # SPDX-License-Identifier: Apache-2.0
 
+# generate skd for the crd of client,informer,lister, to pkg/k8s/client
+
 set -o errexit
 set -o nounset
 set -o pipefail

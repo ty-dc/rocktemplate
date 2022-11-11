@@ -3,6 +3,9 @@
 # Copyright 2022 Authors of spidernet-io
 # SPDX-License-Identifier: Apache-2.0
 
+# generate role.yaml and crds to Chart
+# generate deepcode api to /pkg/k8s/apis
+
 set -o errexit
 set -o nounset
 set -o pipefail
