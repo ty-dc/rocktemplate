@@ -205,6 +205,12 @@ paths:
 #          enabled:
 #            description: enabled
 #            type: boolean
+#          additional:
+#            description: additional information
+#            # 这种定义 object 的方式，可以 实现 对 object 下 动态 Properties 的效果，最终，该 结构体为 map[string]string
+#            type: object
+#            additionalProperties:
+#              type: string
 #  EndpointChangeRequest:
 #    description: |
 #      Structure which contains the mutable elements of an Endpoint.
