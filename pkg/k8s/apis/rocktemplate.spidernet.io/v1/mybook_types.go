@@ -38,7 +38,6 @@ type MybookSpec struct {
 	NodeAffinity *metav1.LabelSelector `json:"nodeAffinity,omitempty"`
 }
 
-// IPPoolStatus defines the observed state of SpiderIPPool
 type MybookStatus struct {
 	// +kubebuilder:validation:Minimum=0
 	// +kubebuilder:validation:Optional
