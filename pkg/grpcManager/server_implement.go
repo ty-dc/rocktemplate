@@ -1,3 +1,6 @@
+// Copyright 2022 Authors of spidernet-io
+// SPDX-License-Identifier: Apache-2.0
+
 package grpcManager
 
 import (
@@ -21,7 +24,7 @@ type myGrpcServer struct {
 func (s *myGrpcServer) ExecRemoteCmd(ctx context.Context, req *grpcService.ExecRequestMsg) (*grpcService.ExecResponseMsg, error) {
 
 	logger := s.logger.With(
-		zap.String("SubnetName", req.Command),
+		zap.String("commandName", req.Command),
 	)
 	logger.Sugar().Infof("request: %+v", req)
 
