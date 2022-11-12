@@ -65,8 +65,10 @@ func init() {
 	viper.AutomaticEnv()
 	if t := viper.GetString("ENV_LOG_LEVEL"); len(t) > 0 {
 		rootLogger = logger.NewStdoutLogger(t, BinName).Named(BinName)
+		rootLogger.Info("ENV_LOG_LEVEL = " + t)
 	} else {
 		rootLogger = logger.NewStdoutLogger("", BinName).Named(BinName)
+		rootLogger.Info("ENV_LOG_LEVEL is empty ")
 	}
 
 	logger := rootLogger.Named("config")
