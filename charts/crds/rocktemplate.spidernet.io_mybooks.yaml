@@ -167,12 +167,16 @@ spec:
             - subnet
             type: object
           status:
-            description: IPPoolStatus defines the observed state of SpiderIPPool
             properties:
+              timeStamp:
+                format: date-time
+                type: string
               totalIPCount:
                 format: int64
                 minimum: 0
                 type: integer
+            required:
+            - totalIPCount
             type: object
         required:
         - metadata

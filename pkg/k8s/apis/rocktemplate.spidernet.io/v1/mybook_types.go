@@ -40,8 +40,12 @@ type MybookSpec struct {
 
 type MybookStatus struct {
 	// +kubebuilder:validation:Minimum=0
+	TotalIPCount int64 `json:"totalIPCount"`
+
 	// +kubebuilder:validation:Optional
-	TotalIPCount *int64 `json:"totalIPCount,omitempty"`
+	// +kubebuilder:validation:Type:=string
+	// +kubebuilder:validation:Format:=date-time
+	TimeStamp *metav1.Time `json:"timeStamp,omitempty"`
 }
 
 // scope(Namespaced or Cluster)
