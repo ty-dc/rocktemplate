@@ -8,6 +8,7 @@ import (
 	"github.com/spidernet-io/rocktemplate/api/v1/grpcService"
 	"github.com/spidernet-io/rocktemplate/pkg/debug"
 	"github.com/spidernet-io/rocktemplate/pkg/grpcManager"
+	"github.com/spidernet-io/rocktemplate/pkg/types"
 	"github.com/spidernet-io/rocktemplate/pkg/utils"
 	"time"
 )
@@ -15,12 +16,12 @@ import (
 func SetupUtility() {
 	// run gops
 	d := debug.New(rootLogger)
-	if globalConfig.GopsPort != 0 {
-		d.RunGops(int(globalConfig.GopsPort))
+	if types.AgentConfig.GopsPort != 0 {
+		d.RunGops(int(types.AgentConfig.GopsPort))
 	}
 
-	if globalConfig.PyroscopeServerAddress != "" {
-		d.RunPyroscope(globalConfig.PyroscopeServerAddress, globalConfig.PodName)
+	if types.AgentConfig.PyroscopeServerAddress != "" {
+		d.RunPyroscope(types.AgentConfig.PyroscopeServerAddress, types.AgentConfig.PodName)
 	}
 }
 
@@ -29,7 +30,7 @@ func testGrpc() {
 	rootLogger.Info("start grpc server")
 	alternateDNS := []string{}
 	// add pod name
-	alternateDNS = append(alternateDNS, globalConfig.PodName)
+	alternateDNS = append(alternateDNS, types.AgentConfig.PodName)
 	tlsCertPath := "/tmp/cert.crt"
 	tlsKeyPath := "/tmp/key.crt"
 	tlsCaPath := "/tmp/ca.crt"
@@ -60,13 +61,13 @@ func testGrpc() {
 }
 
 func DaemonMain() {
-	rootLogger.Sugar().Infof("config: %+v", globalConfig)
+	rootLogger.Sugar().Infof("config: %+v", types.AgentConfig)
 
 	SetupUtility()
 
 	SetupHttpServer()
 
-	RunMetricsServer(globalConfig.PodName)
+	RunMetricsServer(types.AgentConfig.PodName)
 
 	testGrpc()
 
