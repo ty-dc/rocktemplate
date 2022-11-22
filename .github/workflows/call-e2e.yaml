@@ -1,7 +1,5 @@
 name: Call E2E
 
-permissions: write-all
-
 env:
   E2E_LOG_PATH: test/runtime/e2edebugLog.txt
   E2E_GINKGO_REPORT_PATH: test/runtime/ginkgoreport.json
@@ -11,6 +9,7 @@ env:
   PERFORMANCE_BADGE_FILENAME:
 
 permissions: write-all
+
 on:
   workflow_call:
     inputs:
