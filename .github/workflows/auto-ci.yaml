@@ -10,9 +10,7 @@ env:
 
 permissions: write-all
 on:
-  schedule:
-    # each day
-    - cron: "0 20 * * *"
+  workflow_call:
   pull_request_target:
     types:
       - opened
@@ -133,9 +131,9 @@ jobs:
             # do it in another workflow
             echo "RUN_UNITEST_ENABLED=false" >> $GITHUB_ENV
           else
-            # schedule event
+            # workflow_call event
             # use main sha for ci image tag
-            echo "trigger by schedule"
+            echo "trigger by workflow_call"
               echo "RUN_TAG=main" >> $GITHUB_ENV
             # nightly ci, run all e2e
               echo "RUN_E2E_LABEL=" >> $GITHUB_ENV
@@ -484,27 +482,3 @@ jobs:
           else
               exit 0
           fi
-
-  creat_issue:
-    runs-on: ubuntu-latest
-    needs: [e2e_against_commit]
-    # https://docs.github.com/en/actions/learn-github-actions/contexts#jobs-context
-    if: ${{ always() && needs.e2e_against_commit.result == 'failure' && github.event_name == 'schedule' }}
-    steps:
-      - name: echo
-        run: |
-          echo ${{ github.repository }}
-          echo ${{ github.repository_owner }}
-          echo "TIMESTAMP=`date +%Y-%m-%d`" >> $GITHUB_ENV
-
-      - name: create an issue
-        uses: dacbd/create-issue-action@v1.2.1
-        with:
-          token: ${{ secrets.WELAN_PAT }}
-          #owner: spidernet-io
-          #repo: rocktemplae
-          title: "Night CI ${{ ENV.TIMESTAMP }}: Failed"
-          body: |
-            action url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          labels: "kind/bug"
-          assignees: "weizhoublue"
