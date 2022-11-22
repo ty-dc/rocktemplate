@@ -49,7 +49,7 @@ jobs:
               done
           done
           docker images
-          if [ "$RESULT" == "true" ]; then
+          if [ "$RESULT" != "true" ]; then
               echo "error, image is not secure, see detail on Step 'Load And Scan Images' "
               exit 1
           else

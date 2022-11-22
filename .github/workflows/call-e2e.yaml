@@ -75,6 +75,26 @@ jobs:
         with:
           path: output/artifact
 
+      - name: Load And Scan Images
+        run: |
+          PROJECT_DIR=`pwd`
+          cd output/artifact
+          ls
+          ALL_DIR=`ls`
+          IMAGE_DIR=""
+          for ITEM in $ALL_DIR ; do
+              grep -E "^image-tar" <<< "${ITEM}" &>/dev/null && IMAGE_DIR+=" ${ITEM} "
+          done
+          echo "IMAGE_DIR=${IMAGE_DIR}"
+          for ITEM in $IMAGE_DIR ; do
+              TAR_FILES=`ls ${ITEM}`
+              for TAR in $TAR_FILES ; do
+                echo "image tar ${ITEM}/${TAR}"
+                cat ${ITEM}/${TAR} |  docker import - ${TAR%*.tar}:${{ needs.prepare.outputs.ref }}
+              done
+          done
+          docker images
+
       # test against commit version
       - name: Setup Kind Cluster For Dual-stack
         uses: nick-invision/retry@v2
