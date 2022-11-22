@@ -147,6 +147,8 @@ endif
 #====== pyroscope
 PYROSCOPE_CONTAINER_NAME := pyroscope
 PYROSCOPE_IMAGE_NAME := pyroscope/pyroscope:latest
+# empty to disable PYROSCOPE
+# PYROSCOPE_LOCAL_PORT :=
 PYROSCOPE_LOCAL_PORT := 8040
 
 E2E_KIND_CLUSTER_NAME ?= rocktemplate
