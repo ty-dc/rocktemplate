@@ -1,4 +1,4 @@
-name: Auto CI
+name: Auto PR CI
 
 permissions: write-all
 on:
