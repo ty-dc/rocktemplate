@@ -9,6 +9,7 @@ on:
 
 jobs:
   call-ci:
+    runs-on: ubuntu-latest
     uses: ./.github/workflows/auto-ci.yaml
     secrets: inherit
 
