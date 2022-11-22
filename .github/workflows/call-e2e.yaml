@@ -34,11 +34,11 @@ jobs:
           echo "ref: ${{ inputs.ref }} "
           echo "e2e_labels: ${{ inputs.e2e_labels }}"
           #========
-          if ${{ inputs.ipfamily == "ipv4" }} ; then
+          if ${{ inputs.ipfamily == 'ipv4' }} ; then
               echo "test ipv4"          
-          elif ${{ inputs.ipfamily == "ipv6" }} ; then
+          elif ${{ inputs.ipfamily == 'ipv6' }} ; then
               echo "test ipv6"          
-          elif ${{ inputs.ipfamily == "dual" }} ; then
+          elif ${{ inputs.ipfamily == 'dual' }} ; then
               echo "test dual stack"          
           else
               echo "unknow ipfamily ${{ inputs.ipfamily }} "
