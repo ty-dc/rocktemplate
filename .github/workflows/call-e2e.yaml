@@ -41,7 +41,7 @@ jobs:
           elif ${{ inputs.ipfamily == 'dual' }} ; then
               echo "test dual stack"          
           else
-              echo "unknow ipfamily ${{ inputs.ipfamily }} "
+              echo "unknown ipfamily ${{ inputs.ipfamily }} "
               exit
           fi
           echo "===== image "
@@ -97,7 +97,7 @@ jobs:
           docker images
 
       # test against commit version
-      - name: Setup Kind Cluster For Dual-stack
+      - name: Setup Kind Cluster
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 10
@@ -133,14 +133,14 @@ jobs:
               echo "RUN_UPLOAD_E2E_REPORT=false" >> $GITHUB_ENV
           fi
 
-      - name: Upload e2e cluster log For Dual-stack
+      - name: Upload e2e cluster log
         uses: actions/upload-artifact@v3.1.1
         with:
           name: ${{ inputs.ipfamily }}-debuglog.txt
           path: ${{ env.E2E_LOG_PATH }}
           retention-days: 30
 
-      - name: Upload e2e ginkgo report For Dual-stack
+      - name: Upload e2e ginkgo report
         if: ${{ env.RUN_UPLOAD_LOG == 'true' }}
         uses: actions/upload-artifact@v3.1.1
         with:
@@ -148,7 +148,7 @@ jobs:
           path: ${{ env.E2E_GINKGO_REPORT_PATH }}
           retention-days: 30
 
-      - name: Show e2e Result For Dual-stack
+      - name: Show e2e Result
         run: |
           if ${{ env.RUN_PASS == 'true' }} ;then
               exit 0
@@ -156,7 +156,7 @@ jobs:
               exit 1
           fi
 
-      - name: Get the E2E Performance Result For Dual-stack
+      - name: Get the E2E Performance Result
         # run all e2e cases
         id: get_performance
         if: ${{ inputs.ipfamily == 'dual' && env.PERFORMANCE_BADGE_ID != ''}}
@@ -167,7 +167,7 @@ jobs:
           TODO_STATUS=$( ${TOOL_PATH}  "${{ env.E2E_GINKGO_REPORT_PATH }}"  )
           echo "RUN_PERFORMANCE_RESULT=${TODO_STATUS}" >> $GITHUB_ENV
 
-      - name: Update Badge For Dual-stack
+      - name: Update Badge
         if: ${{ env.RUN_PERFORMANCE_RESULT != '' && inputs.ipfamily == 'dual' && env.PERFORMANCE_BADGE_ID != '' }}
         uses: schneegans/dynamic-badges-action@v1.6.0
         with:
@@ -177,7 +177,3 @@ jobs:
           label: performance
           message: ${{ steps.get_performance.outputs.result }}
           color: lightgrey
-
-
-
-
