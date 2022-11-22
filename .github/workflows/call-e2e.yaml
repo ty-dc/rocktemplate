@@ -113,6 +113,8 @@ jobs:
         continue-on-error: true
         run: |
           echo ${{ github.event.inputs.labels }}
+          echo "i am in $(hostname) "
+          docker ps
           RESULT=0
           make e2e_run -e E2E_KIND_CLUSTER_NAME=${{ env.RUN_KIND_CLUSTER_NAME }}  \
               -e E2E_GINKGO_LABELS=${{ inputs.e2e_labels }} \
