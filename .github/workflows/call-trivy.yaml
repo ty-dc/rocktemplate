@@ -24,12 +24,12 @@ jobs:
       - name: Download images
         uses: actions/download-artifact@v3.0.1
         with:
-          path: output/artifact
+          path: output/artifact-trivy
 
       - name: Load And Scan Images
         run: |
           PROJECT_DIR=`pwd`
-          cd output/artifact
+          cd output/artifact-trivy
           ls
           ALL_DIR=`ls`
           IMAGE_DIR=""
