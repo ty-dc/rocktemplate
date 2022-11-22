@@ -10,6 +10,7 @@ on:
 jobs:
   call-ci:
     uses: ./.github/workflows/auto-ci.yaml
+    with:
     secrets: inherit
 
   creat_issue:
