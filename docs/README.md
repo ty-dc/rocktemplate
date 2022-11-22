@@ -50,11 +50,30 @@
 
     sonarCloud: https://sonarcloud.io/projects/create
 
-11. create badge for github/workflows/auto-ci.yaml, github/workflows/badge.yaml
+    codecov: https://app.codecov.io/gh
 
-12. build base image , 
+11. add badge to readme:
+
+    github/workflows/call-e2e.yaml
+
+    github/workflows/badge.yaml
+
+    auto nightly ci
+
+    release version
+
+    code coverage from https://app.codecov.io/gh
+
+    go report from https://goreportcard.com
+
+    codefactor: https://www.codefactor.io/dashboard
+
+    sonarCloud: https://sonarcloud.io/projects
+
+14. build base image , 
     update BASE_IMAGE in images/agent/Dockerfile and images/controller/Dockerfile
     run test
+ 
 
 
 ## local develop
