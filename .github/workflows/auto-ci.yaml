@@ -194,12 +194,13 @@ jobs:
     runs-on: ubuntu-latest
     needs: [call_build_ci_image, prepare, call_release_chart]
     if: ${{ needs.prepare.outputs.e2e_enabled == 'true' && needs.prepare.outputs.ipfamily_dual_e2e == 'true' }}
-    uses: ./.github/workflows/call-e2e.yaml
-    with:
-      ref: ${{ needs.prepare.outputs.ref }}
-      ipfamily: dual
-      e2e_labels: ${{ needs.prepare.outputs.e2e_labels }}
-    secrets: inherit
+      - name: "dual"
+        uses: ./.github/workflows/call-e2e.yaml
+        with:
+          ref: ${{ needs.prepare.outputs.ref }}
+          ipfamily: dual
+          e2e_labels: ${{ needs.prepare.outputs.e2e_labels }}
+        secrets: inherit
 
   e2e_ipv4:
     runs-on: ubuntu-latest
