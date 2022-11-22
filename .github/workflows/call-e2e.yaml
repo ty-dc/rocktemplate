@@ -20,7 +20,7 @@ on:
         required: true
         type: string
       e2e_labels:
-        required: true
+        required: false
         type: string
 
 
