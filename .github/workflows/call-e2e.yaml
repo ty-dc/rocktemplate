@@ -91,7 +91,7 @@ jobs:
               ll -l ${ITEM}
               for TAR in $TAR_FILES ; do
                 echo "image tar ${ITEM}/${TAR}"
-                cat ${ITEM}/${TAR} |  docker import - ${TAR%*.tar}:${{ needs.prepare.outputs.ref }}
+                cat ${ITEM}/${TAR} |  docker import - ${TAR%*.tar}:${{ inputs.ref }}
               done
           done
           docker images
