@@ -73,12 +73,12 @@ jobs:
       - name: Download images
         uses: actions/download-artifact@v3.0.1
         with:
-          path: output/artifact
+          path: output/artifact-${{ inputs.ipfamily }}
 
       - name: Load And Scan Images
         run: |
           PROJECT_DIR=`pwd`
-          cd output/artifact
+          cd output/artifact-${{ inputs.ipfamily }}
           ls
           ALL_DIR=`ls`
           IMAGE_DIR=""
@@ -88,6 +88,7 @@ jobs:
           echo "IMAGE_DIR=${IMAGE_DIR}"
           for ITEM in $IMAGE_DIR ; do
               TAR_FILES=`ls ${ITEM}`
+              ll ${ITEM}
               for TAR in $TAR_FILES ; do
                 echo "image tar ${ITEM}/${TAR}"
                 cat ${ITEM}/${TAR} |  docker import - ${TAR%*.tar}:${{ needs.prepare.outputs.ref }}
