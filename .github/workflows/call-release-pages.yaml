@@ -1,4 +1,4 @@
-name: Call Release Doc
+name: Call Release Pages
 
 env:
   MERGE_BRANCH: github_pages
@@ -77,7 +77,7 @@ jobs:
 
   create_pr:
     name: Create PR
-    needs: [package-doc, package-chart]
+    needs: [package]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
