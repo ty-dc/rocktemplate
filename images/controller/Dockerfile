@@ -5,13 +5,6 @@
 ARG BASE_IMAGE=ghcr.io/spidernet-io/rocktemplate/controller-base:8cb581ff70d86749ec471936daad3c9fda58339f
 ARG GOLANG_IMAGE=docker.io/library/golang:1.19@sha256:dc76ef03e54c34a00dcdca81e55c242d24b34d231637776c4bb5c1a8e8514253
 
-# TARGETARCH is an automatic platform ARG enabled by Docker BuildKit.
-# like amd64 arm64
-ARG TARGETARCH
-
-# report error by github ci
-#ARG BUILDPLATFORM
-
 #======= build bin ==========
 FROM --platform=${BUILDPLATFORM} ${GOLANG_IMAGE} as builder
 
@@ -35,7 +28,7 @@ RUN  make GOARCH=${TARGETARCH}   \
 
 #====== release image =======
 
-FROM ${BASE_IMAGE}
+FROM --platform=${BUILDPLATFORM} ${BASE_IMAGE}
 
 LABEL maintainer="maintainer@spidernet-io"
 
