@@ -7,7 +7,8 @@ ARG GOLANG_IMAGE=docker.io/library/golang:1.19
 
 
 #======= build bin ==========
-FROM --platform=${TARGETPLATFORM} ${GOLANG_IMAGE} as builder
+# use BUILDPLATFORM to cross build
+FROM --platform=${BUILDPLATFORM} ${GOLANG_IMAGE} as builder
 
 # docker build var
 ARG TARGETOS
