@@ -3,9 +3,10 @@
 
 # ====modify====
 ARG BASE_IMAGE=ghcr.io/spidernet-io/rocktemplate/controller-base:8cb581ff70d86749ec471936daad3c9fda58339f
-ARG GOLANG_IMAGE=docker.io/library/golang:1.19@sha256:dc76ef03e54c34a00dcdca81e55c242d24b34d231637776c4bb5c1a8e8514253
+ARG GOLANG_IMAGE=docker.io/library/golang:1.19
 
 #======= build bin ==========
+# use BUILDPLATFORM to cross build
 FROM --platform=${BUILDPLATFORM} ${GOLANG_IMAGE} as builder
 
 # docker build var
@@ -28,7 +29,7 @@ RUN  make GOARCH=${TARGETARCH}   \
 
 #====== release image =======
 
-FROM --platform=${BUILDPLATFORM} ${BASE_IMAGE}
+FROM --platform=${TARGETPLATFORM} ${BASE_IMAGE}
 
 LABEL maintainer="maintainer@spidernet-io"
 
