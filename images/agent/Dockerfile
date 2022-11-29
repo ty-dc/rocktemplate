@@ -2,9 +2,8 @@
 # SPDX-License-Identifier: Apache-2.0
 
 # ====modify====
-ARG BASE_IMAGE=ghcr.io/spidernet-io/rocktemplate/agent-base:4c76490f78c45ccd7aa063bedf2b1acbf8e29964
+ARG BASE_IMAGE=ghcr.io/spidernet-io/rocktemplate/agent-base:f67530f1b0d3f29321c8901c036a217b521cd782
 ARG GOLANG_IMAGE=docker.io/library/golang:1.19
-
 
 #======= build bin ==========
 # use BUILDPLATFORM to cross build
