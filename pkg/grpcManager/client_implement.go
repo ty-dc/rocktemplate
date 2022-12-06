@@ -5,22 +5,47 @@ package grpcManager
 
 import (
 	"context"
+	"fmt"
 	"github.com/pkg/errors"
 	"github.com/spidernet-io/rocktemplate/api/v1/grpcService"
+	"go.uber.org/zap"
 )
 
-func (s *grpcClientManager) SendRequestForExecRequest(ctx context.Context, serverAddress []string, request *grpcService.ExecRequestMsg) (*grpcService.ExecResponseMsg, error) {
+func (s *grpcClientManager) SendRequestForExecRequest(ctx context.Context, serverAddress []string, requestList []*grpcService.ExecRequestMsg) ([]*grpcService.ExecResponseMsg, error) {
+
+	logger := s.logger.With(
+		zap.String("server", fmt.Sprintf("%v", serverAddress)),
+	)
 
 	if e := s.clientDial(ctx, serverAddress); e != nil {
 		return nil, errors.Errorf("failed to dial, error=%v", e)
 	}
 	defer s.client.Close()
 
-	c := grpcService.NewCmdServiceClient(s.client)
+	response := []*grpcService.ExecResponseMsg{}
 
-	if r, err := c.ExecRemoteCmd(ctx, request); err != nil {
+	c := grpcService.NewCmdServiceClient(s.client)
+	stream, err := c.ExecRemoteCmd(ctx)
+	if err != nil {
 		return nil, err
-	} else {
-		return r, nil
 	}
+
+	for n, request := range requestList {
+		logger.Sugar().Debugf("send %v request ", n)
+		if err := stream.Send(request); err != nil {
+			return nil, err
+		}
+
+		if r, err := stream.Recv(); err != nil {
+			return nil, err
+		} else {
+			logger.Sugar().Debugf("recv %v response ", n)
+			response = append(response, r)
+		}
+	}
+
+	logger.Debug("finish")
+	stream.CloseSend()
+	return response, nil
+
 }

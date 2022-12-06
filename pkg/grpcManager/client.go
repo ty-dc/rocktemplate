@@ -27,7 +27,7 @@ const (
 )
 
 type GrpcClientManager interface {
-	SendRequestForExecRequest(ctx context.Context, serverAddress []string, request *grpcService.ExecRequestMsg) (*grpcService.ExecResponseMsg, error)
+	SendRequestForExecRequest(ctx context.Context, serverAddress []string, requestList []*grpcService.ExecRequestMsg) ([]*grpcService.ExecResponseMsg, error)
 }
 
 type grpcClientManager struct {
