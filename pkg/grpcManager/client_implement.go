@@ -45,7 +45,9 @@ func (s *grpcClientManager) SendRequestForExecRequest(ctx context.Context, serve
 	}
 
 	logger.Debug("finish")
-	stream.CloseSend()
+	if e := stream.CloseSend(); e != nil {
+		logger.Sugar().Errorf("grpc failed to CloseSend error=%v ", e)
+	}
 	return response, nil
 
 }
