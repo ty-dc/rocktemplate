@@ -51,10 +51,10 @@ func testGrpc() {
 		Timeoutsecond: 10,
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	if res, err := client.SendRequestForExecRequest(ctx, []string{"127.0.0.1:3000"}, p); err != nil {
+	if reslist, err := client.SendRequestForExecRequest(ctx, []string{"127.0.0.1:3000"}, []*grpcService.ExecRequestMsg{p}); err != nil {
 		rootLogger.Sugar().Errorf("grpc failed to send request, error=%v", err)
 	} else {
-		rootLogger.Sugar().Infof("grpc response: %+v", res)
+		rootLogger.Sugar().Infof("grpc response: %+v", reslist[0])
 	}
 	cancel()
 
