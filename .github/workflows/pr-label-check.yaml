@@ -22,6 +22,8 @@ jobs:
 
       # must set one of required label, for release note generator
       - name: check label
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -x
           echo ${{ secrets.WELAN_PAT }} | gh auth login --with-token
