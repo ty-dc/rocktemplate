@@ -391,7 +391,7 @@ go.opentelemetry.io/otel/semconv/v1.12.0
 # go.opentelemetry.io/otel/exporters/prometheus v0.33.0
 ## explicit; go 1.18
 go.opentelemetry.io/otel/exporters/prometheus
-# go.opentelemetry.io/otel/metric v0.33.0
+# go.opentelemetry.io/otel/metric v0.34.0
 ## explicit; go 1.18
 go.opentelemetry.io/otel/metric
 go.opentelemetry.io/otel/metric/instrument
