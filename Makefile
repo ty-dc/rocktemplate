@@ -67,7 +67,7 @@ build_local_image: build_local_agent_image build_local_controller_image
 
 # ====modify====
 .PHONY: build_local_agent_image
-build_local_agent_image: IMAGE_NAME := ${REGISTER}/${GIT_REPO}/agent
+build_local_agent_image: IMAGE_NAME := ${REGISTER}/${GIT_REPO}-agent
 build_local_agent_image: DOCKERFILE_PATH := $(ROOT_DIR)/images/agent/Dockerfile
 build_local_agent_image: IMAGE_TAG := $(GIT_COMMIT_VERSION)
 build_local_agent_image:
@@ -75,7 +75,7 @@ build_local_agent_image:
 
 # ====modify====
 .PHONY: build_local_controller_image
-build_local_controller_image: IMAGE_NAME := ${REGISTER}/${GIT_REPO}/controller
+build_local_controller_image: IMAGE_NAME := ${REGISTER}/${GIT_REPO}-controller
 build_local_controller_image: DOCKERFILE_PATH := $(ROOT_DIR)/images/controller/Dockerfile
 build_local_controller_image: IMAGE_TAG := $(GIT_COMMIT_VERSION)
 build_local_controller_image:
@@ -111,14 +111,14 @@ build_local_base_image: build_local_agent_base_image
 # ====modify====
 .PHONY: build_local_agent_base_image
 build_local_agent_base_image: DOCKERFILE_PATH := $(ROOT_DIR)/images/agent-base/Dockerfile
-build_local_agent_base_image: BASE_IMAGE_NAME := ${REGISTER}/${GIT_REPO}/agent-base
+build_local_agent_base_image: BASE_IMAGE_NAME := ${REGISTER}/${GIT_REPO}-agent-base
 build_local_agent_base_image:
 	$(BUILD_BASE_IMAGE)
 
 # ====modify====
 .PHONY: build_local_controller_base_image
 build_local_controller_base_image: DOCKERFILE_PATH := $(ROOT_DIR)/images/controller-base/Dockerfile
-build_local_controller_base_image: BASE_IMAGE_NAME := ${REGISTER}/${GIT_REPO}/controller-base
+build_local_controller_base_image: BASE_IMAGE_NAME := ${REGISTER}/${GIT_REPO}-controller-base
 build_local_controller_base_image:
 	$(BUILD_BASE_IMAGE)
 
