@@ -106,7 +106,7 @@ IMAGE_DIR=` dirname $(DOCKERFILE_PATH) ` \
 endef
 
 .PHONY: build_local_base_image
-build_local_base_image: build_local_agent_base_image
+build_local_base_image: build_local_agent_base_image build_local_controller_base_image
 
 # ====modify====
 .PHONY: build_local_agent_base_image
