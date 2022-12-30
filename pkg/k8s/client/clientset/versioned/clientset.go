@@ -20,8 +20,7 @@ type Interface interface {
 	RocktemplateV1() rocktemplatev1.RocktemplateV1Interface
 }
 
-// Clientset contains the clients for groups. Each group has exactly one
-// version included in a Clientset.
+// Clientset contains the clients for groups.
 type Clientset struct {
 	*discovery.DiscoveryClient
 	rocktemplateV1 *rocktemplatev1.RocktemplateV1Client
