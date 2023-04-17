@@ -95,6 +95,7 @@ jobs:
         if: ${{ env.RUN_PUSH == 'true' }}
         shell: bash
         run: |
+          which cosign
           curl -L https://github.com/kubernetes-sigs/bom/releases/download/v0.5.1/bom-linux-amd64 -o bom
           mv ./bom  /usr/local/bin/bom
           chmod +x  /usr/local/bin/bom
@@ -160,7 +161,7 @@ jobs:
         run: |
           set -x
           DIGEST=${{ steps.docker_build_and_push.outputs.digest }}
-          bom generate -o ${{ matrix.name }}_${DIGEST}.spdx \
+          /usr/local/bin/bom generate -o ${{ matrix.name }}_${DIGEST}.spdx \
                 --image=${{ env.ONLINE_REGISTER }}/${{ github.repository }}-${{ matrix.name }}${{ env.RUN_SUFFIX }}:${{ env.RUN_IMAGE_TAG }}@${DIGEST}
 
       - name: Attach SBOM to Container Images
