@@ -85,6 +85,18 @@ jobs:
         run: |
           make lint_dockerfile_trivy
 
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@main
+        with:
+          cosign-release: 'v3.0.2'
+
+      - name: Install Bom
+        shell: bash
+        run: |
+          curl -L https://github.com/kubernetes-sigs/bom/releases/download/v0.5.1/bom-linux-amd64 -o bom
+          sudo mv ./bom /usr/local/bin/bom
+          sudo chmod +x /usr/local/bin/bom
+
       - name: Getting Build Arg
         id: arg
         run: |
@@ -131,6 +143,42 @@ jobs:
             GIT_COMMIT_TIME=${{ env.RUN_COMMIT_TIME }}
             VERSION=${{ env.RUN_REF }}
             RACE=${{ inputs.race }}
+
+      - name: Sign Container Images
+        if: ${{ env.RUN_PUSH == 'true' }}
+        env:
+          COSIGN_EXPERIMENTAL: "true"
+        run: |
+          DIGEST=${{ steps.docker_build_and_push.outputs.digest }}
+          cosign sign -y ${{ env.ONLINE_REGISTER }}/${{ github.repository }}-${{ matrix.name }}${{ env.RUN_SUFFIX }}:${{ env.RUN_IMAGE_TAG }}@${DIGEST}
+
+      - name: Generate SBOM
+        if: ${{ env.RUN_PUSH == 'true' }}
+        shell: bash
+        run: |
+          set -x
+          DIGEST=${{ steps.docker_build_and_push.outputs.digest }}
+          bom generate -o ${{ matrix.name }}_${DIGEST}.spdx \
+                --image=${{ env.ONLINE_REGISTER }}/${{ github.repository }}-${{ matrix.name }}${{ env.RUN_SUFFIX }}:${{ env.RUN_IMAGE_TAG }}@${DIGEST}
+
+      - name: Attach SBOM to Container Images
+        if: ${{ env.RUN_PUSH == 'true' }}
+        run: |
+          set -x
+          DIGEST=${{ steps.docker_build_and_push.outputs.digest }}
+          cosign attach sbom --sbom ${{ matrix.name }}_${DIGEST}.spdx  \
+                ${{ env.ONLINE_REGISTER }}/${{ github.repository }}-${{ matrix.name }}${{ env.RUN_SUFFIX }}:${{ env.RUN_IMAGE_TAG }}@${DIGEST}
+
+      - name: Sign SBOM Images
+        if: ${{ env.RUN_PUSH == 'true' }}
+        env:
+          COSIGN_EXPERIMENTAL: "true"
+        run: |
+          set -x
+          DIGEST=${{ steps.docker_build_and_push.outputs.digest }}
+          image_name="${{ env.ONLINE_REGISTER }}/${{ github.repository }}-${{ matrix.name }}${{ env.RUN_SUFFIX }}:${DIGEST/:/-}.sbom"
+          sbom_digest="sha256:$(docker buildx imagetools inspect --raw ${image_name} | sha256sum | head -c 64)"
+          cosign sign -y "${{ env.ONLINE_REGISTER }}/${{ github.repository }}-${{ matrix.name }}${{ env.RUN_SUFFIX }}@${sbom_digest}"
 
       - name: Image Release Digest
         shell: bash
