@@ -151,7 +151,7 @@ jobs:
         shell: bash
         run: |
           set -x
-          curl -L https://github.com/kubernetes-sigs/bom/releases/download/v0.5.1/bom-linux-amd64 -o bom
+          curl -L https://github.com/kubernetes-sigs/bom/releases/download/v0.5.1/bom-amd64-linux -o bom
           chmod +x  ./bom
           DIGEST=${{ steps.docker_build_and_push.outputs.digest }}
           ./bom generate -o ${{ matrix.name }}_${DIGEST}.spdx \
