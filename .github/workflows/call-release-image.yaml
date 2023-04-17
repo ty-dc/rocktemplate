@@ -91,15 +91,6 @@ jobs:
         with:
           cosign-release: 'v2.0.1' #do not upgrade, or else go error
 
-      - name: Install Bom
-        if: ${{ env.RUN_PUSH == 'true' }}
-        shell: bash
-        run: |
-          which cosign
-          curl -L https://github.com/kubernetes-sigs/bom/releases/download/v0.5.1/bom-linux-amd64 -o bom
-          mv ./bom  /usr/local/bin/bom
-          chmod +x  /usr/local/bin/bom
-
       - name: Getting Build Arg
         id: arg
         run: |
@@ -160,8 +151,10 @@ jobs:
         shell: bash
         run: |
           set -x
+          curl -L https://github.com/kubernetes-sigs/bom/releases/download/v0.5.1/bom-linux-amd64 -o bom
+          chmod +x  ./bom
           DIGEST=${{ steps.docker_build_and_push.outputs.digest }}
-          /usr/local/bin/bom generate -o ${{ matrix.name }}_${DIGEST}.spdx \
+          ./bom generate -o ${{ matrix.name }}_${DIGEST}.spdx \
                 --image=${{ env.ONLINE_REGISTER }}/${{ github.repository }}-${{ matrix.name }}${{ env.RUN_SUFFIX }}:${{ env.RUN_IMAGE_TAG }}@${DIGEST}
 
       - name: Attach SBOM to Container Images
