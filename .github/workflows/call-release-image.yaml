@@ -159,7 +159,7 @@ jobs:
           wget https://github.com/anchore/syft/releases/download/v0.77.0/syft_0.77.0_linux_amd64.tar.gz
           tar xzvf syft_0.77.0_linux_amd64.tar.gz
           chmod +x syft
-          ./syft ${{ env.ONLINE_REGISTER }}/${{ github.repository }}-${{ matrix.name }}${{ env.RUN_SUFFIX }}@${DIGEST} > ${{ matrix.name }}_${DIGEST}.spdx
+          ./syft -o spdx ${{ env.ONLINE_REGISTER }}/${{ github.repository }}-${{ matrix.name }}${{ env.RUN_SUFFIX }}@${DIGEST} > ${{ matrix.name }}_${DIGEST}.spdx
          
       - name: Attach SBOM to Container Images
         if: ${{ env.RUN_PUSH == 'true' }}
