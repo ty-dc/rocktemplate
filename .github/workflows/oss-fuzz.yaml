@@ -27,5 +27,6 @@ jobs:
           fi
           REPO_NAME="github.com/${REPO_NAME}"
           echo "score for ${REPO_NAME}"
+          go install github.com/ossf/criticality_score/cmd/criticality_score@latest
           export GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
           criticality_score --depsdev-disable   ${REPO_NAME}
