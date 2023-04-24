@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       repo:
-        description: 'github project, like "spidernet-io/rocktemplate" '
+        description: 'github project, like "https://github.com/spidernet-io/spiderpool" '
         required: false
 
 permissions: write-all
@@ -23,9 +23,8 @@ jobs:
           set -x
           REPO_NAME=${{ github.event.inputs.repo }}
           if [ -z "${REPO_NAME}" ]; then
-              REPO_NAME=${{ github.repository }}
+              REPO_NAME="https://github.com/${{ github.repository }}"
           fi
-          REPO_NAME="github.com/${REPO_NAME}"
           echo "score for ${REPO_NAME}"
           go install github.com/ossf/criticality_score/cmd/criticality_score@latest
           export GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
