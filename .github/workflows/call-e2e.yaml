@@ -22,7 +22,9 @@ on:
       e2e_labels:
         required: false
         type: string
-
+      kind_node_image:
+        required: false
+        type: string
 
 jobs:
   e2e_against_commit:
@@ -57,14 +59,14 @@ jobs:
           ref: ${{ inputs.ref }}
 
       - name: Setup Golang
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v4
         with:
           go-version: '1.20.0'
           id: go
 
       # https://github.com/helm/kind-action
       - name: Install Kind Bin
-        uses: helm/kind-action@v1.5.0
+        uses: helm/kind-action@v1.7.0
         with:
           install_only: true
 
@@ -107,14 +109,13 @@ jobs:
             make e2e_init -e E2E_KIND_CLUSTER_NAME=${{ env.RUN_KIND_CLUSTER_NAME }} \
                 -e PROJECT_IMAGE_VERSION=${{ inputs.ref }} \
                 -e E2E_IP_FAMILY=${{ inputs.ipfamily }} \
-                -e PYROSCOPE_LOCAL_PORT=''
+                -e PYROSCOPE_LOCAL_PORT='' \
+                -e E2E_KIND_NODE_IMAGE=${{ inputs.kind_node_image }}
 
       - name: Run e2e Test
         continue-on-error: true
         run: |
           echo ${{ github.event.inputs.labels }}
-          echo "i am in $(hostname) "
-          docker ps
           RESULT=0
           make e2e_run -e E2E_KIND_CLUSTER_NAME=${{ env.RUN_KIND_CLUSTER_NAME }}  \
               -e E2E_GINKGO_LABELS=${{ inputs.e2e_labels }} \
@@ -136,17 +137,17 @@ jobs:
           fi
 
       - name: Upload e2e cluster log
-        uses: actions/upload-artifact@v3.1.2
+        uses: actions/upload-artifact@v3.1.1
         with:
-          name: ${{ inputs.ipfamily }}-debuglog.txt
+          name: ${{ inputs.ipfamily }}-debuglog-${{ inputs.kind_node_image }}.txt
           path: ${{ env.E2E_LOG_PATH }}
           retention-days: 30
 
       - name: Upload e2e ginkgo report
         if: ${{ env.RUN_UPLOAD_LOG == 'true' }}
-        uses: actions/upload-artifact@v3.1.2
+        uses: actions/upload-artifact@v3.1.1
         with:
-          name: ${{ inputs.ipfamily }}-e2ereport.json
+          name: ${{ inputs.ipfamily }}-e2ereport-${{ inputs.kind_node_image }}.json
           path: ${{ env.E2E_GINKGO_REPORT_PATH }}
           retention-days: 30
 
