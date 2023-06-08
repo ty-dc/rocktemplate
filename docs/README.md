@@ -38,13 +38,22 @@
 
    spidernet.io/REPO  -> settings -> general -> feature -> issue
 
+   spidernet.io/ORG  -> settings -> actions -> general -> allow github action to create pr
+   spidernet.io/REPO  -> settings -> actions -> general -> allow github action to create pr
+
+   spidernet.io  -> settings -> packages -> public 
+
    repo -> packages -> package settings -> Change package visibility
 
    create 'github_pages' branch, and repo -> settings -> pages -> add branch 'github_pages', directory 'docs'
 
    repo -> settings -> branch -> add protection rules for 'main' and 'github_pages' and 'release*'
 
+   repo -> settings -> tag -> add protection rules for tags
+
 10. enable third app
+
+    personal github -> settings -> applications -> configure
 
     codefactor: https://www.codefactor.io/dashboard
 
@@ -70,7 +79,7 @@
 
     sonarCloud: https://sonarcloud.io/projects
 
-14. build base image , 
+12. build base image , 
     update BASE_IMAGE in images/agent/Dockerfile and images/controller/Dockerfile
     run test
  
