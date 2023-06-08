@@ -40,7 +40,10 @@ jobs:
           gh issue list ${OPTION} | egrep "^[0-9]+[[:space:]]+OPEN"
           issueList=` gh issue list ${OPTION} | egrep "^[0-9]+[[:space:]]+OPEN" | awk '{print $1}' `
           echo "--------"
+          ACTION_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           for ITEM in $issueList ; do
               echo "close issue $ITEM "
+              gh issue comment $ITEM \
+                  --body "closed by CI <${ACTION_URL}> "
               gh issue close $ITEM
           done
