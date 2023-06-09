@@ -32,34 +32,35 @@
 
 8. create an empty branch 'github_pages' and mkdir 'docs'
 
-9. github seetings:
+9. enable third app
 
-   spidernet.io  -> settings -> secrets -> actions -> grant secret to repo
+   personal github -> settings -> applications -> configure
 
-   spidernet.io/REPO  -> settings -> general -> feature -> issue
+   codefactor: https://github.com/marketplace/codefactor and https://www.codefactor.io/dashboard
 
-   spidernet.io/ORG  -> settings -> actions -> general -> allow github action to create pr
-   spidernet.io/REPO  -> settings -> actions -> general -> allow github action to create pr
+   sonarCloud: https://sonarcloud.io/projects/create
 
-   spidernet.io  -> settings -> packages -> public 
+   codecov: https://github.com/marketplace/codecov  and https://app.codecov.io/gh
 
-   repo -> packages -> package settings -> Change package visibility
+10. github seetings:
+      spidernet.io/REPO  -> settings -> secrets and variable -> actions -> add secret 'WELAN_PAT' , 'ACTIONS_RUNNER_DEBUG'=true , 'ACTIONS_STEP_DEBUG'=true, 'CODECOV_TOKEN'
 
-   create 'github_pages' branch, and repo -> settings -> pages -> add branch 'github_pages', directory 'docs'
+      spidernet.io  -> settings -> secrets -> actions -> grant secret to repo
 
-   repo -> settings -> branch -> add protection rules for 'main' and 'github_pages' and 'release*'
+      spidernet.io/REPO  -> settings -> general -> feature -> issue
 
-   repo -> settings -> tag -> add protection rules for tags
+      spidernet.io/ORG  -> settings -> actions -> general -> allow github action to create pr
+      spidernet.io/REPO  -> settings -> actions -> general -> allow github action to create pr
 
-10. enable third app
+      spidernet.io  -> settings -> packages -> public 
 
-    personal github -> settings -> applications -> configure
+      repo -> packages -> package settings -> Change package visibility
 
-    codefactor: https://www.codefactor.io/dashboard
+      create 'github_pages' branch, and repo -> settings -> pages -> add branch 'github_pages', directory 'docs'
 
-    sonarCloud: https://sonarcloud.io/projects/create
+      repo -> settings -> branch -> add protection rules for 'main' and 'github_pages' and 'release*'
 
-    codecov: https://app.codecov.io/gh
+      repo -> settings -> tag -> add protection rules for tags
 
 11. add badge to readme:
 
