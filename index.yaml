@@ -1,0 +1,23 @@
+apiVersion: v1
+entries:
+  rocktemplate:
+  - apiVersion: v2
+    appVersion: 0.1.2
+    created: "2023-09-06T09:17:53.4943003Z"
+    description: rocktemplate
+    digest: f9a63987a0407fb362126343ff7176e69fde2a1073529b6389c0647af2e642ff
+    home: https://spidernet-io.github.io/agent
+    keywords:
+    - rocktemplate
+    kubeVersion: '>= 1.16.0-0'
+    maintainers:
+    - name: spidernet-io
+      url: https://github.com/spidernet-io
+    name: rocktemplate
+    sources:
+    - https://github.com/spidernet-io/rocktemplate
+    type: application
+    urls:
+    - https://ty-dc.github.io/rocktemplate/charts/rocktemplate-0.1.2.tgz
+    version: 0.1.2
+generated: "2023-09-06T09:17:53.488107239Z"
