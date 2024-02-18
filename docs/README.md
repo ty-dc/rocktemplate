@@ -33,15 +33,15 @@
 
 7. `go get -u` , `go mod tidy` , `go mod vendor` , `go vet ./...`  , update all vendor
 
-8. create an empty branch 'github_pages' and mkdir 'docs'
+8. create an empty branch 'github_pages' and  repo -> settings -> pages -> branch
 
 9. enable third app
 
    personal github -> settings -> applications -> configure
 
-   codefactor: https://github.com/marketplace/codefactor and https://www.codefactor.io/dashboard
+   # codefactor: https://github.com/marketplace/codefactor and https://www.codefactor.io/dashboard
 
-   sonarCloud: https://sonarcloud.io/projects/create
+   # sonarCloud: https://sonarcloud.io/projects/create
 
    codecov: https://github.com/marketplace/codecov  and https://app.codecov.io/gh
 
@@ -79,12 +79,17 @@
 
     go report from https://goreportcard.com
 
-    codefactor: https://www.codefactor.io/dashboard
+    # codefactor: https://www.codefactor.io/dashboard
 
-    sonarCloud: https://sonarcloud.io/projects
+    # sonarCloud: https://sonarcloud.io/projects
 
 12. build base image , 
+
+    spidernet.io/REPO -> setting -> packages -> Package creation -> public
+    创建的镜像，设置 Change package visibility -> public
+
     update BASE_IMAGE in images/agent/Dockerfile and images/controller/Dockerfile
+    
     run test
 
 ## local develop
