@@ -4,9 +4,11 @@
 
 1. copy repo `cp -rf rocktemplate/*  YourRepoName  && cp rocktemplate/.gitignore YourRepoName  && cp rocktemplate/.github  YourRepoName `
 
-   replace all 'rocktemplate' to 'YourRepoName'
+   replace all 'rocktemplate' to 'yourRepoName'
+   replace all 'Rocktemplate' to 'YourRepoName'
 
    replace all 'spidernet-io' and 'spidernet.io' to 'YourOrigin'
+            注意保持 github.com/spidernet-io/e2eframework
 
    replace all 'Copyright 2022' to be the right time
 
@@ -15,11 +17,10 @@
 3. in a linux machine, update api/v1/openapi.yaml and `make update_openapi_sdk`
 
 4. redefine CRD in pkg/k8s/v1
-    rename directory name 'pkg/k8s/apis/rocktemplate.spidernet.io' 
-    replace all 'mybook' to 'YourCRDName'
-    and `make update_crd_sdk`, and write code in pkg/mybookManager
-
+    rename directory name 'pkg/k8s/apis/rocktemplate.spidernet.io'
     rename pkg/mybookManager and replace all 'mybook' with your CRD name in this directory
+    replace all 'mybook' and 'Mybook' to 'YourCRDName'
+    and `make update_crd_sdk`, and write code in pkg/mybookManager
 
     rm charts/crds/rocktemplate.spidernet.io_mybooks.yaml 
 
